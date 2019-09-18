@@ -1,0 +1,30 @@
+version: '3.2'
+
+services:
+  mc-panel:
+    container_name: mc-panel
+    restart: unless-stopped
+    build: ./docker
+    image: mc-panel_7.2-apache
+    volumes:
+      - ./www:/var/www
+      - ./minecraft_server:/var/minecraft_server
+    ports:
+      - ${PORT}:80
+    env_file:
+      - .env
+    networks:
+      - mcpanel
+
+  mc-panel-db:
+    container_name: mc-panel.mysql
+    restart: unless-stopped
+    image: mariadb
+    env_file:
+      - .env
+    networks:
+      - mcpanel
+
+networks:
+  mcpanel:
+    driver: bridge

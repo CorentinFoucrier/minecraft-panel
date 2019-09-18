@@ -1,0 +1,9 @@
+# Files
+.env
+.vscode
+www/public/adminer.php
+
+# Folders
+www/vendor
+www/composer.lock
+tests/
