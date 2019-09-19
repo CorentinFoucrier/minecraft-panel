@@ -1,0 +1,43 @@
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    flex: 1 0 auto;
+}
+
+.debug {
+    border: 1px solid red;
+}
+
+/* NAVBAR-TOP */
+.navbar-top {
+    box-shadow: 0px -2px 6px 8px rgba(191,191,191,1);
+}
+
+.title, .user {
+    color: #707070;
+}
+
+.user > div {
+    height: 29px;
+    width: 29px;
+}
+
+/* SIDE BAR */
+nav {
+    z-index: 1  ;
+    background-color: #55595C;
+    color: #FDFDFD;
+}
+
+nav div:hover {
+    background-color: #6c757d;
+}
+
+nav div {
+    font-size: 0.9em;
+}

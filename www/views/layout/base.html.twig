@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>{{title}}</title>
+</head>
+<body>
+    <div class="container-fluid content">
+        <div class="row vh-100">
+            <nav class='col-md-2'>
+                <div class="row p-2 mb-4 d-flex align-items-center justify-content-center border-bottom border-secondary">
+                    <div class="settings m-0 h4 text-uppercase d-flex">
+                        <i class="fas fa-sliders-h d-block"></i> <span class="pl-2"><b>Paramètres</b></span>
+                    </div>
+                </div>
+
+                <a href="/" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 bg-secondary mb-3">
+                        <i class="fas fa-tachometer-alt pr-1 d-flex align-items-center"></i><span class="pl-4">Tableau de bord</span>
+                    </div>
+                </a>
+                <a href="/plugins" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-cubes pr-1 d-flex align-items-center"></i><span class="pl-4">Plugins</span>
+                    </div>
+                </a>
+                <a href="/config" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-cog pr-1 d-flex align-items-center"></i><span class="pl-4">Configuration</span>
+                    </div>
+                </a>
+                <a href="/worlds" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-globe-africa pr-1 d-flex align-items-center"></i><span class="pl-4">Gestion des mondes</span>
+                    </div>
+                </a>
+                <a href="/players" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-user-friends d-flex align-items-center"></i><span class="pl-4">Gestion des joueurs</span>
+                    </div>
+                </a>
+                <a href="/scheduled-tasks" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-calendar-alt pr-1 d-flex align-items-center"></i><span class="pl-4">Tâches planifiées</span>
+                    </div>
+                </a>
+                <a href="/file-export" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-file-export pr-1 d-flex align-items-center"></i><span class="pl-4">Transfert de fichiers</span>
+                    </div>
+                </a>
+                <a href="/co-admin" class="text-reset text-decoration-none">
+                    <div class="row p-2 pl-4 mb-3">
+                        <i class="fas fa-users-cog pr-1 d-flex align-items-center"></i><span class="pl-4">Co-Administration</span>
+                    </div>
+                </a>
+            </nav>
+
+            <div class="col-md-10 ">
+                <div class="navbar-top row p-2 d-flex align-items-center justify-content-between">
+                    <div class="title h4 m-0 col-md-6"><span class="text-uppercase">Minecraft Panel</span> - {{title}}</div>
+                    <div class="user h5 m-0 d-flex col-md-6 align-items-center justify-content-end">
+                        <span class="username pr-3">Admin</span>
+                        <div class="border border-secondary rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="far fa-user d-block"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="row"></div>
+            </div>
+        </div>
+        
+        {% block content %}{% endblock %}
+    </div>
+    {% block javascript %}{% endblock %}
+    <script src="https://kit.fontawesome.com/d399a29ef2.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
