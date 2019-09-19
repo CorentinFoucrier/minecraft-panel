@@ -1,5 +1,87 @@
-{% include "layout/base.html.twig" %}
+{% extends "layout/base.html.twig" %}
 
 {% block content %}
-    
+    <div class="row p-md-4">
+        <div class="col-md-3">
+            <div class="card" style="min-width: 25rem;">
+                <div class="card-header h6">
+                    Version: <span class="float-right">Spigot 1.14.2</span>
+                </div>
+                <div class="card-body">
+                    <p class="card-text text-success"><i class="far fa-check-circle"></i> Version à jour !</p>
+                    <a href="#" class="btn btn-outline-secondary btn-sm float-right">Changer la version</a>
+                </div>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-7">
+            <div class="card">
+                <h5 class="card-header">
+                    <b>Gestion du serveur</b>
+                </h5>
+                <div class="card-body">
+                    <div class="row p-md-2 text-center">
+                        <div class="col-md-4">
+                            <i class="fas fa-user-friends h2"></i><br/>
+                            Nombre de joueurs<br/>
+                            0/100
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-microchip h2"></i><br/>
+                            Utilisation CPU<br/>
+                            2 %
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-memory h2"></i><br/>
+                            Utilisation RAM<br/>
+                            15 %
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="float-right">
+                        <a href="#" class="btn btn-primary mr-md-1"><i class="fas fa-play"></i> START</a>
+                        <a href="#" class="btn btn-warning text-light mr-md-1"><i class="fas fa-undo"></i> RESTART</a>
+                        <a href="#" class="btn btn-danger"><i class="fas fa-power-off"></i> STOP</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row p-md-4">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                    <div class="console-side col-md-2 bg-light border-right d-md-flex flex-md-column justify-content-md-center">
+                        <h5 class="text-center mt-md-3"><b>Opérateurs</b></h5>
+                        <ul>
+                            <li>Mark</li>
+                            <li>Job</li>
+                            <li>Otto</li>
+                        </ul>
+                        <div class="mt-md-auto mb-md-3 mx-md-auto">
+                            <a href="http://" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Ajouté un opérateur</a>
+                        </div>
+                    </div>
+                    <div class="col-md-10 p-md-2">
+                        <div class="card-body py-md-0">
+                            <div class="row">
+                                <div class="form-group">
+                                    <textarea class="form-control noresize" name="console" id="console" cols="90" rows="10" disabled readonly></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="row pt-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fas fa-terminal"></i></div>
+                                    </div>
+                                    <input class="form-control" type="text" name="send-command">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

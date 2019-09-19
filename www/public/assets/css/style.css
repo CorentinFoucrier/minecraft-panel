@@ -1,3 +1,5 @@
+/* GENERAL */
+
 html, body {
     height: 100%;
 }
@@ -7,6 +9,10 @@ body {
 }
 .content {
     flex: 1 0 auto;
+}
+
+.noresize { /* no resize for <textarea>*/
+    resize: none; 
 }
 
 .debug {
@@ -40,4 +46,18 @@ nav div:hover {
 
 nav div {
     font-size: 0.9em;
+}
+
+/* DASHBOARD */
+
+.console-side {
+    border-right: 1px solid #D8D8D8;
+}
+
+.console-side ul {
+    list-style: inside;
+}
+
+.console-input {
+    border-top: 1px solid #D8D8D8;
 }
