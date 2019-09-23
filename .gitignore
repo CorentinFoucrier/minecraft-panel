@@ -7,3 +7,4 @@ www/public/adminer.php
 www/vendor
 www/composer.lock
 tests/
+minecraft_server/
