@@ -1,10 +1,11 @@
 <?php
 namespace App;
 
-use \Core\Controller\RouterController;
-use \Core\Controller\URLController;
-use \Core\Controller\Database\DatabaseMysqlController;
-use \Core\Controller\Database\DatabaseController;
+use Core\Controller\RouterController;
+use Core\Controller\URLController;
+use Core\Controller\Database\DatabaseMysqlController;
+use Core\Controller\Database\DatabaseController;
+use Core\Controller\Services\DefineConstantsController;
 use Core\Controller\Session\FlashService;
 use Core\Controller\Session\PhpSession;
 
@@ -18,8 +19,6 @@ class App
 
     private $router;
 
-    private $startTime;
-
     private $db_instance;
 
     public static function getInstance()
@@ -32,8 +31,6 @@ class App
 
     public static function load()
     {
-        date_default_timezone_set('Europe/Paris');
-
         if (getenv("ENV_DEV")) {
             $whoops = new \Whoops\Run;
             $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
@@ -71,16 +68,6 @@ class App
         return $this->router;
     }
 
-    public function setStartTime()
-    {
-        $this->startTime = microtime(true);
-    }
-
-    public function getDebugTime()
-    {
-        return number_format((microtime(true) - $this->startTime) *  1000, 2);
-    }
-
     public function getTable(string $nameTable)
     {
         $nameTable = "\\App\\Model\\Table\\" . ucfirst($nameTable) . "Table";
@@ -94,7 +81,7 @@ class App
                 getenv('MYSQL_DATABASE'),
                 getenv('MYSQL_USER'),
                 getenv('MYSQL_PASSWORD'),
-                getenv('CONTAINER_MYSQL')
+                getenv('MYSQL_HOST')
             );
         }
         return $this->db_instance;

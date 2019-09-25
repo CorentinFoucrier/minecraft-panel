@@ -15,7 +15,6 @@ abstract class Controller
 
     protected function render(string $view, array $variables = [])
     {
-        $variables["debugTime"] = $this->getApp()->getDebugTime();
         echo $this->getTwig()->render(
             $view . '.html.twig',
             $variables

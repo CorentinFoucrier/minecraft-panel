@@ -3,7 +3,7 @@
         "altorouter/altorouter": "1.2.0",
         "twig/twig": "2.11.2",
         "swiftmailer/swiftmailer": "^6.2",
-        "google/apiclient": "^2.0"
+        "ircmaxell/random-lib": "^1.2"
     },
     "require-dev": {
         "fzaninotto/faker": "1.8.0",

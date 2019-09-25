@@ -17,7 +17,7 @@ services:
       - .env
 
   mysql:
-    container_name: ${CONTAINER_MYSQL}
+    container_name: ${HOST_MYSQL}
     restart: unless-stopped
     image: mariadb
     networks: 
