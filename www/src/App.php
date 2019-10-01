@@ -5,7 +5,7 @@ use Core\Controller\RouterController;
 use Core\Controller\URLController;
 use Core\Controller\Database\DatabaseMysqlController;
 use Core\Controller\Database\DatabaseController;
-use Core\Controller\Services\DefineConstantsController;
+use Core\Controller\DefineConstantsController;
 use Core\Controller\Session\FlashService;
 use Core\Controller\Session\PhpSession;
 
@@ -36,6 +36,8 @@ class App
             $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
             $whoops->register();
         }
+
+        DefineConstantsController::userDefine();
 
         if (session_status() != PHP_SESSION_ACTIVE){
             session_start();

@@ -24,7 +24,7 @@ abstract class Controller
     private function getTwig()
     {
         if (is_null($this->twig)) {
-            $loader = new \Twig\Loader\FilesystemLoader(dirname(dirname(__dir__)) . '/views/');
+            $loader = new \Twig\Loader\FilesystemLoader(BASE_PATH . 'www/views/');
             $this->twig = new \Twig\Environment($loader);
             //Global
             $this->twig->addGlobal('constant', get_defined_constants());

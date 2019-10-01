@@ -9,4 +9,5 @@ $app::load();
 
 $app->getRouter($basePath)
     ->match('/', 'Dashbord#showDashboad', 'dashboard')
+    ->match('/config', 'Config#showForm', 'config')
     ->run();
