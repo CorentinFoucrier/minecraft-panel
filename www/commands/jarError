@@ -35,7 +35,7 @@ $result = $req->fetchObject();
 if ($result->status != 0) {
     $pdo->exec(
         "UPDATE ". $prefix ."server
-        SET `status` = '4'
+        SET `status` = '3'
         WHERE `id` = '1'
     ");
 }

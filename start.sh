@@ -56,11 +56,15 @@ createPwd
 # Create Unix user
 sudo useradd --create-home --shell /bin/bash --groups docker,sudo $panelUser && sudo echo $panelUser:$panelPwd | sudo /usr/sbin/chpasswd
 sleep 1
-sudo mkdir /home/$panelUser/minecraft_panel
+sudo mkdir /home/$panelUser/minecraft_server
 echo "downloading the latest minecraft version..."
-curl -o /home/$panelUser/minecraft_panel/server.jar https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
-sudo chmod -R 775 /home/$panelUser/minecraft_panel
-sudo chmod 777 /home/$panelUser/minecraft_panel/server.jar
+curl -o /home/$panelUser/minecraft_server/server.jar https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
+sudo chmod -R 776 /home/$panelUser/minecraft_server
+sudo chmod 777 /home/$panelUser/minecraft_server/server.jar
+echo "Installation of the needed packages..."
+sleep 2
+sudo apt-get install -y screen
+sudo apt-get install -y default-jdk
 
 dataBase () {
     echo "Enter a name for database:"
@@ -126,7 +130,11 @@ docker-compose build
 
 docker-compose -f docker-compose.yml up -d
 
-docker exec ${CONTAINER_NAME} composer update
+if [[ ${ENV_DEV} == "true" ]]; then
+    docker exec ${CONTAINER_NAME} composer update
+else
+    docker exec ${CONTAINER_NAME} composer update --no-dev
+fi
 
 docker exec ${CONTAINER_NAME} php commands/createsql
 
