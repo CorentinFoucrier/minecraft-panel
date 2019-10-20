@@ -14,13 +14,7 @@ class DefineConstantsController extends Controller {
         define("SHELL_USER", getenv("SHELL_USER"));
         define("SELL_PWD", getenv("SHELL_PWD"));
         define("SERVER_PROPERTIES", ServerPropertiesController::getContent());
-        /**
-         * Not define any const if the server.properties file is not found or empty
-         * Waiting the server generate the file first.
-         */
-        if (!is_null(SERVER_PROPERTIES)) {
-            define("ENABLE_QUERY", "true");
-            define("QUERY_PORT", "25565");
-        }
+        define("ENABLE_QUERY", "true");
+        define("QUERY_PORT", "25565");
     }
 }
