@@ -20,7 +20,7 @@ require_once '/var/www/vendor/autoload.php';
 $dbname = getenv('MYSQL_DATABASE');
 $dbuser = getenv('MYSQL_USER');
 $dbpassword = getenv('MYSQL_PASSWORD');
-$dbhost = getenv('HOST_MYSQL');
+$dbhost = getenv('MYSQL_HOST');
 $prefix = getenv('PREFIX');
 
 $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpassword);

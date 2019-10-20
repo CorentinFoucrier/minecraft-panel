@@ -85,7 +85,7 @@ class App
                 getenv('MYSQL_DATABASE'),
                 getenv('MYSQL_USER'),
                 getenv('MYSQL_PASSWORD'),
-                getenv('HOST_MYSQL')
+                getenv('MYSQL_HOST')
             );
         }
         return $this->db_instance;

@@ -54,10 +54,13 @@ createPwd () {
 }
 createPwd
 # Create Unix user
-sudo useradd $username --create-home --shell /bin/bash
-echo $panelUser:$panelPwd | chpasswd
-sudo usermod -aG docker $panelUser
-sudo usermod -aG sudo $panelUser
+sudo useradd --create-home --shell /bin/bash --groups docker,sudo $panelUser && sudo echo $panelUser:$panelPwd | sudo /usr/sbin/chpasswd
+sleep 1
+sudo mkdir /home/$panelUser/minecraft_panel
+echo "downloading the latest minecraft version..."
+curl -o /home/$panelUser/minecraft_panel/server.jar https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
+sudo chmod -R 775 /home/$panelUser/minecraft_panel
+sudo chmod 777 /home/$panelUser/minecraft_panel/server.jar
 
 dataBase () {
     echo "Enter a name for database:"
