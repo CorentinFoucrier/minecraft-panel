@@ -5,8 +5,18 @@ use \Core\Controller\Database\DatabaseController;
 
 class Table
 {
+    /**
+     * Our Database Object
+     *
+     * @var DatabaseController
+     */
     protected $db;
 
+    /**
+     * Table Name
+     *
+     * @var string
+     */
     protected $table;
 
     public function __construct(DatabaseController $db)
@@ -15,11 +25,15 @@ class Table
 
         if (is_null($this->table)) {
             //App\Model\Table\ClassTable
-            $parts = explode('\\', get_class($this));
-            $class_name = end($parts);
-            // $class_name = str_replace('Table', '', $class_name);
-            // $class_name = Text::splitAtUpperCase($class_name);
-            $this->table = strtolower(str_replace('Table', '', $class_name));
+            $parts = explode('\\', get_class($this)); // Get class and explode it into an array at backslash
+            /* array[
+                0 => "App"
+                1 => "Model"
+                2 => "Table"
+                3 => "ClassTable"] */
+            $class_name = end($parts); // We just want the "end" of this array
+            // Build a string with the user defined prefix, remove "Table" and go to lowercase
+            $this->table = PREFIX.strtolower(str_replace('Table', '', $class_name));
         }
     }
 
@@ -38,17 +52,12 @@ class Table
         return $this->query("SELECT MAX(id) AS id FROM {$this->table}", null, true);
     }
 
-    /**
-     * Find lines in table
-     *
-     * @param string $column
-     * @param mixed $attribute
-     * @return void
-     */
-    public function find($attribute, $column = 'id')
+
+    public function findBy(string $column, bool $one)
     {
-        return $this->query("SELECT * FROM {$this->table} WHERE {$column} = ?", [$attribute], true);
+        return $this->query("SELECT $column FROM {$this->table}", null, $one);
     }
+
     /**
      * Find lines in a table with a multiple WHERE condition
      *
@@ -70,14 +79,13 @@ class Table
 
     /**
      * Update SQL query
-     * UPDATE {$this->table} SET $sql_part WHERE $column = ?
+     * UPDATE Table SET $key = ? WHERE id = ? ----> [2, $id]
      *
      * @param integer $id
-     * @param string $column
      * @param array $fields
      * @return bool
      */
-    public function update(int $id, string $column, array $fields)
+    public function update(int $id, array $fields)
     {
         $sql_parts = [];
         $attributes = [];
@@ -87,7 +95,7 @@ class Table
         }
         $attributes[] = $id;
         $sql_part = implode(', ', $sql_parts);
-        return $this->query("UPDATE {$this->table} SET $sql_part WHERE $column = ?", $attributes, true);
+        return $this->query("UPDATE {$this->table} SET $sql_part WHERE id = ?", $attributes, true);
     }
 
     /**

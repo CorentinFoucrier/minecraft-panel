@@ -2,22 +2,18 @@
 
 namespace Core\Extension\Twig;
 
+use App\App;
+use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
 use Core\Controller\Session\FlashService;
-use Twig\TwigFunction;
 
 class FlashExtension extends AbstractExtension
 {
-    /**
-     * Stockage de la session ;) 
-     *
-     * @var FlashService 
-     */
     private $flashService;
 
     public function __construct()
     {
-        $this->flashService = \App\App::getInstance()->flash();
+        $this->flashService = App::getInstance()->getFlash();
     }
 
     public function getFunctions(): array

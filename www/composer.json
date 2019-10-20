@@ -3,7 +3,10 @@
         "altorouter/altorouter": "1.2.0",
         "twig/twig": "2.11.2",
         "swiftmailer/swiftmailer": "^6.2",
-        "ircmaxell/random-lib": "^1.2"
+        "ircmaxell/random-lib": "^1.2",
+        "phpseclib/phpseclib": "~2.0",
+        "xpaw/php-minecraft-query": "^3.0",
+        "xpaw/php-source-query-class": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "1.8.0",

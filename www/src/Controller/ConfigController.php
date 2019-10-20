@@ -11,9 +11,12 @@ class ConfigController extends Controller
     public function showForm()
     {
         if (!empty($_POST) && !is_null(SERVER_PROPERTIES)) {
+            $_POST[''];
             if (!$this->writeServerProperties($_POST)) {
-                $this->flash()->addAlert('The "server.property" file not found!');
+                $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
+                Démarrer le serveur pour générer le fichier.");
             }
+            $this->redirect($this->generateUrl('config'));
         }
 
         /* If server.properties is not null display config form */
@@ -22,7 +25,13 @@ class ConfigController extends Controller
             $config = SERVER_PROPERTIES; // Retrieve server.properties content
             foreach ($config as $key => $value) {
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key));
-                if (!in_array($key, ["server-ip", "rcon.password", "enable-rcon", "enable-query", "rcon.port", "query.port"])) {
+                /* add the name of fields that are not displayed in the array below */
+                if (!in_array($key, [
+                    "server-ip", "rcon.password",
+                    "enable-rcon", "enable-query",
+                    "rcon.port", "query.port",
+                    "broadcast-rcon-to-ops"])
+                    ) {
                     $form->addGroup("col-sm-6");
                 }
                 /** 
@@ -30,7 +39,7 @@ class ConfigController extends Controller
                  * add select with default selected value as 'true', same with 'false'
                  */
                 if ((preg_match('/(true|false)++/', $value)) === 1) {
-                    if (!in_array($key, ["enable-rcon", "enable-query"])) {
+                    if (!in_array($key, ["enable-rcon", "enable-query", "broadcast-rcon-to-ops"])) {
                         $form->addSelect("$key", "$label",[
                             'options' => ['true'=>'true','false'=>'false'],
                             'selected' => $value
@@ -77,7 +86,7 @@ class ConfigController extends Controller
                 }
                 /* Treatment for string but not boolean and custom select fields above */
                 if ((preg_match('/^(?!true$|false$)[a-zA-Z]++/', $value)) === 1) {
-                    if (!in_array($key, ["difficulty", "gamemode", "level-type", "rcon.password"])) {
+                    if (!in_array($key, ["difficulty", "gamemode", "level-type"])) {
                         $form->addField("text", "$key", "$label", [
                             'attributes' => [
                                 'value' => $value,
@@ -88,7 +97,7 @@ class ConfigController extends Controller
                 }
                 /* Treatment for integer $value */
                 if (preg_match('/[0-9]/', $value)) {
-                    if (!in_array($key, ["rcon.port", "query.port", "rcon.password"])) {
+                    if (!in_array($key, ["rcon.port", "query.port"])) {
                         $form->addField("number", "$key", "$label", [
                             'attributes' => [
                                 'value' => $value
@@ -98,7 +107,7 @@ class ConfigController extends Controller
                 }
                 /* Treatment for empty $value */
                 if ($value === "") {
-                    if (!in_array($key, ["server-ip"])) {
+                    if (!in_array($key, ["server-ip", "rcon.password"])) {
                         $form->addField("text", "$key", "$label", [
                             'attributes' => [
                                 'value' => $value,
@@ -109,15 +118,16 @@ class ConfigController extends Controller
                 }
             }
             $form->addSubmit("send", "Envoyer", "btn btn-success btn-sm");
-            $form->getForm();
 
             return $this->render("config", [
                 'title' => "Configurations",
                 'form' => $form->getForm()
             ]);
         } else {
+            $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
+            Démarrer le serveur pour générer le fichier.");
             return $this->render("noConfig", [
-                'title' => "No configurations found"
+                'title' => "Configuration non trouvé!"
             ]);
         }
     }

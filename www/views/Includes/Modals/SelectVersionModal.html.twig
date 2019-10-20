@@ -1,0 +1,57 @@
+<div class="modal fade" id="changeVersion" tabindex="-1" role="dialog" aria-labelledby="changeVersionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeVersionLabel">Choisisez votre version</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <h5>Vanilla</h5>
+                <div class="input-group">
+                    <select class="custom-select" name="vanilla" id="vanilla">
+                        <option selected>-- Choisir une version --</option>
+                        <option value="MC_1.14.4">MC 1.14.4</option>
+                        <option value="MC_1.14.3">MC 1.14.3</option>
+                        <option value="MC_1.14.2">MC 1.14.2</option>
+                        <option value="MC_1.14.1">MC 1.14.1</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="button">Choisir</button>
+                    </div>
+                </div>
+
+                <h5 class="mt-3">Spigot</h5>
+                <div class="input-group">
+                    <select class="custom-select" name="spigot" id="spigot" disabled>
+                        <option selected>-- Choisir une version --</option>
+                        <option value="Spigot_1.14.4">Spigot 1.14.4</option>
+                        <option value="Spigot_1.14.3">Spigot 1.14.3</option>
+                        <option value="Spigot_1.14.2">Spigot 1.14.2</option>
+                        <option value="Spigot_1.14.1">Spigot 1.14.1</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="button" disabled>Choisir</button>
+                    </div>
+                </div>
+
+                <h5 class="mt-3">Minecraft Forge</h5>
+                <div class="input-group">
+                    <select class="custom-select" name="forge" id="forge" disabled>
+                        <option selected>-- Choisir une version --</option>
+                        <option value="Forge_1.14.4_28.1.44">Forge 1.14.4 - 28.1.44</option>
+                        <option value="Forge_1.14.4_28.1.0">Forge 1.14.4 - 28.1.0</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="button" disabled>Choisir</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>

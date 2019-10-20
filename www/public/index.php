@@ -9,5 +9,14 @@ $app::load();
 
 $app->getRouter($basePath)
     ->match('/', 'Dashbord#showDashboad', 'dashboard')
+    ->match('/getLog', 'Server#getLog', 'getLog')
     ->match('/config', 'Config#showForm', 'config')
+
+    ->get('/checkStatus', 'Server#checkStatus', 'check_status')
+    ->get('/getOnlinePlayers', 'Dashbord#getOnlinePlayers', 'getOnlinePlayers')
+    
+    ->post('/start', 'Controls#start', 'server_start')
+    ->post('/restart', 'Controls#restart', 'server_restart')
+    ->post('/stop', 'Controls#stop', 'server_stop')
+    ->post('/sendCommand', 'Server#sendCommand', 'command_send')
     ->run();

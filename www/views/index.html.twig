@@ -1,6 +1,7 @@
 {% extends "layout/base.html.twig" %}
 
 {% block content %}
+    {# Version infos #}
     <div class="row p-4">
         <div class="col-md-3">
             <div class="card" style="min-width: 25rem;">
@@ -9,10 +10,11 @@
                 </div>
                 <div class="card-body">
                     <p class="card-text text-success"><i class="far fa-check-circle"></i> Version à jour !</p>
-                    <a href="#" class="btn btn-outline-secondary btn-sm float-right">Changer la version</a>
+                    <button class="btn btn-outline-secondary btn-sm float-right" data-toggle="modal" data-target="#changeVersion">Changer la version</button>
                 </div>
             </div>
         </div>
+        {# Server Management #}
         <div class="offset-md-2 col-md-7">
             <div class="card">
                 <h5 class="card-header">
@@ -23,30 +25,38 @@
                         <div class="col-md-4">
                             <i class="fas fa-user-friends h2"></i><br/>
                             Nombre de joueurs<br/>
-                            0/100
+                            <span id="playersOnline">...</span>/{{maxPlayers}}
                         </div>
                         <div class="col-md-4">
                             <i class="fas fa-microchip h2"></i><br/>
                             Utilisation CPU<br/>
-                            2 %
+                            N/A %
                         </div>
                         <div class="col-md-4">
                             <i class="fas fa-memory h2"></i><br/>
                             Utilisation RAM<br/>
-                            15 %
+                            N/A %
                         </div>
                     </div>
                     <br/>
                     <div class="float-right">
-                        <a href="#" class="btn btn-primary mr-md-1"><i class="fas fa-play"></i> START</a>
-                        <a href="#" class="btn btn-warning text-light mr-md-1"><i class="fas fa-undo"></i> RESTART</a>
-                        <a href="#" class="btn btn-danger"><i class="fas fa-power-off"></i> STOP</a>
+                        <button onclick="serverStart();" id="startButton" class="btn btn-primary mr-md-1 text-uppercase not-allowed" disabled><i class="fas fa-play"></i> 
+                            Démarrer
+                            <span id="startButtonLoading"></span>
+                        </button>
+                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning text-light mr-md-1 text-uppercase not-allowed" disabled><i class="fas fa-redo"></i> 
+                            Redémmarer
+                        </button>
+                        <button onclick="serverStop();" id="stopButton" class="btn btn-danger text-uppercase not-allowed" disabled><i class="fas fa-power-off"></i> 
+                            Stop
+                            <span id="stopButtonLoading"></span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    {# Console #}
     <div class="row p-md-4">
         <div class="col-md-12">
             <div class="card mb-3">
@@ -59,15 +69,15 @@
                             <li>Otto</li>
                         </ul>
                         <div class="mt-md-auto mb-md-3 mx-md-auto">
-                            <a href="http://" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Ajouté un opérateur</a>
+                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Ajouter un opérateur</a>
                         </div>
                     </div>
                     <div class="col-md-10 p-md-2">
                         <div class="card-body py-md-0">
                             <div class="row">
-                                <div class="form-group">
-                                    <textarea class="form-control noresize" name="console" id="console" cols="90" rows="10" disabled readonly></textarea>
-                                </div>
+                                {# Console renderer #}
+                                <div id="log" class="border rounded" style="height:200px;width:100%;overflow:auto!important;"></div>
+                                <input type="hidden" name="currentLine" id="currentLine" value="0">
                             </div>
                             
                             <div class="row pt-2">
@@ -75,7 +85,10 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text"><i class="fas fa-terminal"></i></div>
                                     </div>
-                                    <input class="form-control" type="text" name="send-command">
+                                    <input class="form-control" type="text" name="send-command" id="send-command">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success" type="button" id="send" onclick="sendCommand();">Envoyer</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -84,4 +97,8 @@
             </div>
         </div>
     </div>
+{% include "Includes/Modals/SelectVersionModal.html.twig" %}
+{% endblock %}
+{% block javascripts %}
+    <script src="assets/js/dashboard.js"></script>
 {% endblock %}

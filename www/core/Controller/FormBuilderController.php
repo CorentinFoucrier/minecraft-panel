@@ -71,7 +71,7 @@ class FormBuilderController {
     public function addSubmit(string $id, string $value, string $class): void
     {
         $this->button .= <<<HTML
-                    <button type="submit" id="{$id}" class="{$class}">{$value}</button>
+        <button type="submit" id="{$id}" class="{$class}">{$value}</button>
         HTML;
     }
 

@@ -10,7 +10,9 @@ class ServerPropertiesController extends Controller {
     static public function getContent(): ?array
     {
         /* Path to server.properties */
-        if (!$fileContent = file_get_contents(self::$filePath)) {
+        try {
+            $fileContent = file_get_contents(self::$filePath);
+        } catch (\Exception $e) {
             return null;
         }
 

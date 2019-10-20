@@ -22,7 +22,7 @@ class DatabaseMysqlController extends DatabaseController
         $this->db_char = $db_char;
     }
 
-    public function getPDO()
+    public function getPDO(): \PDO
     {
         if (is_null($this->pdo)) {
             $pdo = new PDO(

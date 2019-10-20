@@ -1,14 +1,16 @@
 <?php
 namespace App;
 
-use Core\Controller\RouterController;
 use Core\Controller\URLController;
-use Core\Controller\Database\DatabaseMysqlController;
-use Core\Controller\Database\DatabaseController;
-use Core\Controller\DefineConstantsController;
-use Core\Controller\Session\FlashService;
+use App\Controller\ServerController;
+use Core\Controller\RouterController;
 use Core\Controller\Session\PhpSession;
-
+use App\Controller\ServerQueryController;
+use Core\Controller\Session\FlashService;
+use Core\Controller\Helpers\LogsController;
+use Core\Controller\DefineConstantsController;
+use Core\Controller\Database\DatabaseController;
+use Core\Controller\Database\DatabaseMysqlController;
 
 class App
 {
@@ -37,7 +39,7 @@ class App
             $whoops->register();
         }
 
-        DefineConstantsController::userDefine();
+        DefineConstantsController::define();
 
         if (session_status() != PHP_SESSION_ACTIVE){
             session_start();
@@ -83,14 +85,29 @@ class App
                 getenv('MYSQL_DATABASE'),
                 getenv('MYSQL_USER'),
                 getenv('MYSQL_PASSWORD'),
-                getenv('MYSQL_HOST')
+                getenv('HOST_MYSQL')
             );
         }
         return $this->db_instance;
     }
 
-    public function flash()
+    public function getFlash(): FlashService
     {
         return new FlashService(new PhpSession());
+    }
+
+    public function getServer(): ServerController
+    {
+        return new ServerController();
+    }
+
+    public function getLogs(): LogsController
+    {
+        return new LogsController();
+    }
+
+    public function getServerQuery(): ServerQueryController
+    {
+        return new ServerQueryController();
     }
 }

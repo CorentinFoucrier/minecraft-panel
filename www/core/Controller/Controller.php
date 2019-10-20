@@ -2,9 +2,15 @@
 
 namespace Core\Controller;
 
-use Core\Controller\Session\FlashService;
-use Core\Extension\Twig\FlashExtension;
+use App\App;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+use App\Controller\ServerController;
 use Core\Extension\Twig\URIExtension;
+use Core\Extension\Twig\FlashExtension;
+use App\Controller\ServerQueryController;
+use Core\Controller\Session\FlashService;
+use Core\Controller\Helpers\LogsController;
 
 abstract class Controller
 {
@@ -24,8 +30,8 @@ abstract class Controller
     private function getTwig()
     {
         if (is_null($this->twig)) {
-            $loader = new \Twig\Loader\FilesystemLoader(BASE_PATH . 'www/views/');
-            $this->twig = new \Twig\Environment($loader);
+            $loader = new FilesystemLoader(BASE_PATH . 'www/views/');
+            $this->twig = new Environment($loader);
             //Global
             $this->twig->addGlobal('constant', get_defined_constants());
             //Extension
@@ -35,10 +41,10 @@ abstract class Controller
         return $this->twig;
     }
 
-    protected function getApp()
+    protected function getApp(): App
     {
         if (is_null($this->app)) {
-            $this->app = \App\App::getInstance();
+            $this->app = App::getInstance();
         }
         return $this->app;
     }
@@ -53,9 +59,9 @@ abstract class Controller
         $this->$nameTable = $this->getApp()->getTable($nameTable);
     }
 
-    protected function flash(): FlashService
+    protected function getFlash(): FlashService
     {
-        return $this->getApp()->flash();
+        return $this->getApp()->getFlash();
     }
 
     protected function getUri(string $name, array $params = []): string
@@ -63,11 +69,26 @@ abstract class Controller
         return URLController::getUri($name, $params);
     }
 
-    protected function redirect(string $routeName, ?int $httpResponseCode = null)
+    protected function redirect(string $url, ?int $httpResponseCode = null)
     {
         if ($httpResponseCode) {
             http_response_code($httpResponseCode);
         }
-        return header('Location: '.$routeName);
+        return header('Location: '.$url);
+    }
+
+    protected function getServer(): ServerController
+    {
+        return $this->getApp()->getServer();
+    }
+
+    protected function getLogs(): LogsController
+    {
+        return $this->getApp()->getLogs();
+    }
+
+    protected function getServerQuery(): ServerQueryController
+    {
+        return $this->getApp()->getServerQuery();
     }
 }

@@ -7,8 +7,13 @@ body {
     display: flex;
     flex-direction: column;
 }
+
 .content {
     flex: 1 0 auto;
+}
+
+.not-allowed {
+    cursor: not-allowed;
 }
 
 .noresize { /* no resize for <textarea>*/
@@ -40,7 +45,7 @@ nav {
     color: #FDFDFD;
 }
 
-nav div:hover {
+nav > a div:hover {
     background-color: #6c757d;
 }
 

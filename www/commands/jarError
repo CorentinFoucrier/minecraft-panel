@@ -1,0 +1,41 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+if (php_sapi_name() != "cli") {
+    fwrite(
+        STDERR,
+        PHP_EOL."File only in CLI".PHP_EOL
+    );
+    die(1);
+}
+
+require_once '/var/www/vendor/autoload.php';
+
+/**
+ *******
+ * This file is called by docker exec commmand
+ * The docker command follows the java command and is launched at each stop
+ *******
+ */
+
+$dbname = getenv('MYSQL_DATABASE');
+$dbuser = getenv('MYSQL_USER');
+$dbpassword = getenv('MYSQL_PASSWORD');
+$dbhost = getenv('HOST_MYSQL');
+$prefix = getenv('PREFIX');
+
+$pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpassword);
+
+$req = $pdo->query("SELECT * FROM ". $prefix ."server");
+$req->setFetchMode(PDO::FETCH_OBJ);
+$result = $req->fetchObject();
+/**
+ * If the server is stopped no error found but if isn't stopped by user
+ * there is an error, then store the server state in database.
+ */
+if ($result->status != 0) {
+    $pdo->exec(
+        "UPDATE ". $prefix ."server
+        SET `status` = '4'
+        WHERE `id` = '1'
+    ");
+}

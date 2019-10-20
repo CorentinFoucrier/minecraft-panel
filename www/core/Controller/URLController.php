@@ -1,6 +1,7 @@
 <?php
-
 namespace Core\Controller;
+
+use App\App;
 
 class URLController 
 {
@@ -39,7 +40,7 @@ class URLController
         
         $uri = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"];
         //$folder = $this->generateUrl($name, $params);
-        $folder = \App\App::getInstance()->getRouter()->url($name, $params);
+        $folder = App::getInstance()->getRouter()->url($name, $params);
 
         return $uri. $folder;
     }

@@ -43,15 +43,13 @@ class RouterController
 
         if (is_array($match)) {
             if (strpos($match['target'], "#")) {
+                // Init 2 variables -> $controller and $mehode with two parts that return the explode function
                 [$controller, $methode] = explode("#", $match['target']);
+                // $controller = App\Controller\MyController
                 $controller = "App\\Controller\\" . ucfirst($controller) . "Controller";
-                //try{
-
                 (new $controller())->$methode(...array_values($match['params']));
-                //}catch(\Exception $e){
-                //    header($_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
-                //    exit();
-                //}
+                // Put all values of $match['params'] in $methode parameters
+                // Like this: (new $controller())->$methode('id', 'slug', 'page', 'etc'))
             }
         } else {
             // no route was matched

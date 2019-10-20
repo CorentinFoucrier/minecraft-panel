@@ -1,0 +1,59 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+if (php_sapi_name() != "cli") {
+    fwrite(
+        STDERR,
+        PHP_EOL."File only in CLI".PHP_EOL
+    );
+    die(1);
+}
+
+require_once '/var/www/vendor/autoload.php';
+
+$dbname = getenv('MYSQL_DATABASE');
+$dbuser = getenv('MYSQL_USER');
+$dbpassword = getenv('MYSQL_PASSWORD');
+$dbhost = getenv('HOST_MYSQL');
+
+$NUM_OF_ATTEMPTS = 10;
+$attempts = 0;
+do {
+    try
+    {
+        $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpassword);
+    } catch (Exception $e) {
+        $attempts++;
+        sleep(3);
+        continue;
+    }
+    break;
+} while ($attempts < $NUM_OF_ATTEMPTS);
+
+$prefix = getenv('PREFIX');
+
+echo "Creating Database".PHP_EOL;
+sleep(1);
+echo "[||";
+$pdo->exec("DROP TABLE `".$prefix."server`");
+echo "||";
+$pdo->exec("CREATE TABLE `".$prefix."server` (
+    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) NOT NULL,
+    `panel_port` smallint(3) UNSIGNED NOT NULL,
+    `is_installed` tinyint(1) UNSIGNED NOT NULL,
+    `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY(`id`)
+)");
+echo "||";
+
+echo "||]".PHP_EOL;
+
+echo "Instert default value to the database".PHP_EOL;
+sleep(1);
+echo "[||";
+$pdo->exec("INSERT INTO `".$prefix."server` (
+        `name`, `panel_port`, `is_installed`, `status`
+    ) VALUES (
+        'Minecraft Panel', 8080, 0, 0
+)");
+echo "||]".PHP_EOL;
