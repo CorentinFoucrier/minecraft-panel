@@ -1,10 +1,8 @@
 <?php
 namespace App\Controller;
-
 use phpseclib\Net\SSH2;
 use Core\Controller\Controller;
 use Core\Controller\Helpers\LogsController;
-
 /**
  * This class related to the minecraft
  * server itself.
@@ -15,7 +13,6 @@ class ServerController extends Controller
     {
         $this->loadModel('server');
     }
-
     /**
      * Get the latest.log file
      * for an AJAX call and return
@@ -26,7 +23,6 @@ class ServerController extends Controller
     {
         return LogsController::getLog();
     }
-
     public function checkStatus(): void
     {
         $req = $this->server->selectEverything(true);
@@ -35,7 +31,6 @@ class ServerController extends Controller
         if (is_int($nbPlayers['online']) && $nbPlayers['online'] >= 0) {
             $this->server->update($req->getId(), ['status' => 2]);
         }
-
         switch ($req->getStatus()) {
             case 0:
                 echo "stopped";
@@ -51,7 +46,6 @@ class ServerController extends Controller
                 break;
         }
     }
-
     public function sendCommand(?string $p_command = null): void
     {
         /* If sendCommand reached by AJAX post methode => $_POST['command']... */
@@ -65,16 +59,13 @@ class ServerController extends Controller
             $this->sshCommand($p_command);
         }
     }
-
     public function selectVersion()
     {
         if (!empty($_POST)) {
             $version = $_POST['version']; // Version number
             $gameVersion = $_POST['gameVersion']; // Game Version eg. "Vanilla"
-
             $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
             $versions = json_decode($json, true);
-
             if ($gameVersion === "vanilla") {
                 /**
                  * expected values:
@@ -134,7 +125,6 @@ class ServerController extends Controller
             }
         }
     }
-
     private function sshCommand(string $command): void
     {
         $ssh = new SSH2(getenv('IP'));
@@ -153,7 +143,6 @@ class ServerController extends Controller
          */
         $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
     }
-
     private function downloadServer(string $version, string $link): void
     {
         file_put_contents("/var/minecraft_server/$version.jar", fopen($link, 'r'));

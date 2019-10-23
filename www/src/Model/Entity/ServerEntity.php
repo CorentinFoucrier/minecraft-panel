@@ -1,40 +1,32 @@
 <?php
 namespace App\Model\Entity;
-
 use Core\Model\Entity;
-
 class ServerEntity extends Entity
 {
     /**
      * @var int $id
      */
     private $id;
-
     /**
      * @var string $name
      */
     private $name;
-
     /**
      * @var int $panel_port
      */
     private $panel_port;
-
     /**
      * @var int $is_installed
      */
     private $is_installed;
-
     /**
      * @var int $status
      */
     private $status;
-
     /**
      * @var string
      */
     private $version;
-
     /**
      * Get the value of id
      *
@@ -44,7 +36,6 @@ class ServerEntity extends Entity
     {
         return $this->id;
     }
-
     /**
      * Set the value of id
      *
@@ -56,7 +47,6 @@ class ServerEntity extends Entity
         $this->id = $id;
         return $this;
     }
-
     /**
      * Get the value of name
      *
@@ -66,7 +56,6 @@ class ServerEntity extends Entity
     {
         return $this->name;
     }
-
     /**
      * Set the value of name
      *
@@ -78,7 +67,6 @@ class ServerEntity extends Entity
         $this->name = $name;
         return $this;
     }
-
     /**
      * Get the value of panel_port
      *
@@ -88,7 +76,6 @@ class ServerEntity extends Entity
     {
         return $this->panel_port;
     }
-
     /**
      * Set the value of panel_port
      *
@@ -100,7 +87,6 @@ class ServerEntity extends Entity
         $this->panel_port = $panel_port;
         return $this;
     }
-
     /**
      * Get the value of is_installed
      *
@@ -110,7 +96,6 @@ class ServerEntity extends Entity
     {
         return $this->is_installed;
     }
-
     /**
      * Set the value of is_installed
      *
@@ -122,7 +107,6 @@ class ServerEntity extends Entity
         $this->is_installed = $is_installed;
         return $this;
     }
-
     /**
      * Get the value of status
      *
@@ -132,7 +116,6 @@ class ServerEntity extends Entity
     {
         return $this->status;
     }
-
     /**
      * Set the value of status
      *
@@ -144,7 +127,6 @@ class ServerEntity extends Entity
         $this->status = $status;
         return $this;
     }
-
     /**
      * Get the value of version
      *
@@ -154,7 +136,6 @@ class ServerEntity extends Entity
     {
         return $this->version;
     }
-
     /**
      * Set the value of version
      *

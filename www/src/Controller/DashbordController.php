@@ -1,15 +1,12 @@
 <?php
 namespace App\Controller;
-
 use Core\Controller\Controller;
-
 class DashbordController extends Controller
 {
     public function __construct()
     {
         $this->loadModel('server');
     }
-
     public function showDashboad()
     {
         $config = SERVER_PROPERTIES;
@@ -21,7 +18,6 @@ class DashbordController extends Controller
             "version" => $version
         ]);
     }
-
     /**
      * Get online players through AJAX
      * Route: /getOnlinePlayers
@@ -32,7 +28,6 @@ class DashbordController extends Controller
         $players = $this->getServerQuery()->getPlayers();
         echo $players['online'];
     }
-
     /**
      * Get active minecraft version
      * Route: /getVersion
@@ -42,7 +37,6 @@ class DashbordController extends Controller
     {
         $req = $this->server->selectEverything(true)->getVersion();
         $version = explode('_', $req);
-
         if ($version[0] == "MC") {
             $v = $version = "Vanilla ".$version[1];
             if (!empty($_GET)) echo $v;

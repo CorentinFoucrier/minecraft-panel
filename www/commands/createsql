@@ -7,14 +7,11 @@ if (php_sapi_name() != "cli") {
     );
     die(1);
 }
-
 require_once '/var/www/vendor/autoload.php';
-
 $dbname = getenv('MYSQL_DATABASE');
 $dbuser = getenv('MYSQL_USER');
 $dbpassword = getenv('MYSQL_PASSWORD');
 $dbhost = getenv('MYSQL_HOST');
-
 $NUM_OF_ATTEMPTS = 10;
 $attempts = 0;
 do {
@@ -28,9 +25,7 @@ do {
     }
     break;
 } while ($attempts < $NUM_OF_ATTEMPTS);
-
 $prefix = getenv('PREFIX');
-
 echo "Creating Database".PHP_EOL;
 sleep(1);
 echo "[||";
@@ -46,9 +41,7 @@ $pdo->exec("CREATE TABLE `".$prefix."server` (
     PRIMARY KEY(`id`)
 )");
 echo "||";
-
 echo "||]".PHP_EOL;
-
 echo "Instert default value to the database".PHP_EOL;
 sleep(1);
 echo "[||";
