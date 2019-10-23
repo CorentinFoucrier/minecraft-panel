@@ -6,7 +6,7 @@
         <div class="col-md-3">
             <div class="card" style="min-width: 25rem;">
                 <div class="card-header h6">
-                    Version: <span class="float-right">Spigot 1.14.2</span>
+                    Version: <span class="float-right" id="version">{{version}}</span>
                 </div>
                 <div class="card-body">
                     <p class="card-text text-success"><i class="far fa-check-circle"></i> Version à jour !</p>
@@ -101,4 +101,5 @@
 {% endblock %}
 {% block javascripts %}
     <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/selectVersion.js"></script>
 {% endblock %}

@@ -27,7 +27,7 @@ class ServerController extends Controller
         return LogsController::getLog();
     }
 
-    public function checkStatus()
+    public function checkStatus(): void
     {
         $req = $this->server->selectEverything(true);
         $nbPlayers = $this->getServerQuery()->getPlayers();
@@ -55,13 +55,83 @@ class ServerController extends Controller
     public function sendCommand(?string $p_command = null): void
     {
         /* If sendCommand reached by AJAX post methode => $_POST['command']... */
-        if (!empty($_POST['command'])) {
+        $server = $this->server->selectEverything(true);
+        if (!empty($_POST['command']) && $server->getStatus() == 2) {
             $command = htmlspecialchars($_POST['command']);
             $this->sshCommand($command);
             echo "done";
         /* ...else send the command recived by p_command */
         } else {
             $this->sshCommand($p_command);
+        }
+    }
+
+    public function selectVersion()
+    {
+        if (!empty($_POST)) {
+            $version = $_POST['version']; // Version number
+            $gameVersion = $_POST['gameVersion']; // Game Version eg. "Vanilla"
+
+            $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
+            $versions = json_decode($json, true);
+
+            if ($gameVersion === "vanilla") {
+                /**
+                 * expected values:
+                 * array("0" => "MC", "1" => "1.14.4") OR
+                 * array("0" => "SNAP", "1" => "19w42a")
+                 * @var array $vanilla
+                 */
+                $vanilla = explode('_', $version);
+                switch ($vanilla[0]) {
+                    case 'MC':
+                        $link = $versions[$gameVersion]['stable'][$vanilla[1]];
+                        if ($link == null) {
+                            goto error;
+                        } else {
+                            if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                                echo "fromCache";
+                            } else {
+                                $this->downloadServer($version, $link);
+                                echo "downloaded";
+                            }
+                            $this->server->update(1, ['version' => $version]);
+                        }
+                        break;
+                    case 'SNAP':
+                        $link = $versions[$gameVersion]['snapshot'][$vanilla[1]];
+                        if ($link == null) {
+                            goto error;
+                        } else {
+                            if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                                echo "fromCache";
+                            } else {
+                                $this->downloadServer($version, $link);
+                                echo "downloaded";
+                            }
+                            $this->server->update(1, ['version' => $version]);
+                        }
+                        break;
+                    default:
+                        error: echo "error";
+                        break;
+                }
+            } else if ($gameVersion === "spigot" || $gameVersion === "forge") {
+                $link = $versions[$gameVersion][explode('_', $version)[1]];
+                if ($link == null) {
+                    echo "error"; 
+                } else {
+                    if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                        echo "fromCache";
+                    } else {
+                        $this->downloadServer($version, $link);
+                        echo "downloaded";
+                    }
+                    $this->server->update(1, ['version' => $version]);
+                }
+            } else {
+                echo "error";
+            }
         }
     }
 
@@ -82,5 +152,10 @@ class ServerController extends Controller
          * @see https://theterminallife.com/sending-commands-into-a-screen-session/
          */
         $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
+    }
+
+    private function downloadServer(string $version, string $link): void
+    {
+        file_put_contents("/var/minecraft_server/$version.jar", fopen($link, 'r'));
     }
 }

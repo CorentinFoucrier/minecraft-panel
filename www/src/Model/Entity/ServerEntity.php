@@ -31,6 +31,11 @@ class ServerEntity extends Entity
     private $status;
 
     /**
+     * @var string
+     */
+    private $version;
+
+    /**
      * Get the value of id
      *
      * @return integer|null
@@ -137,6 +142,28 @@ class ServerEntity extends Entity
     public function setStatus(int $status): self
     {
         $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * Get the value of version
+     *
+     * @return string|null
+     */
+    public function getVersion(): ?string
+    {
+        return $this->version;
+    }
+
+    /**
+     * Set the value of version
+     *
+     * @param string $version
+     * @return self
+     */
+    public function setVersion(int $version): self
+    {
+        $this->version = $version;
         return $this;
     }
 }

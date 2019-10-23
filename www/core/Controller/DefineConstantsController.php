@@ -9,8 +9,8 @@ class DefineConstantsController extends Controller {
     public static function define(): void
     {
         define("PREFIX", getenv('PREFIX'));
-        define("RAM_MIN", "1024M");
-        define("RAM_MAX", "2048M");
+        define("RAM_MIN", "512M");
+        define("RAM_MAX", "1024M");
         define("SHELL_USER", getenv("SHELL_USER"));
         define("SELL_PWD", getenv("SHELL_PWD"));
         define("SERVER_PROPERTIES", ServerPropertiesController::getContent());

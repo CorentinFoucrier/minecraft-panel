@@ -5,24 +5,54 @@ use Core\Controller\Controller;
 
 class DashbordController extends Controller
 {
+    public function __construct()
+    {
+        $this->loadModel('server');
+    }
+
     public function showDashboad()
     {
         $config = SERVER_PROPERTIES;
         $maxPlayers = $config['max-players'];
+        $version = $this->getVersion();
         return $this->render("index", [
             'title' => "Tableau de board",
-            'maxPlayers' => $maxPlayers
+            'maxPlayers' => $maxPlayers,
+            "version" => $version
         ]);
     }
 
     /**
      * Get online players through AJAX
-     *
+     * Route: /getOnlinePlayers
      * @return void
      */
     public function getOnlinePlayers(): void
     {
         $players = $this->getServerQuery()->getPlayers();
         echo $players['online'];
+    }
+
+    /**
+     * Get active minecraft version
+     * Route: /getVersion
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        $req = $this->server->selectEverything(true)->getVersion();
+        $version = explode('_', $req);
+
+        if ($version[0] == "MC") {
+            $v = $version = "Vanilla ".$version[1];
+            if (!empty($_GET)) echo $v;
+            return $v;
+        } else if ($version[0] == "SNAP") {
+            $v = $version = "Snapshot ".$version[1];
+            if (!empty($_GET)) echo $v;
+            return $v;
+        } else {
+            return $version = ucfirst(str_replace('_', ' ', $req));
+        }
     }
 }

@@ -34,7 +34,8 @@ class ControlsController extends Controller
                 $ssh->write("cd /home/mcserver/minecraft_server\n");
                 $cn = getenv('CONTAINER_NAME');
                 // If java command failed the command following pipes is launch.
-                $ssh->write("java -Xms1024M -Xmx1024M -jar server.jar -nogui && docker exec $cn php commands/jarError\n");
+                $version = $this->server->selectEverything();
+                $ssh->write("java ".RAM_MIN." ".RAM_MAX." -jar $version->getVersion -nogui && docker exec $cn php commands/jarError\n");
                 // The default state is "in loading" an AJAX script will send a request to know if the server is up.
                 $ssh->read();
                 $this->server->update($req->getId(), ['status' => 1]);

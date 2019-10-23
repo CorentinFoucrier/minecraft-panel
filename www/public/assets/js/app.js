@@ -32,26 +32,33 @@ $(document.body).keyup(function(event) {
 });
 
 function checkStatus(){
-    $.get("/checkStatus", {}, async function (data) {
-        if (data == "loading") {
-            startButtonLoading.addClass('ld ld-ring ld-spin');
-            await sleep(1000);
-            checkStatus();
-        } else if (data == "started") {
-            stopButton.removeAttr('disabled');
-            restartButton.removeAttr('disabled');
-            startButtonLoading.removeClass();
-            startButton.attr('disabled', 'disabled');
-        } else if (data == "stopped") {
-            startButton.removeAttr('disabled');
-            restartButton.attr('disabled', 'disabled');
-            stopButton.attr('disabled', 'disabled');
-        } else if (data == "error") {
-            toastr.error("Veuillez vérifier votre installation et relancer le serveur.", "Une erreur est survenue !");
-            startButton.removeAttr('disabled');
-            startButtonLoading.removeClass();
-        }
-    }, "text");
+    return new Promise(resolve => {
+        $.get("/checkStatus", {}, async function (data) {
+            if (data == "loading") {
+                startButtonLoading.addClass('ld ld-ring ld-spin');
+                await sleep(1000);
+                checkStatus();
+                resolve(data);
+            } else if (data == "started") {
+                stopButton.removeAttr('disabled');
+                restartButton.removeAttr('disabled');
+                startButtonLoading.removeClass();
+                startButton.attr('disabled', 'disabled');
+                resolve(data);
+            } else if (data == "stopped") {
+                startButtonLoading.removeClass();
+                startButton.removeAttr('disabled');
+                restartButton.attr('disabled', 'disabled');
+                stopButton.attr('disabled', 'disabled');
+                resolve(data);
+            } else if (data == "error") {
+                toastr.error("Veuillez vérifier votre installation et relancer le serveur.", "Une erreur est survenue !");
+                startButton.removeAttr('disabled');
+                startButtonLoading.removeClass();
+                resolve(data);
+            }
+        }, "text");
+    });
 }
 
 function serverStart() {
