@@ -30,6 +30,8 @@ echo "Creating Database".PHP_EOL;
 sleep(1);
 echo "[||";
 $pdo->exec("DROP TABLE `".$prefix."server`");
+$pdo->exec("DROP TABLE `".$prefix."user`");
+$pdo->exec("DROP TABLE `".$prefix."role`");
 echo "||";
 $pdo->exec("CREATE TABLE `".$prefix."server` (
     `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -41,6 +43,25 @@ $pdo->exec("CREATE TABLE `".$prefix."server` (
     PRIMARY KEY(`id`)
 )");
 echo "||";
+$pdo->exec("CREATE TABLE `".$prefix."user` (
+    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `username` varchar(255) NOT NULL,
+    `password` varchar(255) NOT NULL,
+    `role_id` tinyint(1) UNSIGNED NOT NULL,
+    PRIMARY KEY(`id`)
+)");
+echo "||";
+$pdo->exec("CREATE TABLE `".$prefix."role` (
+    `id` tinyint(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `role_name` varchar(255) NOT NULL DEFAULT 2,
+    PRIMARY KEY(`id`)
+)");
+echo "||||";
+$pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+$pdo->exec("TRUNCATE TABLE `server`");
+$pdo->exec("TRUNCATE TABLE `user`");
+$pdo->exec("TRUNCATE TABLE `role`");
+$pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
 echo "||]".PHP_EOL;
 echo "Instert default value to the database".PHP_EOL;
 sleep(1);
@@ -50,8 +71,23 @@ $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
 $versions = json_decode($json, true);
 $version = array_key_first($versions['vanilla']['stable']);
 $pdo->exec("INSERT INTO `{$prefix}server` (
-        `name`, `panel_port`, `is_installed`, `status`, `version`
-    ) VALUES (
-        'Minecraft Panel', 8080, 0, 0, 'MC_{$version}'
+    `name`, `panel_port`, `is_installed`, `status`, `version`
+) VALUES (
+    'Minecraft Panel', 8080, 0, 0, 'MC_{$version}'
+)");
+echo "||||";
+$pdo->exec("INSERT INTO `{$prefix}role` (
+    `role_name`
+) VALUES 
+    ('admin'),
+    ('co-admin'),
+    ('moderator')
+");
+echo "||||";
+$passwordHash = password_hash('admin', PASSWORD_ARGON2ID);
+$pdo->exec("INSERT INTO `{$prefix}user` (
+    `username`, `password`, `role_id`
+) VALUES (
+    'admin', '{$passwordHash}', 1
 )");
 echo "||]".PHP_EOL;

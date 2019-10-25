@@ -11,6 +11,7 @@ $app->getRouter($basePath)
     ->match('/', 'Dashbord#showDashboad', 'dashboard')
     ->match('/getLog', 'Server#getLog', 'getLog')
     ->match('/config', 'Config#showForm', 'config')
+    ->match('/login', 'User#login', 'login')
 
     ->get('/checkStatus', 'Server#checkStatus', 'check_status')
     ->get('/getOnlinePlayers', 'Dashbord#getOnlinePlayers', 'getOnlinePlayers')
