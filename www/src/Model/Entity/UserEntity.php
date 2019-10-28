@@ -91,8 +91,10 @@ class UserEntity extends Entity
 
     /**
      * Get the value of roleId
+     * 
+     * @return int
      */ 
-    public function getRoleId()
+    public function getRoleId(): int
     {
         return $this->role_id;
     }
@@ -101,7 +103,7 @@ class UserEntity extends Entity
      *
      * @return  self
      */ 
-    public function setRoleId($role_id)
+    public function setRoleId($role_id): self
     {
         $this->role_id = $role_id;
         return $this;

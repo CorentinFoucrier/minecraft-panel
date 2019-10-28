@@ -72,10 +72,16 @@ class App
         return $this->router;
     }
 
-    public function getTable(string $nameTable)
+    /**
+     * Used for instantiate any table passed by Core\Controller\loadModel($tableName) method
+     *
+     * @param string $tableName
+     * @return void
+     */
+    public function getTable(string $tableName)
     {
-        $nameTable = "\\App\\Model\\Table\\" . ucfirst($nameTable) . "Table";
-        return new $nameTable($this->getDb());
+        $tableName = "\\App\\Model\\Table\\" . ucfirst($tableName) . "Table";
+        return new $tableName($this->getDb());
     }
 
     public function getDb(): DatabaseController

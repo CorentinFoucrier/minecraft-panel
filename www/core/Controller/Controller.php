@@ -54,9 +54,16 @@ abstract class Controller
         return $this->getApp()->getRouter()->url($routeName, $params);
     }
 
-    protected function loadModel(string $nameTable): void
+    /**
+     * Used to instantiate a model class in src/Model/Table
+     * Called by this->loadModel in any Controller that extents of Core\Controller
+     *
+     * @param string $tableName
+     * @return void
+     */
+    protected function loadModel(string $tableName): void
     {
-        $this->$nameTable = $this->getApp()->getTable($nameTable);
+        $this->$tableName = $this->getApp()->getTable($tableName);
     }
 
     protected function getFlash(): FlashService
@@ -90,5 +97,43 @@ abstract class Controller
     protected function getServerQuery(): ServerQueryController
     {
         return $this->getApp()->getServerQuery();
+    }
+
+    /**
+     * Redirect the visitor if he is not logged in.
+     *
+     * @return void
+     */
+    protected function userOnly(): void
+    {
+        if (!isset($_SESSION['username']) || empty($_SESSION['username'])) {
+            $this->redirect($this->getUri('login'));
+        }
+    }
+
+    /**
+     * Redirect the visitor if he is not logged as Admin.
+     *
+     * @return void
+     */
+    protected function adminOnly(): void
+    {
+        $this->loadModel('user');
+        $user = $this->user->select(['username' => $_SESSION['username']]);
+        if ($user && ($user->getRoleId() !== 1)) {
+            $this->redirect($this->getUri('login'));
+        }
+    }
+
+    /**
+     * Redirect connected users.
+     *
+     * @return void
+     */
+    protected function notForLoggedIn()
+    {
+        if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
+            $this->redirect($this->getUri('dashboard'));
+        }
     }
 }

@@ -9,6 +9,7 @@ class DashbordController extends Controller
     }
     public function showDashboad()
     {
+        $this->userOnly();
         $config = SERVER_PROPERTIES;
         $maxPlayers = $config['max-players'];
         $version = $this->getVersion();

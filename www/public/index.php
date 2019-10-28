@@ -8,11 +8,12 @@ $app = App\App::getInstance();
 $app::load();
 
 $app->getRouter($basePath)
-    ->match('/', 'Dashbord#showDashboad', 'dashboard')
     ->match('/getLog', 'Server#getLog', 'getLog')
     ->match('/config', 'Config#showForm', 'config')
     ->match('/login', 'User#login', 'login')
-
+    ->match('/co-administrators', 'CoAdmin#showCoAdmin', 'coAdmin')
+    
+    ->get('/', 'Dashbord#showDashboad', 'dashboard')
     ->get('/checkStatus', 'Server#checkStatus', 'check_status')
     ->get('/getOnlinePlayers', 'Dashbord#getOnlinePlayers', 'getOnlinePlayers')
     ->get('/getVersion', 'Dashbord#getVersion', 'getVersion')
@@ -22,4 +23,5 @@ $app->getRouter($basePath)
     ->post('/stop', 'Controls#stop', 'server_stop')
     ->post('/sendCommand', 'Server#sendCommand', 'command_send')
     ->post('/selectVersion', 'Server#selectVersion', 'select_version')
+    ->post('/coAdmin/delete/[i:id]/[*:token]', 'CoAdmin#deleteCoAdmin', 'coAdminDelete')
     ->run();

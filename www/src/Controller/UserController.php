@@ -16,11 +16,7 @@ class UserController extends Controller
      */
     public function login()
     {
-        if (isset($_SESSION['user'])) {
-            // Already logged in!
-            $this->redirect('/', 200);
-            exit();
-        }
+        $this->notForLoggedIn();
         if (!empty($_POST)) {
             $username = $_POST['username'];
             $password = $_POST['password'];
@@ -33,7 +29,8 @@ class UserController extends Controller
                 if (password_verify($password, $userEntity->getPassword())) {
                     if ($_SESSION['token'] === $token) {
                         /* Logged! */
-                        $_SESSION['user'] = $userEntity->getUsername();
+                        $_SESSION['username'] = $userEntity->getUsername();
+                        unset($_SESSION['token']);
                         $this->redirect("/", 200);
                         exit();
                     } else {
@@ -46,7 +43,7 @@ class UserController extends Controller
                 $this->getFlash()->addAlert('L\'utilisateur ou le mot de passe est incorrect !');
             }
         }
-        $token = bin2hex(random_bytes(32));
+        $token = bin2hex(random_bytes(16));
         $_SESSION['token'] = $token;
         return $this->render("login", [
             'title' => 'Panel | Connexion',

@@ -66,3 +66,8 @@ nav div {
 .console-input {
     border-top: 1px solid #D8D8D8;
 }
+
+/* TABLES */
+table {
+    width: auto!important;
+}

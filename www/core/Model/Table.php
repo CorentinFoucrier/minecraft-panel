@@ -19,10 +19,15 @@ class Table
      */
     protected $table;
 
+    /**
+     * This constructor is called by App\App\getTable() method
+     *
+     * @param DatabaseController $db
+     */
     public function __construct(DatabaseController $db)
     {
         $this->db = $db;
-
+        // Singleton patern
         if (is_null($this->table)) {
             //App\Model\Table\ClassTable
             $parts = explode('\\', get_class($this)); // Get class and explode it into an array at backslash
@@ -37,6 +42,10 @@ class Table
         }
     }
 
+    /**
+     * W.I.P
+     * Not sure to keep this method
+     */
     public function count()
     {
         return $this->query("SELECT COUNT(id) as nbrow FROM {$this->table}", null, true);
@@ -63,6 +72,10 @@ class Table
         return $this->query("SELECT * FROM {$this->table} WHERE id = {$id}", null, true);
     }
 
+    /**
+     * W.I.P
+     * Not sure to keep this method
+     */
     public function findBy(string $column, bool $one)
     {
         return $this->query("SELECT $column FROM {$this->table}", null, $one);
