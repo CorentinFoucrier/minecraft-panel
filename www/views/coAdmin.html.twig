@@ -61,6 +61,8 @@
 {% block javascripts %}
     <script src="/assets/js/coAdmin.js"></script>
     {% if password != false %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+        <script>new ClipboardJS('.btn');</script>
         <script>$('#passwordModal').modal('toggle');</script>
     {% endif %}
 {% endblock %}
