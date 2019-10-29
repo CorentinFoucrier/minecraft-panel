@@ -1,10 +1,9 @@
 <?php
 namespace Core\Controller;
 
-use Core\Controller\Controller;
 use Core\Controller\Helpers\ServerPropertiesController;
 
-class DefineConstantsController extends Controller
+class DefineConstantsController
 {
 
     public static function define(): void

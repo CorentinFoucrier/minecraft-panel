@@ -19,7 +19,15 @@ abstract class Controller
 
     private $app;
 
-    protected function render(string $view, array $variables = [])
+    /**
+     * Render the HTML view of a .twig file
+     * This is the end of application from entrypoint index.php
+     *
+     * @param string $view
+     * @param array $variables
+     * @return void
+     */
+    protected function render(string $view, array $variables = []): void
     {
         echo $this->getTwig()->render(
             $view . '.html.twig',
@@ -27,7 +35,13 @@ abstract class Controller
         );
     }
 
-    private function getTwig()
+    /**
+     * Init and configure a new Twig\Environment object
+     *
+     * @see https://twig.symfony.com/doc/2.x/api.html
+     * @return Environment
+     */
+    private function getTwig(): Environment
     {
         if (is_null($this->twig)) {
             $loader = new FilesystemLoader(BASE_PATH . 'www/views/');
@@ -41,6 +55,12 @@ abstract class Controller
         return $this->twig;
     }
 
+    /**
+     * Get an the current instance of App or
+     * create a new App if not exist
+     *
+     * @return App
+     */
     protected function getApp(): App
     {
         if (is_null($this->app)) {
@@ -49,7 +69,15 @@ abstract class Controller
         return $this->app;
     }
 
-    protected function generateUrl(string $routeName, array $params = []): String
+    /**
+     * Generate the url of a route name eg. /foo/bar/1
+     * without the domain name
+     *
+     * @param string $routeName
+     * @param array $params Assoc array ['paramName'=>'value']
+     * @return string
+     */
+    protected function generateUrl(string $routeName, array $params = []): string
     {
         return $this->getApp()->getRouter()->url($routeName, $params);
     }
@@ -66,16 +94,36 @@ abstract class Controller
         $this->$tableName = $this->getApp()->getTable($tableName);
     }
 
+    /**
+     * Get a FlashService for put flash messages in $_SESSION
+     * getFlash()->addAlert('Custom alert message')
+     *
+     * @return FlashService
+     */
     protected function getFlash(): FlashService
     {
         return $this->getApp()->getFlash();
     }
 
-    protected function getUri(string $name, array $params = []): string
+    /**
+     * Get the entire Uri eg. http://localhost/foo/bar/1
+     *
+     * @param string $routeName
+     * @param array $params Assoc array ['paramName'=>'value']
+     * @return string
+     */
+    protected function getUri(string $routeName, array $params = []): string
     {
-        return URLController::getUri($name, $params);
+        return URLController::getUri($routeName, $params);
     }
 
+    /**
+     * Redirect a client with an optionnal http code.
+     *
+     * @param string $url
+     * @param integer|null $httpResponseCode
+     * @return void
+     */
     protected function redirect(string $url, ?int $httpResponseCode = null)
     {
         if ($httpResponseCode) {
@@ -84,16 +132,31 @@ abstract class Controller
         return header('Location: '.$url);
     }
 
+    /**
+     * Get Server Controller
+     *
+     * @return ServerController
+     */
     protected function getServer(): ServerController
     {
         return $this->getApp()->getServer();
     }
 
+    /**
+     * Get Logs Controller
+     *
+     * @return LogsController
+     */
     protected function getLogs(): LogsController
     {
         return $this->getApp()->getLogs();
     }
 
+    /**
+     * Get SeverQuery Controller
+     *
+     * @return ServerQueryController
+     */
     protected function getServerQuery(): ServerQueryController
     {
         return $this->getApp()->getServerQuery();

@@ -31,7 +31,7 @@ class PaginatedQueryController
         $nbPage = $this->getNbPages();
         $currentPage = $this->getCurrentPage();
         if ($currentPage > $nbPage) {
-            throw new \Exception('pas de pages');
+            throw new \Exception('No pages here!');
         }
         if ($this->items === null) {
             $offset = ($currentPage - 1) * $this->perPage;
@@ -45,7 +45,7 @@ class PaginatedQueryController
         $nbPage = $this->getNbPages($id);
         $currentPage = $this->getCurrentPage();
         if ($currentPage > $nbPage) {
-            throw new \Exception('pas de pages');
+            throw new \Exception('No pages here!');
         }
         if ($this->items === null) {
             $offset = ($currentPage - 1) * $this->perPage;
@@ -60,13 +60,7 @@ class PaginatedQueryController
         $nbPage = $this->getNbPages();
         $navArray = [];
         for ($i = 1; $i <= $nbPage; $i++) {
-            // if($i == 1){
-            //     $url = $uri;
-            // }else{
-            //     $url = $uri . "?page=" . $i;
-            // }
             $url = $i == 1 ? $uri : $uri . "?page=" . $i;
-
             $navArray[$i] = $url;
         }
         return $navArray;

@@ -15,7 +15,7 @@ class URLController
         }
 
         if (!filter_var($_GET[$name], FILTER_VALIDATE_INT)) {
-            throw new \Exception("Le paramètre '$name' dans l'url n'est pas un entier");
+            throw new \Exception("The '$name' param in the URL is not an integer!");
         }
         return (int) $_GET[$name];
     }
@@ -24,24 +24,22 @@ class URLController
     {
         $param = self::getInt($name, $default);
         if ($param !== null && $param <= 0) {
-            throw new \Exception("Le paramètre '$name' dans l'url n'est pas un entier positif");
+            throw new \Exception("The '$name' param in the URL is not a positive integer!");
         }
         return $param;
     }
 
     /**
-     * génère une uri entière :) avec http et tout et tout
+     * Get the entire Uri eg. http://localhost/foo/bar/1
      *
-     * @param string $cible
+     * @param string $routeName
+     * @param array $params Assoc array ['paramName'=>'value']
      * @return string
      */
-    public static function getUri(string $name, array $params = []): string
+    public static function getUri(string $routeName, array $params = []): string
     {
-        
         $uri = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"];
-        //$folder = $this->generateUrl($name, $params);
-        $folder = App::getInstance()->getRouter()->url($name, $params);
-
+        $folder = App::getInstance()->getRouter()->url($routeName, $params);
         return $uri. $folder;
     }
 }

@@ -1,10 +1,13 @@
 <?php
 namespace Core\Controller\Session;
-
+/**
+ * Manage $_SESSION informations
+ */
 class PhpSession implements SessionInterface, \ArrayAccess
 {
     /**
-     * recupère une  info en session
+     * Get $_SESSION value of $key
+     * 
      * @param string $key
      * @param mixed $default
      * @return mixed
@@ -18,9 +21,11 @@ class PhpSession implements SessionInterface, \ArrayAccess
         return $default;
     }
     /**
-     * mettre une  info en session
+     * Set $_SESSION $key and the $value in a sub array
+     * 
      * @param string $key
      * @param mixed $value
+     * @return void
      */
     public function set(string $key, $value): void
     {
@@ -29,8 +34,10 @@ class PhpSession implements SessionInterface, \ArrayAccess
     }
 
     /**
-     * supprime une  info en session
+     * Delete session $key
+     * 
      * @param string $key
+     * @return void
      */
     public function delete(string $key): void
     {
@@ -38,31 +45,35 @@ class PhpSession implements SessionInterface, \ArrayAccess
         unset($_SESSION[$key]);
     }
 
-
-    private function ensureStarted():void
+    /**
+     * Start the session if isn't started yet.
+     *
+     * @return void
+     */
+    private function ensureStarted(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    public function offsetExists($key) : bool
+    public function offsetExists($key): bool
     {
         $this->ensureStarted();
         return array_key_exists($key, $_SESSION);
     }
     
-    public function offsetGet($offset) : mixed
+    public function offsetGet($offset): mixed
     {
         return $this->get($offset);
     }
 
-    public function offsetSet($offset, $value) : void
+    public function offsetSet($offset, $value): void
     {
         $this->set($offset, $value);
     }
 
-    public function offsetUnset($offset) : void
+    public function offsetUnset($offset): void
     {
         $this->delete($offset);
     }
