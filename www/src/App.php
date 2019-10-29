@@ -41,7 +41,7 @@ class App
 
         DefineConstantsController::define();
 
-        if (session_status() != PHP_SESSION_ACTIVE){
+        if (session_status() != PHP_SESSION_ACTIVE) {
             session_start();
         }
 

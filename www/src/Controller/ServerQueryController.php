@@ -30,10 +30,11 @@ class ServerQueryController extends Controller
                     $result = $Query->Query();
                     return $result['players'];
                 }
-            } catch(MinecraftPingException $e) {
-                // TODO: Find a way to display an error when the Minecraft server can not be reached by xPaw\MinecraftPing
+            } catch (MinecraftPingException $e) {
+                // TODO: Find a way to display an error when the Minecraft server
+                // can not be reached by xPaw\MinecraftPing
             } finally {
-                if($Query) {
+                if ($Query) {
                     $Query->Close();
                 }
             }

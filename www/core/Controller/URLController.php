@@ -3,7 +3,7 @@ namespace Core\Controller;
 
 use App\App;
 
-class URLController 
+class URLController
 {
     public static function getInt(string $name, ?int $default = null): ?int
     {

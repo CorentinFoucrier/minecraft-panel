@@ -6,11 +6,8 @@ class RouterController
 
     private $router;
 
-    private $viewPath;
-
-    public function __construct(string $viewPath)
+    public function __construct()
     {
-        $this->viewPath = $viewPath;
         $this->router = new \AltoRouter();
     }
 

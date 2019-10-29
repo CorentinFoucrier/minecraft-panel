@@ -1,7 +1,8 @@
 <?php
 namespace Core\Controller;
 
-class FormBuilderController {
+class FormBuilderController
+{
 
     private $html;
 

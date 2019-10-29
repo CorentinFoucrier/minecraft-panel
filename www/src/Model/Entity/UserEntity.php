@@ -33,9 +33,9 @@ class UserEntity extends Entity
 
     /**
      * Get the value of id
-     * 
+     *
      * @return null|int
-     */ 
+     */
     public function getId(): ?int
     {
         return $this->id;
@@ -44,7 +44,7 @@ class UserEntity extends Entity
      * Set the value of id
      *
      * @return self
-     */ 
+     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -52,9 +52,9 @@ class UserEntity extends Entity
     }
     /**
      * Get the value of username
-     * 
+     *
      * @return null|string
-     */ 
+     */
     public function getUsername(): ?string
     {
         return $this->username;
@@ -63,7 +63,7 @@ class UserEntity extends Entity
      * Set the value of username
      *
      * @return self
-     */ 
+     */
     public function setUsername(string $username): self
     {
         $this->username = $username;
@@ -71,9 +71,9 @@ class UserEntity extends Entity
     }
     /**
      * Get the value of password
-     * 
+     *
      * @return null|string
-     */ 
+     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -82,7 +82,7 @@ class UserEntity extends Entity
      * Set the value of password
      *
      * @return self
-     */ 
+     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -91,9 +91,9 @@ class UserEntity extends Entity
 
     /**
      * Get the value of roleId
-     * 
+     *
      * @return int
-     */ 
+     */
     public function getRoleId(): int
     {
         return $this->role_id;
@@ -102,7 +102,7 @@ class UserEntity extends Entity
      * Set the value of roleId
      *
      * @return  self
-     */ 
+     */
     public function setRoleId($role_id): self
     {
         $this->role_id = $role_id;
@@ -110,9 +110,9 @@ class UserEntity extends Entity
     }
     /**
      * Get the value of RoleEntity
-     * 
+     *
      * @return RoleEntity
-     */ 
+     */
     public function getRoleEntity(): RoleEntity
     {
         return $this->RoleEntity;
@@ -121,7 +121,7 @@ class UserEntity extends Entity
      * Set the value of RoleEntity
      *
      * @return  self
-     */ 
+     */
     public function setRoleEntity(RoleEntity $RoleEntity): self
     {
         $this->RoleEntity = $RoleEntity;

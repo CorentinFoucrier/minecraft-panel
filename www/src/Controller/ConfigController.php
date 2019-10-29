@@ -34,13 +34,13 @@ class ConfigController extends Controller
                     ) {
                     $form->addGroup("col-sm-6");
                 }
-                /** 
+                /**
                  * If 'true' is matched, that's a boolean then when 'true'
                  * add select with default selected value as 'true', same with 'false'
                  */
                 if ((preg_match('/(true|false)++/', $value)) === 1) {
                     if (!in_array($key, ["enable-rcon", "enable-query", "broadcast-rcon-to-ops"])) {
-                        $form->addSelect("$key", "$label",[
+                        $form->addSelect("$key", "$label", [
                             'options' => ['true'=>'true','false'=>'false'],
                             'selected' => $value
                         ]);
@@ -49,7 +49,7 @@ class ConfigController extends Controller
                 //Add select for possible default values that arn't in $config
                 switch ($key) {
                     case 'difficulty':
-                        $form->addSelect("$key", "$label",[
+                        $form->addSelect("$key", "$label", [
                             'options' => [
                                 'peaceful' => 'peaceful',
                                 'easy' => 'easy',
@@ -60,7 +60,7 @@ class ConfigController extends Controller
                             ]);
                         break;
                     case 'gamemode':
-                        $form->addSelect("$key", "$label",[
+                        $form->addSelect("$key", "$label", [
                             'options' => [
                                 'survival' => 'survival',
                                 'creative' => 'creative',
@@ -71,7 +71,7 @@ class ConfigController extends Controller
                         ]);
                         break;
                     case 'level-type':
-                        $form->addSelect("$key", "$label",[
+                        $form->addSelect("$key", "$label", [
                             'options' => [
                                 'default' => 'default',
                                 'flat' => 'flat',

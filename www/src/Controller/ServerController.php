@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller;
+
 use phpseclib\Net\SSH2;
 use Core\Controller\Controller;
 use Core\Controller\Helpers\LogsController;
+
 /**
  * This class related to the minecraft
  * server itself.
@@ -107,10 +109,10 @@ class ServerController extends Controller
                         error: echo "error";
                         break;
                 }
-            } else if ($gameVersion === "spigot" || $gameVersion === "forge") {
+            } elseif ($gameVersion === "spigot" || $gameVersion === "forge") {
                 $link = $versions[$gameVersion][explode('_', $version)[1]];
                 if ($link == null) {
-                    echo "error"; 
+                    echo "error";
                 } else {
                     if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
                         echo "fromCache";

@@ -3,11 +3,12 @@ namespace Core\Controller\Helpers;
 
 use Core\Controller\Controller;
 
-class ServerPropertiesController extends Controller {
+class ServerPropertiesController extends Controller
+{
 
-    static public $filePath = BASE_PATH . 'minecraft_server/server.properties';
+    public static $filePath = BASE_PATH . 'minecraft_server/server.properties';
 
-    static public function getContent(): ?array
+    public static function getContent(): ?array
     {
         /* Path to server.properties */
         try {
@@ -28,6 +29,6 @@ class ServerPropertiesController extends Controller {
 
         ksort($config);//Sort alphabeticly
 
-        return $config; 
+        return $config;
     }
 }

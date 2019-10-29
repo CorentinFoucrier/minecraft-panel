@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
+
 use Core\Controller\Controller;
+
 class DashbordController extends Controller
 {
     public function __construct()
@@ -40,11 +42,15 @@ class DashbordController extends Controller
         $version = explode('_', $req);
         if ($version[0] == "MC") {
             $v = $version = "Vanilla ".$version[1];
-            if (!empty($_GET)) echo $v;
+            if (!empty($_GET)) {
+                echo $v;
+            }
             return $v;
-        } else if ($version[0] == "SNAP") {
+        } elseif ($version[0] == "SNAP") {
             $v = $version = "Snapshot ".$version[1];
-            if (!empty($_GET)) echo $v;
+            if (!empty($_GET)) {
+                echo $v;
+            }
             return $v;
         } else {
             return $version = ucfirst(str_replace('_', ' ', $req));

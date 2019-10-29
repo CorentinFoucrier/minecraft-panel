@@ -92,7 +92,7 @@ class Table
     {
         $sql_parts = [];
         $attributes = [];
-        foreach($fields as $k => $v){
+        foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = ?";
             $attributes[] = $v;
         }
@@ -112,7 +112,7 @@ class Table
     {
         $sql_parts = [];
         $attributes = [];
-        foreach($fields as $k => $v){
+        foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = ?";
             $attributes[] = $v;
         }
@@ -122,7 +122,7 @@ class Table
     }
 
     /**
-     * Query : 
+     * Query :
      * "UPDATE {$this->table} SET $sql_part WHERE $column_part"
      *
      * @param array $fields The SET field
@@ -134,11 +134,11 @@ class Table
         $sql_parts = [];
         $attributes = [];
         $column_parts = [];
-        foreach($fields as $k => $v){
+        foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = :$k";
             $attributes[":".$k] = "$v";
         }
-        foreach($columns as $k => $v){
+        foreach ($columns as $k => $v) {
             $column_parts[] = "$k = :$k";
             $attributes[":".$k] = "$v";
         }
@@ -155,22 +155,22 @@ class Table
      * @param boolean $class
      * @return boolean
      */
-    public function create(array $fields, $class=false)
+    public function create(array $fields, $class = false)
     {
         $sql_parts = [];
         $attributes = [];
-        if($class) {
+        if ($class) {
             $methods = get_class_methods($fields);
             $array = [];
-            foreach($methods as $value) {
-                if(strrpos($value, 'get') === 0) {
+            foreach ($methods as $value) {
+                if (strrpos($value, 'get') === 0) {
                     $column = strtolower(explode('get', $value)[1]);
                     $array[$column] = $fields->$value();
                 }
             }
             $fields = $array;
         }
-        foreach($fields as $k => $v){
+        foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = ?";
             $attributes[] = $v;
         }
@@ -183,9 +183,9 @@ class Table
         return $this->query("DELETE FROM {$this->table} WHERE id = ?", [$id], true);
     }
 
-    public function selectEverything(bool $fetch = false )
+    public function selectEverything(bool $fetch = false)
     {
-        return $this->query("SELECT * FROM {$this->table}", null ,$fetch);
+        return $this->query("SELECT * FROM {$this->table}", null, $fetch);
     }
 
     /**

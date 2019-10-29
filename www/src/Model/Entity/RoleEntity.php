@@ -16,9 +16,9 @@ class RoleEntity extends Entity
 
     /**
      * Get the value of id
-     * 
+     *
      * @return null|int
-     */ 
+     */
     public function getId(): ?int
     {
         return $this->id;
@@ -27,7 +27,7 @@ class RoleEntity extends Entity
      * Set the value of id
      *
      * @return self
-     */ 
+     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -35,9 +35,9 @@ class RoleEntity extends Entity
     }
     /**
      * Get the value of role.name
-     * 
+     *
      * @return null|string
-     */ 
+     */
     public function getRoleName(): ?string
     {
         return $this->role_name;
@@ -46,7 +46,7 @@ class RoleEntity extends Entity
      * Set the value of role.name
      *
      * @return self
-     */ 
+     */
     public function setRoleName(string $role_name): self
     {
         $this->role_name = $role_name;
