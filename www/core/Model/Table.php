@@ -61,10 +61,10 @@ class Table
         return $this->query("SELECT MAX(id) AS id FROM {$this->table}", null, true);
     }
 
-        /**
+    /**
      * Find by id
      *
-     * @param array $attribute
+     * @param int $id
      * @return void
      */
     public function findById(int $id)

@@ -199,4 +199,32 @@ abstract class Controller
             $this->redirect($this->getUri('dashboard'));
         }
     }
+
+    protected function upload(string $path, string $attrName, array $extention, array $mimeTypes): ?string
+    {
+        return $this->getApp()->getUpload()->upload($path, $attrName, $extention, $mimeTypes);
+    }
+
+    /**
+     * Remove a directory in recursive mode.
+     *
+     * @see https://www.php.net/manual/fr/function.rmdir.php#98622
+     * @param string $dirPath Directory path you want to remove recursivly.
+     * @return bool
+     */
+    protected function rmDirectoryRecursivly(string $dirPath): bool
+    {
+        if (is_dir($dirPath)) {
+            $objects = scandir($dirPath);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dirPath . "/" . $object) && !is_link($dirPath . "/" . $object))
+                        $this->rmDirectoryRecursivly($dirPath . "/" . $object);
+                    else
+                        unlink($dirPath . "/" . $object);
+                }
+            }
+            return rmdir($dirPath);
+        }
+    }
 }

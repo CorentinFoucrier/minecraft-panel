@@ -11,6 +11,7 @@ use Core\Controller\Helpers\LogsController;
 use Core\Controller\DefineConstantsController;
 use Core\Controller\Database\DatabaseController;
 use Core\Controller\Database\DatabaseMysqlController;
+use Core\Controller\UploadController;
 
 class App
 {
@@ -76,7 +77,7 @@ class App
      * Used for instantiate any table passed by Core\Controller\loadModel($tableName) method
      *
      * @param string $tableName
-     * @return void
+     * @return object
      */
     public function getTable(string $tableName)
     {
@@ -115,5 +116,10 @@ class App
     public function getServerQuery(): ServerQueryController
     {
         return new ServerQueryController();
+    }
+
+    public function getUpload(): UploadController
+    {
+        return new UploadController();
     }
 }

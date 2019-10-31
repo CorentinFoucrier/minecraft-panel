@@ -18,4 +18,12 @@ RUN pecl install yaml
 
 RUN docker-php-ext-enable yaml
 
+RUN touch /usr/local/etc/php/conf.d/upload.ini
+
+RUN echo "file_uploads = On" > /usr/local/etc/php/conf.d/upload.ini  && \
+    echo "memory_limit = 256M"  > /usr/local/etc/php/conf.d/upload.ini  && \
+    echo "upload_max_filesize = 10240M"  > /usr/local/etc/php/conf.d/upload.ini  && \
+    echo "post_max_size = 10240M"  > /usr/local/etc/php/conf.d/upload.ini  && \
+    echo "max_execution_time = 600"  > /usr/local/etc/php/conf.d/upload.ini
+
 WORKDIR /var/www

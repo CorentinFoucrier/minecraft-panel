@@ -12,6 +12,7 @@ $app->getRouter($basePath)
     ->match('/config', 'Config#showForm', 'config')
     ->match('/login', 'User#login', 'login')
     ->match('/co-administrators', 'CoAdmin#showCoAdmin', 'coAdmin')
+    ->match('/worlds', 'Worlds#showWorlds', 'worlds')
     
     ->get('/', 'Dashbord#showDashboad', 'dashboard')
     ->get('/checkStatus', 'Server#checkStatus', 'check_status')
@@ -24,4 +25,5 @@ $app->getRouter($basePath)
     ->post('/sendCommand', 'Server#sendCommand', 'command_send')
     ->post('/selectVersion', 'Server#selectVersion', 'select_version')
     ->post('/coAdmin/delete/[i:id]/[*:token]', 'CoAdmin#deleteCoAdmin', 'coAdminDelete')
+    ->post('/worlds/delete/[*:worldName]/[*:token]', 'Worlds#deleteWorlds', 'worldsDelete')
     ->run();
