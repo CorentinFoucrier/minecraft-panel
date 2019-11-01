@@ -1,9 +1,5 @@
-function deleteWorld(name, token) {
-    
-}
-
-$('td').click(function() {
-    var tableRow = $(this).parent();
+$('button#delete').click(function() {
+    var tableRow = $(this).parent().parent();
     var worldName = tableRow.children().first().html();
     var token = $('#token').val();
 
@@ -15,4 +11,8 @@ $('td').click(function() {
             toastr.error("Une erreur est survenue !");
         }
     });
+});
+
+$('button#download').click(function() {
+    //wip
 });

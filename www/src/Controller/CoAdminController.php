@@ -48,7 +48,7 @@ class CoAdminController extends Controller
 
     private function addCoAdmin()
     {
-        $coAdminName = $_POST['coAdminInput'];
+        $coAdminName = htmlspecialchars($_POST['coAdminInput']);
         $generatedPwd = bin2hex(random_bytes(4));
         $generatedPwdHash = password_hash($generatedPwd, PASSWORD_ARGON2ID);
         $fields = [

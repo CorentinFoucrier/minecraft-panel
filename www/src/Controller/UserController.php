@@ -18,9 +18,9 @@ class UserController extends Controller
     {
         $this->notForLoggedIn();
         if (!empty($_POST)) {
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            $token = $_POST['token'];
+            $username = htmlspecialchars($_POST['username']);
+            $password = htmlspecialchars($_POST['password']);
+            $token = htmlspecialchars($_POST['token']);
             /* Check if user exist */
             if ($userEntity = $this->user->select(['username' => $username])) {
                 // Set userEntity with hydrated roleEntity

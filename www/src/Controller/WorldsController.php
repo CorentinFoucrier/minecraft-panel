@@ -2,7 +2,6 @@
 namespace App\Controller;
 
 use Core\Controller\Controller;
-use Core\Controller\UploadController;
 
 class WorldsController extends Controller
 {
@@ -37,6 +36,7 @@ class WorldsController extends Controller
 
     /**
      * AJAX request for deleting a minecraft World
+     * Route: /worlds/delete/[*:worldName]/[*:token]
      *
      * @return void
      */
