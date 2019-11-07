@@ -24,7 +24,7 @@ class ServerPropertiesController extends Controller
 
         /* Generate $config array as $key => $value */
         for ($i=0; $i < count($matches); $i++) {
-            $config[$matches[$i][1]] = $matches[$i][2];
+            $config[$matches[$i][1]] = htmlspecialchars($matches[$i][2], ENT_QUOTES);
         }
 
         ksort($config);//Sort alphabeticly

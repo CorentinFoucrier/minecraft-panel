@@ -69,6 +69,19 @@ class FormBuilderController
         HTML;
     }
 
+    public function addCheckbox(string $id, string $value, string $label)
+    {
+        if ($value === "true" || $value === true) {
+            $checked = 'checked=""';
+        }
+        $this->html .= <<<HTML
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="{$id}" name="{$id}" {$checked}>
+                        <label class="custom-control-label" for="{$id}">{$label}</label>
+                    </div>
+        HTML;
+    }
+
     public function addSubmit(string $id, string $value, string $class): void
     {
         $this->button .= <<<HTML

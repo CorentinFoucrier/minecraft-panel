@@ -23,30 +23,39 @@ class ConfigController extends Controller
         if (!is_null(SERVER_PROPERTIES)) {
             $form = new FormBuilderController('server.propreties');
             $config = SERVER_PROPERTIES; // Retrieve server.properties content
+            //dd($config);
             foreach ($config as $key => $value) {
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key));
-                /* add the name of fields that are not displayed in the array below */
-                if (!in_array($key, [
-                    "server-ip", "rcon.password",
-                    "enable-rcon", "enable-query",
-                    "rcon.port", "query.port",
-                    "broadcast-rcon-to-ops"])
-                    ) {
-                    $form->addGroup("col-sm-6");
-                }
                 /**
                  * If 'true' is matched, that's a boolean then when 'true'
                  * add select with default selected value as 'true', same with 'false'
                  */
                 if ((preg_match('/(true|false)++/', $value)) === 1) {
                     if (!in_array($key, ["enable-rcon", "enable-query", "broadcast-rcon-to-ops"])) {
-                        $form->addSelect("$key", "$label", [
-                            'options' => ['true'=>'true','false'=>'false'],
-                            'selected' => $value
-                        ]);
+                        $form->addGroup('col-6');
+                        $form->addCheckbox("$key", "$value", "$label");
                     }
                 }
-                //Add select for possible default values that arn't in $config
+            }
+            $form->addGroup('col-12');
+            foreach ($config as $key => $value) {
+                $label = ucfirst(str_replace(['.', '-'], ' ', $key));
+                /* Add the name of fields that we don't displayed in the exclude array below */
+                $exclude = [
+                    "server-ip", "rcon.password",
+                    "enable-rcon", "enable-query",
+                    "rcon.port", "query.port",
+                    "broadcast-rcon-to-ops"
+                ];
+                /* If is a boolean add $key to the exclude array */
+                if ((preg_match('/(true|false)++/', $value)) === 1) {
+                    $exclude[] = $key;
+                }
+                if (!in_array($key, $exclude)
+                    ) {
+                    $form->addGroup("col-sm-6");
+                }
+                /* Add select for possible default values that arn't in $config */
                 switch ($key) {
                     case 'difficulty':
                         $form->addSelect("$key", "$label", [
