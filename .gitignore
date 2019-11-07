@@ -6,6 +6,8 @@ www/public/debug.php
 
 # Folders
 www/vendor
+www/public/assets/scss
+www/public/assets/.sass-cache
 www/composer.lock
 tests/
 minecraft_server/
