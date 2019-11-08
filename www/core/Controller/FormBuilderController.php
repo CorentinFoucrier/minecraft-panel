@@ -76,7 +76,8 @@ class FormBuilderController
         }
         $this->html .= <<<HTML
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="{$id}" name="{$id}" {$checked}>
+                        <input type="hidden" name="{$id}" value="false">
+                        <input type="checkbox" class="custom-control-input" id="{$id}" name="{$id}" value="true" {$checked}>
                         <label class="custom-control-label" for="{$id}">{$label}</label>
                     </div>
         HTML;
