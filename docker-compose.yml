@@ -19,7 +19,7 @@ services:
   mc-panel.mysql:
     container_name: ${MYSQL_HOST}
     restart: unless-stopped
-    image: mariadb
+    image: mysql:5.6
     networks: 
       - mc-panel
     env_file:
