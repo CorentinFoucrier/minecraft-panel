@@ -18,7 +18,7 @@ class FormBuilderController
     private function build(string $title): void
     {
         $this->html = <<<HTML
-            <form class="mt-4 p-3 border rounded" action="" method="post">
+            <form class="m-4 p-3 border rounded" action="" method="post">
                 <fieldset>
                     <p class="h4 ml-2 mt-2">{$title}</p>
                     <div class="row">
