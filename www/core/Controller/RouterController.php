@@ -39,6 +39,7 @@ class RouterController
         $match = $this->router->match();
 
         if (is_array($match)) {
+            $_SESSION['route'] = $match['name'];
             if (strpos($match['target'], "#")) {
                 // Init 2 variables -> $controller and $mehode with two parts that return the explode function
                 [$controller, $methode] = explode("#", $match['target']);

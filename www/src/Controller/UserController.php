@@ -10,9 +10,12 @@ class UserController extends Controller
         $this->loadModel('user');
         $this->loadModel('role');
     }
+
     /**
      * Login form
      * Route: /login
+     * 
+     * @return void
      */
     public function login()
     {
@@ -31,7 +34,7 @@ class UserController extends Controller
                         /* Logged! */
                         $_SESSION['username'] = $userEntity->getUsername();
                         unset($_SESSION['token']);
-                        $this->redirect("/", 200);
+                        $this->redirect($this->getUri("dashboard"), 200);
                         exit();
                     } else {
                         $this->getFlash()->addAlert('Le post n\'a pas été émis pas le bon formulaire.');
@@ -50,5 +53,19 @@ class UserController extends Controller
             'username' => $username,
             'token' => $token
         ]);
+    }
+
+    /**
+     * Logout the connected user
+     * Route: /logout
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        unset($_SESSION['username']);
+        session_unset();
+        session_destroy();
+        $this->redirect($this->getUri("login"), 200);
     }
 }

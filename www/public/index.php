@@ -19,6 +19,7 @@ $app->getRouter($basePath)
     ->get('/checkStatus', 'Server#checkStatus', 'check_status')
     ->get('/getOnlinePlayers', 'Dashbord#getOnlinePlayers', 'getOnlinePlayers')
     ->get('/getVersion', 'Dashbord#getVersion', 'getVersion')
+    ->get('/logout', 'User#logout', 'logout')
     
     ->post('/start', 'Controls#start', 'server_start')
     ->post('/restart', 'Controls#restart', 'server_restart')

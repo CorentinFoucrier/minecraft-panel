@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#TODO: Create another user and prompt choices to the shell user
-# and put this new user in docker group with "sudo usermod -aG docker 'username'"
-
 if [ -e .env ]; then
     source .env
 fi

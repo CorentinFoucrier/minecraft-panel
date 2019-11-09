@@ -30,14 +30,13 @@ body {
     background-color: #282828;
 }
 
-.title, .user {
+.title {
     color: #FDFDFD;
 }
 
-.user > div {
-    height: 29px;
-    width: 29px;
-    border-color: #FDFDFD !important;
+.flag {
+    height: 20px;
+    width: 20px;
 }
 
 /* SIDE BAR */
@@ -47,8 +46,17 @@ nav {
     color: #FDFDFD;
 }
 
+nav > div.items {
+    display: inline !important;
+    overflow-y: auto !important;
+}
+
+nav > a div.active {
+    background-color: rgba(89, 89, 89, 0.534);
+}
+
 nav > a div:hover {
-    background-color: #595959;
+    background-color: rgba(89, 89, 89, 0.534);
 }
 
 nav div {
@@ -58,7 +66,9 @@ nav div {
 /* DASHBOARD */
 
 .console-side {
-    border-right: 1px solid #D8D8D8;
+    border-right: 1px solid #1e1e1e;
+    background-color: #1e1e1e;
+    border-radius: 4px 0 0 4px;
 }
 
 .console-side ul {
@@ -73,3 +83,5 @@ nav div {
 table {
     width: auto!important;
 }
+
+/* BOOTSTRAP OVERRIDE */

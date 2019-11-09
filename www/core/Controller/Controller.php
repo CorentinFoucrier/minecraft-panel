@@ -47,7 +47,8 @@ abstract class Controller
             $loader = new FilesystemLoader(BASE_PATH . 'www/views/');
             $this->twig = new Environment($loader);
             //Global
-            $this->twig->addGlobal('constant', get_defined_constants());
+            $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
+            $this->twig->addGlobal('route', $_SESSION['route']);
             //Extension
             $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new URIExtension());

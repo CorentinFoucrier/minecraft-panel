@@ -44,7 +44,7 @@
                             Démarrer
                             <span id="startButtonLoading"></span>
                         </button>
-                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning text-light mr-md-1 text-uppercase not-allowed" disabled><i class="fas fa-redo"></i> 
+                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning mr-md-1 text-uppercase not-allowed" disabled><i class="fas fa-redo"></i> 
                             Redémmarer
                         </button>
                         <button onclick="serverStop();" id="stopButton" class="btn btn-danger text-uppercase not-allowed" disabled><i class="fas fa-power-off"></i> 
@@ -61,22 +61,22 @@
         <div class="col-md-12">
             <div class="card mb-3">
                 <div class="row no-gutters">
-                    <div class="console-side col-md-2 border-right d-md-flex flex-md-column justify-content-md-center">
+                    <div class="console-side col-md-2 d-md-flex flex-md-column justify-content-md-center">
                         <h5 class="text-center mt-md-3"><b>Opérateurs</b></h5>
                         <ul>
-                            <li>Mark</li>
-                            <li>Job</li>
-                            <li>Otto</li>
+                        {% for op in ops %}
+                            <li>{{op.name}}</li>
+                        {% endfor %}
                         </ul>
                         <div class="mt-md-auto mb-md-3 mx-md-auto">
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Ajouter un opérateur</a>
+                            <a href="#" class="btn btn-success btn-sm not-allowed wip"><i class="fas fa-plus"></i> Ajouter un opérateur</a>
                         </div>
                     </div>
                     <div class="col-md-10 p-md-2">
                         <div class="card-body py-md-0">
                             <div class="row">
                                 {# Console renderer #}
-                                <div id="log" class="border rounded" style="height:200px;width:100%;overflow:auto!important;"></div>
+                                <div id="log" class="border pl-1" style="height:200px;width:100%;overflow:auto!important;"></div>
                                 <input type="hidden" name="currentLine" id="currentLine" value="0">
                             </div>
                             

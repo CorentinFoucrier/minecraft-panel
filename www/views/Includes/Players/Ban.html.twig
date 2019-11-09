@@ -1,4 +1,4 @@
-<form action="" method="post" class="col-md-8 px-md-0">
+<form action="" method="post" class="col-md-12 px-md-0">
     <div class="form-group">
         <input type="text" id="add_banned-players" name="add_banned-players" class="form-control" required="required" placeholder="Ajouter un joueur à la list">
     </div>
@@ -16,7 +16,7 @@
         <tr>
             <th>Username</th>
             <th>UUID</th>
-            <th>Date</th>
+            <th>Infos</th>
             <th>Supprimer</th>
         </tr>
     </thead>
@@ -24,10 +24,14 @@
     <tbody>
     {% for player in bannedPlayers %}
         <tr>
-            <td>{{player.name}}</td>
-            <td>{{player.uuid}}</td>
-            <td>{{player.created}}</td>
-            <td><button class="btn btn-danger btn-sm float-right delete"><i class="far fa-trash-alt"></i></button></td>
+            <td class="align-middle">{{player.name}}</td>
+            <td class="align-middle">{{player.uuid}}</td>
+            <td class="align-middle">
+                Le <strong class="text-primary">{{player.created|date("d/m/Y")}}</strong> à <strong class="text-primary">{{player.created|date("h:i")}}</strong><br />
+                Par : {{player.source}}<br />
+                Pour : {{player.reason}}
+            </td>
+            <td class="align-middle"><button class="btn btn-danger btn-sm float-right mx-auto delete"><i class="far fa-trash-alt"></i></button></td>
         </tr>
     {% endfor %}
     </tbody>

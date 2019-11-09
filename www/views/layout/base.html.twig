@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="assets/css/mcpanel.min.css">
+    {% if ENV_DEV %}
+        <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.css">
+    {% else %}
+        <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.min.css">
+    {% endif %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
     <link rel="stylesheet" href="https://loading.io/css/loading.css">
@@ -17,48 +21,47 @@
     <div class="container-fluid content">
         <div class="row vh-100">
             <nav class='col-md-2'>
-                <div class="row p-md-2 mb-4 d-md-flex align-items-md-center justify-content-md-center border-bottom border-secondary">
-                    <div class="settings m-md-0 h4 text-uppercase d-md-flex">
-                        <i class="fas fa-sliders-h d-block"></i> <span class="pl-2"><b>Paramètres</b></span>
-                    </div>
+                <div class="row p-md-2 mb-4 d-md-flex flex-md-column">
+                    <p class="m-0 pl-3"><span class="text-primary">■</span> Admin</p>
+                    <a href="{{ uri("logout") }}" class="m-0 pl-3 text-muted">&gt; Déconnexion</a>
                 </div>
                 <a href="{{ uri("dashboard") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 bg-secondary mb-md-3">
+                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "dashboard" %}bg-secondary{% endif %}">
                         <i class="fas fa-tachometer-alt pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Tableau de bord</span>
                     </div>
                 </a>
-                <a href="/plugins" class="text-reset text-decoration-none">
+                <a href="/plugins" class="text-reset text-decoration-none not-allowed wip">
                     <div class="row p-md-2 pl-md-4 mb-md-3">
                         <i class="fas fa-cubes pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Plugins</span>
                     </div>
                 </a>
                 <a href="{{ uri("config") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
+                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "config" %}bg-secondary{% endif %}">
                         <i class="fas fa-cog pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Configuration</span>
                     </div>
                 </a>
-                <a href="/worlds" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
+                <a href="{{ uri("worlds") }}" class="text-reset text-decoration-none">
+                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "worlds" %}bg-secondary{% endif %}">
                         <i class="fas fa-globe-africa pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Gestion des mondes</span>
                     </div>
                 </a>
-                <a href="/players" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
+                <a href="{{ uri("players") }}" class="text-reset text-decoration-none">
+                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "players" %}bg-secondary{% endif %}">
                         <i class="fas fa-user-friends d-md-flex align-items-md-center"></i><span class="pl-md-4">Gestion des joueurs</span>
                     </div>
                 </a>
-                <a href="/scheduled-tasks" class="text-reset text-decoration-none">
+                <a href="/scheduled-tasks" class="text-reset text-decoration-none not-allowed wip">
                     <div class="row p-md-2 pl-md-4 mb-md-3">
                         <i class="fas fa-calendar-alt pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Tâches planifiées</span>
                     </div>
                 </a>
-                <a href="/file-export" class="text-reset text-decoration-none">
+                <a href="/file-export" class="text-reset text-decoration-none not-allowed wip">
                     <div class="row p-md-2 pl-md-4 mb-md-3">
                         <i class="fas fa-file-export pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Transfert de fichiers</span>
                     </div>
                 </a>
                 <a href="{{ uri("coAdmin") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
+                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "coAdmin" %}bg-secondary{% endif %}">
                         <i class="fas fa-users-cog pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Co-Administration</span>
                     </div>
                 </a>
@@ -67,10 +70,10 @@
             <div class="col-md-10" style="height:100vh;width:100%;overflow:auto!important;">
                 <div class="navbar-top row p-md-2 d-md-flex align-items-md-center justify-content-md-between">
                     <div class="title h4 m-md-0 col-md-6"><span class="text-uppercase">Minecraft Panel</span> - {{title}}</div>
-                    <div class="user h5 m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
-                        <span class="username pr-md-3">Admin</span>
-                        <div class="border border-secondary rounded-circle d-md-flex align-items-md-center justify-content-md-center">
-                            <i class="far fa-user d-block"></i>
+                    <div class="m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
+                        <div>
+                            <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/fr.svg" alt="Drapeau Français"></a>
+                            <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/gb.svg" alt="United Kingdom Flag"></a>
                         </div>
                     </div>
                 </div>
@@ -84,6 +87,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="assets/js/toastr_options.js"></script>
     <script src="assets/js/app.js"></script>
+    <script>
+        $('.wip').click(function(event) {
+            event.preventDefault();
+            toastr.info("cette fonctionnalité n'est pas encore disponible." ,"En developpement...")
+        });
+    </script>
     {% block javascripts %}{% endblock %}
 </body>
 </html>
