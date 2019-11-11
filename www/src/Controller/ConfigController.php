@@ -23,7 +23,6 @@ class ConfigController extends Controller
         if (!is_null(SERVER_PROPERTIES)) {
             $form = new FormBuilderController('server.propreties');
             $config = SERVER_PROPERTIES; // Retrieve server.properties content
-            //dd($config);
             foreach ($config as $key => $value) {
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key));
                 /**

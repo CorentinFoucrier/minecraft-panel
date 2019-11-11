@@ -20,47 +20,28 @@ class PlayersController extends Controller
         $this->whitelist = json_decode(file_get_contents(BASE_PATH."minecraft_server/whitelist.json"), true);
     }
 
+    /**
+     * Render function
+     *
+     * @return void
+     */
     public function showPlayers()
     {
-        $token = htmlspecialchars($_POST['token']);
-        if (!empty($_POST) && $token === $_SESSION['token']) {
+        /* If post and a valid token ->addToList */
+        if (
+            !empty($_POST) &&
+            htmlspecialchars($_POST['token']) === $_SESSION['token']
+        ) {
             $type =   htmlspecialchars( end(explode('_', array_key_first($_POST))) );
             $name =   htmlspecialchars( $_POST['add_'.$type] );
             $reason = htmlspecialchars( $_POST['reason'] );
 
-            /* If server is not started do the php script else send the appropiate commande the the server */
+            /* If server is not started run the php script... */
             if ($this->server->selectEverything(true)->getStatus() != 2) {
-                $client = new \GuzzleHttp\Client();
-                $response = $client->request('GET', 'https://api.mojang.com/users/profiles/minecraft/'.$name);
-                $uuid = json_decode($response->getBody(), true)['id'];
-                /**
-                 * Regex for valid UUID format expected by JSON server files.
-                 * Like from this "7125ba8b1c864508b92bb5c042ccfe2b" to this 7125ba8b-1c86-4508-b92bb-5c042ccfe2b
-                 * @var string $regex
-                 */
-                $regex = "/^([a-f0-9]{8})\-?([a-f0-9]{4})\-?([a-f0-9]{4})\-?([a-f0-9]{4})\-?([a-f0-9]{12})$/";
-
-                preg_match($regex, $uuid, $matches);
-                array_shift($matches); // To remove the first key
-                $uuid = implode('-', $matches);
-                /* If uuid is good we can it to the list. */
-                if (!empty($uuid)) {
-                    $this->addToList($type, $name, $uuid, $reason);
-                } else {
-                    $this->getFlash()->addAlert("Le joueur $name n'existe pas !");
-                }
+                $this->addToList($type, $name, $reason);
+            /* ...else send the appropiate commande the the server */
             } else {
-                switch ($type) {
-                    case 'ops':
-                        $this->getServer()->sendCommand("op $name");
-                        break;
-                    case 'whitelist':
-                        $this->getServer()->sendCommand("whitelist add $name");
-                        break;
-                    case 'banned-players':
-                        $this->getServer()->sendCommand("ban $name");
-                        break;
-                }
+                $this->sendCommand($type, $name, null, $reason);
             }
         }
 
@@ -81,8 +62,36 @@ class PlayersController extends Controller
      * @param string $type
      * @return void
      */
-    private function addToList(string $type, string $name, string $uuid, string $reason): bool
+    private function addToList(string $type, string $name, string $reason): bool
     {
+        $client = new \GuzzleHttp\Client();
+        try {
+            $response = $client->request('GET', 'https://api.mojang.com/users/profiles/minecraft/'.$name);
+        } catch (\Exception $e) {
+            if (getenv("ENV_DEV")) {
+                throw $e;
+            } else {
+                $this->getFlash()->addAlert(
+                    "Erreur: nous n'avons pas pu verifier votre uuid\n
+                    Veuillez réessayer plus tard."
+                );
+            }
+        }
+        $uuid = json_decode($response->getBody(), true)['id'];
+        /**
+         * Regex for valid UUID format expected by JSON server files.
+         * Like from this "7125ba8b1c864508b92bb5c042ccfe2b" to this 7125ba8b-1c86-4508-b92bb-5c042ccfe2b
+         * @var string $regex
+         */
+        $regex = "/^([a-f0-9]{8})\-?([a-f0-9]{4})\-?([a-f0-9]{4})\-?([a-f0-9]{4})\-?([a-f0-9]{12})$/";
+        preg_match($regex, $uuid, $matches);
+        array_shift($matches); // To remove the first key
+        $uuid = implode('-', $matches);
+        if (!empty($uuid)) {
+            $this->getFlash()->addAlert("Le joueur $name n'existe pas !");
+            return FALSE;
+        }
+
         /* Check if player already exist. */
         foreach ($this->$type as $value) {
             if ($value['name'] == $name) {
@@ -123,7 +132,11 @@ class PlayersController extends Controller
      */
     public function deleteFromList(string $type): void
     {
-        if ($name = $_POST['name']) {
+        $name = $_POST['name'];
+        if (
+            $this->server->selectEverything(true)->getStatus() != 2 &&
+            !empty($name)
+        ) {
             if ($_POST['token'] === $_SESSION['token']) {
                 $resultArray = [];
                 /* Rebuild a new array from actual json file without the name we want to delete */
@@ -140,6 +153,9 @@ class PlayersController extends Controller
                     echo "done";
                 }
             }
+        } else {
+            $this->sendCommand($type, $name, __FUNCTION__);
+            echo "done";
         }
     }
 
@@ -157,5 +173,32 @@ class PlayersController extends Controller
         $timeArray = array_replace( $matches, [2 => str_replace(':', '', $matches[2])] );
         $timeStr = implode(' ', $timeArray);
         return $timeStr;
+    }
+
+    private function sendCommand(string $type, string $name, ?string $function = null, $reason): void
+    {
+        switch ($type) {
+            case 'ops':
+                if ($function == "deleteFromList") {
+                    $this->getServer()->sendCommand("op $name");
+                } else {
+                    $this->getServer()->sendCommand("deop $name");
+                }
+                break;
+            case 'whitelist':
+                if ($function == "deleteFromList") {
+                    $this->getServer()->sendCommand("whitelist add $name $reason");
+                } else {
+                    $this->getServer()->sendCommand("whitelist remove $name");
+                }
+                break;
+            case 'banned-players':
+                if ($function == "deleteFromList") {
+                    $this->getServer()->sendCommand("ban $name");
+                } else {
+                    $this->getServer()->sendCommand("pardon $name");
+                }
+                break;
+        }
     }
 }

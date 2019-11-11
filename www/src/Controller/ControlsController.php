@@ -31,7 +31,7 @@ class ControlsController extends Controller
                     exit('Login failed!');
                 }
                 $ssh->write("screen -R minecraft_server\n");
-                $ssh->write("cd /home/mcserver/minecraft_server\n");
+                $ssh->write("cd /home/".SHELL_USER."/minecraft_server\n");
                 $cn = getenv('CONTAINER_NAME');
                 // If java command failed the command following pipes is launch.
                 $version = $this->server->selectEverything(true)->getVersion();

@@ -30,12 +30,12 @@ class FormBuilderController
         if ($this->first_time === true) {
             $this->first_time = false;
             $this->html .= <<<HTML
-                <div class="form-group {$class}">
+                <div class="form-group {$class}">\n
             HTML;
         } else {
             $this->html .= <<<HTML
-                </div>
-                <div class="form-group {$class}">
+                </div>\n
+                <div class="form-group {$class}">\n
             HTML;
         }
     }
@@ -48,7 +48,7 @@ class FormBuilderController
         }
         $this->html .= <<<HTML
                     <label for="{$id}">{$label}</label>
-                    <input class="form-control" type="{$type}" name="{$id}" id="{$id}" $attr>
+                    <input class="form-control" type="{$type}" name="{$id}" id="{$id}" $attr>\n
         HTML;
     }
 
@@ -58,14 +58,14 @@ class FormBuilderController
         foreach ($options['options'] as $key => $value) {
             $selected = ($options['selected'] == $value) ? 'selected' : '';
             $option .= <<<HTML
-                            <option value="{$value}" {$selected}>{$value}</option>
+                            <option value="{$value}" {$selected}>{$value}</option>\n
             HTML;
         }
         $this->html .= <<<HTML
-                    <label for="{$id}">{$label}</label>
+                    <label for="{$id}">{$label}</label>\n
                     <select class="custom-select" name="{$id}" id="{$id}">
                         {$option}
-                    </select>
+                    </select>\n
         HTML;
     }
 
@@ -79,25 +79,25 @@ class FormBuilderController
                         <input type="hidden" name="{$id}" value="false">
                         <input type="checkbox" class="custom-control-input" id="{$id}" name="{$id}" value="true" {$checked}>
                         <label class="custom-control-label" for="{$id}">{$label}</label>
-                    </div>
+                    </div>\n
         HTML;
     }
 
     public function addSubmit(string $id, string $value, string $class): void
     {
         $this->button .= <<<HTML
-        <button type="submit" id="{$id}" class="{$class}">{$value}</button>
+        <button type="submit" id="{$id}" class="{$class}">{$value}</button>\n
         HTML;
     }
 
     public function getForm(): string
     {
         $this->html .= <<<HTML
-                        </div><!-- end of form-group -->
-                    </div><!-- end of row -->
-                </fieldset>
+                        </div><!-- end of form-group -->\n
+                    </div><!-- end of row -->\n
+                </fieldset>\n
                 {$this->button}
-            </form>
+            </form>\n
         HTML;
         return (string)$this->html;
     }
