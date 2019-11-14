@@ -11,6 +11,7 @@ use Core\Extension\Twig\FlashExtension;
 use App\Controller\ServerQueryController;
 use Core\Controller\Session\FlashService;
 use Core\Controller\Helpers\LogsController;
+use Core\Extension\Twig\BeautifyStrExtension;
 
 abstract class Controller
 {
@@ -52,6 +53,7 @@ abstract class Controller
             //Extension
             $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new URIExtension());
+            $this->twig->addExtension(new BeautifyStrExtension());
         }
         return $this->twig;
     }
@@ -180,12 +182,16 @@ abstract class Controller
      *
      * @return void
      */
-    protected function adminOnly(): void
+    protected function adminOnly()
     {
         $this->loadModel('user');
         $user = $this->user->select(['username' => $_SESSION['username']]);
         if ($user && ($user->getRoleId() !== 1)) {
-            $this->redirect($this->getUri('login'));
+            if (!empty($_POST)) { // AJAX if $_POST
+                return FALSE;
+            } else {
+                $this->redirect($this->getUri('login'));
+            }
         }
     }
 
@@ -226,6 +232,30 @@ abstract class Controller
                 }
             }
             return rmdir($dirPath);
+        }
+    }
+
+    /**
+     * Check if the connected user has the permission passed in params or not.
+     *
+     * @param string $perm permission name in camelCase
+     * @return bool
+     */
+    protected function hasPermission(string $perm, bool $redirect = true)
+    {
+        $perm = "get".ucfirst($perm);
+        $this->loadModel('user');
+        $this->loadModel('permissions');
+        $userEntity = $this->user->select(['username' => $_SESSION['username']]);
+        $permEntity = $this->permissions->select(['user_id' => $userEntity->getId()]);
+
+        if ($permEntity->$perm() == 0 && $redirect) {
+            $this->redirect($this->generateUrl('dashboard'));
+            exit();
+        } elseif ($permEntity->$perm() == 1) {
+            return TRUE;
+        } else {
+            return FALSE;
         }
     }
 }

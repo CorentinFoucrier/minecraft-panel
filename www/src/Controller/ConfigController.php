@@ -11,6 +11,7 @@ class ConfigController extends Controller
     public function showForm()
     {
         $this->userOnly();
+        $this->hasPermission('config');
         if (!empty($_POST) && !is_null(SERVER_PROPERTIES)) {
             if (!$this->writeServerProperties($_POST)) {
                 $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n

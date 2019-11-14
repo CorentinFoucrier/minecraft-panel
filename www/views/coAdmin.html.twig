@@ -21,7 +21,7 @@
                     <div class="input-group">
                         <input type="text" id="coAdminInput" name="coAdminInput" class="form-control" required="required">
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="submit">Ajouter</button>
+                            <button class="btn btn-primary" type="submit">Ajouter</button>
                         </div>
                     </div>
                     <span id="coAdminInputHelp" class="form-text text-muted">Un mot de passe sera généré.</span>
@@ -45,14 +45,16 @@
                 {% for coAdmin in coAdmins %}
                     <tr id="{{coAdmin.id}}">
                         <td>{{coAdmin.username}}</td>
-                        <td><button class="btn btn-primary btn-sm float-right" disabled><i class="far fa-edit"></i></button></td>
-                        <td><button class="btn btn-danger btn-sm float-right" onclick="deleteCoAdmin({{coAdmin.id}}, '{{token}}');"><i class="far fa-trash-alt"></i></button></td>
+                        <td><button class="btn btn-primary btn-sm float-right" onclick="editCoAdmin('{{coAdmin.id}}', '{{token}}');"><i class="far fa-edit"></i></button></td>
+                        <td><button class="btn btn-danger btn-sm float-right" onclick="deleteCoAdmin('{{coAdmin.id}}', '{{token}}');"><i class="far fa-trash-alt"></i></button></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     </section>
+
+    {% include "Includes/Modals/permissionsModal.html.twig" %}
     {% if password != false %}
         {% include "Includes/Modals/passwordModal.html.twig" %}
     {% endif %}

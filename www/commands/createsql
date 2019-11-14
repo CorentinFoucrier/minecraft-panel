@@ -29,38 +29,56 @@ $prefix = getenv('PREFIX');
 echo "Creating Database".PHP_EOL;
 sleep(1);
 echo "[||";
-$pdo->exec("DROP TABLE `".$prefix."server`");
-$pdo->exec("DROP TABLE `".$prefix."user`");
-$pdo->exec("DROP TABLE `".$prefix."role`");
+$pdo->exec("DROP TABLE `{$prefix}server`");
+$pdo->exec("DROP TABLE `{$prefix}user`");
+$pdo->exec("DROP TABLE `{$prefix}role`");
+$pdo->exec("DROP TABLE `{$prefix}permissions`");
 echo "||";
-$pdo->exec("CREATE TABLE `".$prefix."server` (
-    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) NOT NULL,
-    `panel_port` smallint(3) UNSIGNED NOT NULL,
-    `is_installed` tinyint(1) UNSIGNED NOT NULL,
-    `status` tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
-    `version` varchar(255) NOT NULL,
+$pdo->exec("CREATE TABLE `{$prefix}server` (
+    `id`            int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name`          varchar(255) NOT NULL,
+    `panel_port`    smallint(3) UNSIGNED NOT NULL,
+    `is_installed`  tinyint(1) UNSIGNED NOT NULL,
+    `status`        tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
+    `version`       varchar(255) NOT NULL,
     PRIMARY KEY(`id`)
 )");
 echo "||";
-$pdo->exec("CREATE TABLE `".$prefix."user` (
-    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `username` varchar(255) NOT NULL,
-    `password` varchar(255) NOT NULL,
-    `role_id` tinyint(1) UNSIGNED NOT NULL,
+$pdo->exec("CREATE TABLE `{$prefix}user` (
+    `id`        int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `username`  varchar(255) NOT NULL,
+    `password`  varchar(255) NOT NULL,
+    `role_id`   tinyint(1) UNSIGNED NOT NULL,
     PRIMARY KEY(`id`)
 )");
 echo "||";
-$pdo->exec("CREATE TABLE `".$prefix."role` (
-    `id` tinyint(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+$pdo->exec("CREATE TABLE `{$prefix}role` (
+    `id`        tinyint(1) UNSIGNED NOT NULL AUTO_INCREMENT,
     `role_name` varchar(255) NOT NULL DEFAULT 2,
+    PRIMARY KEY(`id`)
+)");
+echo "||";
+$pdo->exec("CREATE TABLE `{$prefix}permissions` (
+    `id`                 int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `user_id`            int(11) unsigned NOT NULL,
+    `start_and_stop`     tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `change_version`     tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `send_command`       tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `plugins`            tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `config`             tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `worlds_management`   tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `players_management` tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `scheduled_tasks`    tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `file_export`        tinyint(1) unsigned NOT NULL DEFAULT 1,
+    `co_admin`           tinyint(1) unsigned NOT NULL DEFAULT 1,
     PRIMARY KEY(`id`)
 )");
 echo "||||";
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-$pdo->exec("TRUNCATE TABLE `server`");
-$pdo->exec("TRUNCATE TABLE `user`");
-$pdo->exec("TRUNCATE TABLE `role`");
+$pdo->exec("TRUNCATE TABLE `{$prefix}server`");
+$pdo->exec("TRUNCATE TABLE `{$prefix}user`");
+$pdo->exec("TRUNCATE TABLE `{$prefix}role`");
+$pdo->exec("TRUNCATE TABLE `{$prefix}permissions`");
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
 echo "||]".PHP_EOL;
 echo "Instert default value to the database".PHP_EOL;
@@ -84,6 +102,11 @@ $pdo->exec("INSERT INTO `{$prefix}role` (
     ('moderator')
 ");
 echo "||||";
+$pdo->exec("INSERT INTO `{$prefix}permissions` (
+    `user_id`
+) VALUES
+    ('1')
+");
 $passwordHash = password_hash('admin', PASSWORD_ARGON2ID);
 $pdo->exec("INSERT INTO `{$prefix}user` (
     `username`, `password`, `role_id`

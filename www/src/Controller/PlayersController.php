@@ -27,6 +27,7 @@ class PlayersController extends Controller
      */
     public function showPlayers()
     {
+        $this->hasPermission('playersManagement');
         /* If post and a valid token ->addToList */
         if (
             !empty($_POST) &&

@@ -8,6 +8,7 @@ class WorldsController extends Controller
     public function showWorlds()
     {
         $this->userOnly();
+        $this->hasPermission('worldsManagement');
         if (!empty($_FILES)) {
             $path = BASE_PATH.'minecraft_server/';
             if (is_string($file = $this->upload(

@@ -27,6 +27,7 @@ $app->getRouter($basePath)
     ->post('/sendCommand', 'Server#sendCommand', 'command_send')
     ->post('/selectVersion', 'Server#selectVersion', 'select_version')
     ->post('/coAdmin/delete/[i:id]/[*:token]', 'CoAdmin#deleteCoAdmin', 'coAdminDelete')
+    ->post('/coAdmin/edit', 'CoAdmin#editPermissions', 'editPermissions')
     ->post('/worlds/delete/[*:worldName]/[*:token]', 'Worlds#deleteWorlds', 'worldsDelete')
     ->post('/players/deleteFromList/[*:type]', 'Players#deleteFromList', 'deleteFromList')
     ->run();
