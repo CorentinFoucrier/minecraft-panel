@@ -15,6 +15,7 @@ class ServerController extends Controller
     {
         $this->loadModel('server');
     }
+
     /**
      * Get the latest.log file
      * for an AJAX call and return
@@ -25,6 +26,7 @@ class ServerController extends Controller
     {
         return LogsController::getLog();
     }
+
     public function checkStatus(): void
     {
         $req = $this->server->selectEverything(true);
@@ -48,19 +50,24 @@ class ServerController extends Controller
                 break;
         }
     }
+
     public function sendCommand(?string $p_command = null): void
     {
-        /* If sendCommand reached by AJAX post methode => $_POST['command']... */
+        /* If sendCommand reached by AJAX post methode => $_POST['command']*/
         $server = $this->server->selectEverything(true);
         if (!empty($_POST['command']) && $server->getStatus() == 2) {
             $command = htmlspecialchars($_POST['command']);
             $this->sshCommand($command);
             echo "done";
-        /* ...else send the command recived by p_command */
+            exit();
         } else {
-            $this->sshCommand($p_command);
+            echo "error";
+            exit();
         }
+
+        $this->sshCommand($p_command);
     }
+
     public function selectVersion()
     {
         if (!empty($_POST)) {
@@ -127,6 +134,7 @@ class ServerController extends Controller
             }
         }
     }
+
     private function sshCommand(string $command): void
     {
         $ssh = new SSH2(getenv('IP'));
@@ -145,6 +153,7 @@ class ServerController extends Controller
          */
         $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
     }
+
     private function downloadServer(string $version, string $link): void
     {
         file_put_contents("/var/minecraft_server/$version.jar", fopen($link, 'r'));
