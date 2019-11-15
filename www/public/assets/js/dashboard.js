@@ -3,6 +3,7 @@ var startButton = $('#startButton');
 var restartButton = $('#restartButton');
 var stopButtonLoading = $('#stopButtonLoading');
 var startButtonLoading = $('#startButtonLoading');
+const psLog = new PerfectScrollbar('#log');
 
 // Check the minecraft server status when the document is ready.
 $(document).ready(checkStatus());
