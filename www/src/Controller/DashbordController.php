@@ -16,7 +16,8 @@ class DashbordController extends Controller
         $maxPlayers = $config['max-players'];
         $version = $this->getVersion();
         $ops = json_decode(file_get_contents(BASE_PATH.'minecraft_server/ops.json'), true);
-        return $this->render("index", [
+
+        return $this->render("dashboard", [
             'title' => "Tableau de board",
             'maxPlayers' => $maxPlayers,
             "version" => $version,

@@ -1,41 +1,86 @@
-$(function () {
-    setInterval(function () {
-        var currentLine = $('#currentLine').val();
-        $.get("./getLog", {
-            cl: currentLine
-        }, function(data) {
-            var $log = $('#log');
-            $.each(data, function (_key, val) {
-                console.log(val);
-                const regex = /^[0-9]+$/gm;
-                if ((regex.exec(val)) !== null) {
-                    // store current line number in hidden input
-                    $('#currentLine').val(val);
-                } else {
-                    $log.append("<p class=\"m-0\">" + escapeHtml(val) + "</p>");
-                    $("#log").scrollTop($("#log")[0].scrollHeight);
-                }
-            });
-        }, "json");
-        // Refresh the number of players are online.
-        $.get("./getOnlinePlayers", {}, function(data) {
-            if (data) {
-                $('#playersOnline').html(data);
-            } else {
-                $('#playersOnline').html("0");
+var stopButton = $('#stopButton');
+var startButton = $('#startButton');
+var restartButton = $('#restartButton');
+var stopButtonLoading = $('#stopButtonLoading');
+var startButtonLoading = $('#startButtonLoading');
+
+// Check the minecraft server status when the document is ready.
+$(document).ready(checkStatus());
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function checkStatus(){
+    return new Promise(resolve => {
+        $.get("/checkStatus", {}, async function (data) {
+            if (data == "loading") {
+                startButtonLoading.addClass('ld ld-ring ld-spin');
+                await sleep(1000);
+                checkStatus();
+                resolve(data);
+            } else if (data == "started") {
+                stopButton.removeAttr('disabled');
+                restartButton.removeAttr('disabled');
+                startButtonLoading.removeClass();
+                startButton.attr('disabled', 'disabled');
+                resolve(data);
+            } else if (data == "stopped") {
+                startButtonLoading.removeClass();
+                startButton.removeAttr('disabled');
+                restartButton.attr('disabled', 'disabled');
+                stopButton.attr('disabled', 'disabled');
+                resolve(data);
+            } else if (data == "error") {
+                toastr.error("Veuillez vérifier votre installation et relancer le serveur.", "Une erreur est survenue !");
+                startButton.removeAttr('disabled');
+                startButtonLoading.removeClass();
+                resolve(data);
             }
         }, "text");
-    }, 3000);
-});
+    });
+}
 
-function escapeHtml(text) {
-    var map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
+function serverStart() {
+    event.preventDefault();
+    startButton.attr('disabled', 'disabled');
+    toastr.success("Votre serveur va démarrer...", "Démmarage");
+    startButtonLoading.addClass('ld ld-ring ld-spin');
+    $.post("/start", {
+        start: "start"
+    }, function (data) {
+        if (data == "loading") {
+            $('#log').empty();
+            $('#currentLine').val(0);
+            checkStatus();
+        }
+    }, "text");
+}
 
-    return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+function serverStop() {
+    event.preventDefault();
+    $.post("/stop", {
+        stop: "stop"
+    }, async function (data) {
+        if (data == "stopped") {
+            stopButtonLoading.addClass('ld ld-ring ld-spin');
+            await sleep(5000);
+            stopButtonLoading.removeClass();
+            toastr.success("Votre serveur à bien été arrêté !", "Arrêt");
+            checkStatus();
+        }
+    }, "text");
+}
+
+function sendCommand() {
+    event.preventDefault();
+    $.post("/sendCommand", {
+        command: command.val()
+    }, function (data) {
+        if (data == "done") {
+            command.val('');
+        } else {
+            toastr.error("Votre commande n'a pas pu être envoyé.", "Une erreur est survenue !");
+        }
+    }, "text");
 }
