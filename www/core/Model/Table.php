@@ -100,6 +100,16 @@ class Table
         return $this->query("SELECT * FROM {$this->table} WHERE {$sql_part}", $attributes, $one);
     }
 
+    public function selectBy(string $what, array $where, bool $fetch = false)
+    {
+        foreach ($where as $k => $v) {
+            $where_parts[] = "$k = $v";
+            $attributes[] = $v;
+        }
+        $where_parts = implode(', ', $where_parts);
+        return $this->query("SELECT {$what} FROM {$this->table} WHERE {$where_parts}", null, $fetch);
+    }
+
     /**
      * Update SQL query
      * UPDATE Table SET $key = ? WHERE id = ? ----> [2, $id]

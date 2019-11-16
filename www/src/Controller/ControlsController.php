@@ -19,7 +19,7 @@ class ControlsController extends Controller
      */
     public function start(): void
     {
-        if (!empty($_POST['start'])) {
+        if (!empty($_POST['start']) && $this->hasPermission('startAndStop', false)) {
             /* If isn't start or has an error then start it */
             $req = $this->server->selectEverything(true);
             /* If the server is in stopped or error state */
@@ -43,6 +43,8 @@ class ControlsController extends Controller
                 $this->server->update($req->getId(), ['status' => 1]);
                 echo "loading";
             }
+        } else {
+            echo "not allowed";
         }
     }
 
@@ -54,7 +56,7 @@ class ControlsController extends Controller
      */
     public function stop(): void
     {
-        if (!empty($_POST['stop'])) {
+        if (!empty($_POST['stop']) && $this->hasPermission('startAndStop', false)) {
             $req = $this->server->selectEverything(true);
             /* If is start then stop it */
             if ($req->getStatus() === 2) {
@@ -62,8 +64,12 @@ class ControlsController extends Controller
                 if ($this->server->update($req->getId(), ['status' => 0])) {
                     $this->getServer()->sendCommand('stop'); //Send "stop" through Rcon protocol
                     echo 'stopped'; //send confirmation to JavaScript client
+                } else {
+                    echo "error";
                 }
             }
+        } else {
+            echo "not allowed";
         }
     }
 }

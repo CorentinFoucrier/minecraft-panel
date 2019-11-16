@@ -3,8 +3,9 @@ async function selectVersion(gameVersion) {
     var version = $('#'+gameVersion);
     var displayVersion = $('#version'); //span element
     var modal = $('#changeVersion');
-    var data = await checkStatus();
-    if (data !== "started") {
+    var status = await checkStatus();
+
+    if (status !== "started") {
         if (version.val() !== "default") {
             toastr.info("Début du téléchargement", "Téléchargement...");
             $.post("./selectVersion", {
@@ -20,6 +21,16 @@ async function selectVersion(gameVersion) {
                     displayVersion.html(v);
                     modal.modal('hide');
                     toastr.success("Votre version a bien été télécharger et changé !", "Téléchagement et changement !")
+                } else if (data == "not allowed") {
+                    toastr.clear();
+                    setTimeout(function(){
+                        toastr.error("Vous n'êtes pas autorisé à changer la version du serveur.", "Permission non accordée !");
+                    }, 1100);
+                } else {
+                    toastr.clear();
+                    setTimeout(function(){
+                        toastr.error("Une erreur est survenue", "Erreur!");
+                    }, 1100);
                 }
             },"text");
         } else if (data == "error") {

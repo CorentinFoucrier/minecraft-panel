@@ -50,6 +50,7 @@ abstract class Controller
             //Global
             $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
             $this->twig->addGlobal('route', $_SESSION['route']);
+            $this->twig->addGlobal('username', $_SESSION['username']);
             //Extension
             $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new URIExtension());
@@ -241,7 +242,7 @@ abstract class Controller
      * @param string $perm permission name in camelCase
      * @return bool
      */
-    protected function hasPermission(string $perm, bool $redirect = true)
+    protected function hasPermission(string $perm, bool $redirect = true): bool
     {
         $perm = "get".ucfirst($perm);
         $this->loadModel('user');

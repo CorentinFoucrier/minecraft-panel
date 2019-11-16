@@ -54,6 +54,15 @@ function serverStart() {
             $('#log').empty();
             $('#currentLine').val(0);
             checkStatus();
+        } else if (data == "not allowed") {
+            toastr.clear();
+            setTimeout(function(){
+                toastr.error("Vous ne pouvez pas démmarer le serveur.", "Permission non accordée !");
+            }, 1100);
+            checkStatus();
+        } else {
+            toastr.error("Une erreur est survenue !", "Erreur");
+            checkStatus();
         }
     }, "text");
 }
@@ -69,6 +78,10 @@ function serverStop() {
             stopButtonLoading.removeClass();
             toastr.success("Votre serveur à bien été arrêté !", "Arrêt");
             checkStatus();
+        } else if (data == "not allowed") {
+            toastr.error("Vous ne pouvez pas arrêter le serveur.", "Permission non accordée !");
+        } else {
+            toastr.error("Veuillez réessayer.", "Une erreur est survenue !");
         }
     }, "text");
 }
@@ -80,6 +93,8 @@ function sendCommand() {
     }, function (data) {
         if (data == "done") {
             command.val('');
+        } else if (data == "not allowed") {
+            toastr.error("Vous ne pouvez pas envoyer de commandes.", "Permission non accordée !");
         } else {
             toastr.error("Votre commande n'a pas pu être envoyé.", "Une erreur est survenue !");
         }

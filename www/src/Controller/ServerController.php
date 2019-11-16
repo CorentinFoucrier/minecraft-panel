@@ -68,69 +68,81 @@ class ServerController extends Controller
         $this->sshCommand($p_command);
     }
 
+    /**
+     * AJAX: To select a version from an already downloaded one
+     * or download the new requested by user
+     * Route: /selectVersion
+     *
+     * @return void
+     */
     public function selectVersion()
     {
-        if (!empty($_POST)) {
-            $version = $_POST['version']; // Version number
-            $gameVersion = $_POST['gameVersion']; // Game Version eg. "Vanilla"
-            $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
-            $versions = json_decode($json, true);
-            if ($gameVersion === "vanilla") {
-                /**
-                 * expected values:
-                 * array("0" => "MC", "1" => "1.14.4") OR
-                 * array("0" => "SNAP", "1" => "19w42a")
-                 * @var array $vanilla
-                 */
-                $vanilla = explode('_', $version);
-                switch ($vanilla[0]) {
-                    case 'MC':
-                        $link = $versions[$gameVersion]['stable'][$vanilla[1]];
-                        if ($link == null) {
-                            goto error;
-                        } else {
-                            if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
-                                echo "fromCache";
+        $status = $this->server->selectBy('status', ['id' => 1], true)->getStatus();
+        if (!empty($_POST) && $status != 2) {
+            if ($this->hasPermission('sendCommand', false)) {
+                $version = $_POST['version']; // Version number
+                $gameVersion = $_POST['gameVersion']; // Game Version eg. "Vanilla"
+                $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
+                $versions = json_decode($json, true);
+                if ($gameVersion === "vanilla") {
+                    /**
+                     * expected values:
+                     * array("0" => "MC", "1" => "1.14.4") OR
+                     * array("0" => "SNAP", "1" => "19w42a")
+                     * @var array $vanilla
+                     */
+                    $vanilla = explode('_', $version);
+                    switch ($vanilla[0]) {
+                        case 'MC':
+                            $link = $versions[$gameVersion]['stable'][$vanilla[1]];
+                            if ($link == null) {
+                                goto error;
                             } else {
-                                $this->downloadServer($version, $link);
-                                echo "downloaded";
+                                if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                                    echo "fromCache";
+                                } else {
+                                    $this->downloadServer($version, $link);
+                                    echo "downloaded";
+                                }
+                                $this->server->update(1, ['version' => $version]);
                             }
-                            $this->server->update(1, ['version' => $version]);
-                        }
-                        break;
-                    case 'SNAP':
-                        $link = $versions[$gameVersion]['snapshot'][$vanilla[1]];
-                        if ($link == null) {
-                            goto error;
-                        } else {
-                            if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
-                                echo "fromCache";
+                            break;
+                        case 'SNAP':
+                            $link = $versions[$gameVersion]['snapshot'][$vanilla[1]];
+                            if ($link == null) {
+                                goto error;
                             } else {
-                                $this->downloadServer($version, $link);
-                                echo "downloaded";
+                                if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                                    echo "fromCache";
+                                } else {
+                                    $this->downloadServer($version, $link);
+                                    echo "downloaded";
+                                }
+                                $this->server->update(1, ['version' => $version]);
                             }
-                            $this->server->update(1, ['version' => $version]);
-                        }
-                        break;
-                    default:
-                        error: echo "error";
-                        break;
-                }
-            } elseif ($gameVersion === "spigot" || $gameVersion === "forge") {
-                $link = $versions[$gameVersion][explode('_', $version)[1]];
-                if ($link == null) {
-                    echo "error";
-                } else {
-                    if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
-                        echo "fromCache";
-                    } else {
-                        $this->downloadServer($version, $link);
-                        echo "downloaded";
+                            break;
+                        default:
+                            error: echo "error";
+                            break;
                     }
-                    $this->server->update(1, ['version' => $version]);
+                } elseif ($gameVersion === "spigot" || $gameVersion === "forge") {
+                    $link = $versions[$gameVersion][explode('_', $version)[1]];
+                    if ($link == null) {
+                        echo "error";
+                    } else {
+                        if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                            echo "fromCache";
+                        } else {
+                            $this->downloadServer($version, $link);
+                            echo "downloaded";
+                        }
+                        $this->server->update(1, ['version' => $version]);
+                    }
+                } else {
+                    echo "error";
                 }
             } else {
-                echo "error";
+                echo "not allowed";
             }
         }
     }
