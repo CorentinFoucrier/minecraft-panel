@@ -59,13 +59,9 @@ class ServerController extends Controller
             $command = htmlspecialchars($_POST['command']);
             $this->sshCommand($command);
             echo "done";
-            exit();
         } else {
             echo "error";
-            exit();
         }
-
-        $this->sshCommand($p_command);
     }
 
     /**
@@ -147,8 +143,9 @@ class ServerController extends Controller
         }
     }
 
-    private function sshCommand(string $command): void
+    public function sshCommand(string $command): void
     {
+        $command = str_replace(['\'', '"'], ['\\u0027', '\\u0022'], $command);
         $ssh = new SSH2(getenv('IP'));
         try {
             $ssh->login(SHELL_USER, SELL_PWD);

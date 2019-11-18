@@ -5,19 +5,9 @@ use Core\Controller\Controller;
 
 class PlayersController extends Controller
 {
-
-    private $ops;
-
-    private $bannedPlayers;
-
-    private $whitelist;
-
     public function __construct()
     {
         $this->loadModel('server');
-        $this->ops = json_decode(file_get_contents(BASE_PATH.'minecraft_server/ops.json'), true);
-        $this->bannedPlayers = json_decode(file_get_contents(BASE_PATH."minecraft_server/banned-players.json"), true);
-        $this->whitelist = json_decode(file_get_contents(BASE_PATH."minecraft_server/whitelist.json"), true);
     }
 
     /**
@@ -42,7 +32,8 @@ class PlayersController extends Controller
                 $this->addToList($type, $name, $reason);
             /* ...else send the appropiate commande the the server */
             } else {
-                $this->sendCommand($type, $name, null, $reason);
+                $this->sendCommand($type, $name, false, $reason);
+                sleep(2);
             }
         }
 
@@ -51,9 +42,9 @@ class PlayersController extends Controller
             'title' => "Gestion des joueurs",
             'token' => $_SESSION['token'],
             'tab' => $type,
-            'ops' => $this->ops,
-            'bannedPlayers' => $this->bannedPlayers,
-            'whitelist' => $this->whitelist
+            'ops' => $this->getJson('ops'),
+            'bannedPlayers' => $this->getJson('banned-players'),
+            'whitelist' => $this->getJson('whitelist')
         ]);
     }
 
@@ -88,13 +79,13 @@ class PlayersController extends Controller
         preg_match($regex, $uuid, $matches);
         array_shift($matches); // To remove the first key
         $uuid = implode('-', $matches);
-        if (!empty($uuid)) {
+        if (empty($uuid)) {
             $this->getFlash()->addAlert("Le joueur $name n'existe pas !");
             return FALSE;
         }
 
         /* Check if player already exist. */
-        foreach ($this->$type as $value) {
+        foreach ($this->getJson($type) as $value) {
             if ($value['name'] == $name) {
                 $this->getFlash()->addAlert("Le joueur {$name} est déjà dans la liste !");
                 return FALSE;
@@ -113,10 +104,11 @@ class PlayersController extends Controller
             $infos['expires']   = "forever";
             $infos['reason']    = (empty($reason)) ? 'No reason :(' : $reason;
         }
-        $this->$type[] = $infos;
+        $jsonPhp = $this->getJson($type);
+        $jsonPhp[] = $infos;
         if (!is_int(file_put_contents(
             BASE_PATH."minecraft_server/{$type}.json",
-            json_encode($this->$type, JSON_PRETTY_PRINT)
+            json_encode($jsonPhp, JSON_PRETTY_PRINT)
         ))) {
             $this->getFlash()->addAlert("Erreur d'écriture !");
             return FALSE;
@@ -126,7 +118,7 @@ class PlayersController extends Controller
 
     /**
      * From AJAX delete a player of one of JSON lists
-     * Route: /players/ /[*:type]
+     * Route: /players/deleteFromList/[*:type]
      *
      * @param string $type
      * @return void
@@ -136,26 +128,25 @@ class PlayersController extends Controller
         $name = $_POST['name'];
         if (
             $this->server->selectEverything(true)->getStatus() != 2 &&
-            !empty($name)
+            !empty($name) &&
+            $_POST['token'] === $_SESSION['token']
         ) {
-            if ($_POST['token'] === $_SESSION['token']) {
-                $resultArray = [];
-                /* Rebuild a new array from actual json file without the name we want to delete */
-                foreach ($this->$type as $value) {
-                    if ($value['name'] !== $name) {
-                        $resultArray[] = $value;
-                    }
-                }
-                /* Transform this new array into json format and write it into .json */
-                if (is_int(file_put_contents(
-                    BASE_PATH."minecraft_server/{$type}.json",
-                    json_encode($resultArray, JSON_PRETTY_PRINT)
-                ))) {
-                    echo "done";
+            $resultArray = [];
+            /* Rebuild a new array from actual json file without the name we want to delete */
+            foreach ($this->getJson($type) as $value) {
+                if ($value['name'] !== $name) {
+                    $resultArray[] = $value;
                 }
             }
+            /* Transform this new array into json format and write it into .json */
+            if (is_int(file_put_contents(
+                BASE_PATH."minecraft_server/{$type}.json",
+                json_encode($resultArray, JSON_PRETTY_PRINT)
+            ))) {
+                echo "done";
+            }
         } else {
-            $this->sendCommand($type, $name, __FUNCTION__);
+            $this->sendCommand($type, $name, true);
             echo "done";
         }
     }
@@ -176,30 +167,36 @@ class PlayersController extends Controller
         return $timeStr;
     }
 
-    private function sendCommand(string $type, string $name, ?string $function = null, $reason): void
+    private function sendCommand(string $type, string $name, bool $ajax = false, string $reason = ""): void
     {
+        $reason = ($reason === "") ? "Banned by server" : $reason;
         switch ($type) {
             case 'ops':
-                if ($function == "deleteFromList") {
-                    $this->getServer()->sendCommand("op $name");
+                if ($ajax) {
+                    $this->getServer()->sshCommand("deop $name");
                 } else {
-                    $this->getServer()->sendCommand("deop $name");
+                    $this->getServer()->sshCommand("op $name");
                 }
                 break;
             case 'whitelist':
-                if ($function == "deleteFromList") {
-                    $this->getServer()->sendCommand("whitelist add $name $reason");
+                if ($ajax) {
+                    $this->getServer()->sshCommand("whitelist remove $name");
                 } else {
-                    $this->getServer()->sendCommand("whitelist remove $name");
+                    $this->getServer()->sshCommand("whitelist add $name");
                 }
                 break;
             case 'banned-players':
-                if ($function == "deleteFromList") {
-                    $this->getServer()->sendCommand("ban $name");
+                if ($ajax) {
+                    $this->getServer()->sshCommand("pardon $name");
                 } else {
-                    $this->getServer()->sendCommand("pardon $name");
+                    $this->getServer()->sshCommand("ban $name $reason");
                 }
                 break;
         }
+    }
+
+    private function getJson(string $type): array
+    {
+        return json_decode(file_get_contents(BASE_PATH."minecraft_server/$type.json"), true);
     }
 }

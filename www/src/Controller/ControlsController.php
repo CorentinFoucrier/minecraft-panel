@@ -59,11 +59,11 @@ class ControlsController extends Controller
         if (!empty($_POST['stop']) && $this->hasPermission('startAndStop', false)) {
             $req = $this->server->selectEverything(true);
             /* If is start then stop it */
-            if ($req->getStatus() === 2) {
+            if ($req->getStatus() == 2) {
                 // Save server status in db
                 if ($this->server->update($req->getId(), ['status' => 0])) {
-                    $this->getServer()->sendCommand('stop'); //Send "stop" through Rcon protocol
-                    echo 'stopped'; //send confirmation to JavaScript client
+                    $this->getServer()->sshCommand('stop');
+                    echo "stopped"; // Send confirmation to JavaScript client
                 } else {
                     echo "error";
                 }

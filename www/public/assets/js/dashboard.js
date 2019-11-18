@@ -80,8 +80,10 @@ function serverStop() {
             checkStatus();
         } else if (data == "not allowed") {
             toastr.error("Vous ne pouvez pas arrêter le serveur.", "Permission non accordée !");
-        } else {
+            checkStatus();
+        } else if (data == "error") {
             toastr.error("Veuillez réessayer.", "Une erreur est survenue !");
+            checkStatus();
         }
     }, "text");
 }
