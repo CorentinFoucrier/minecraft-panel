@@ -132,6 +132,32 @@ class Table
     }
 
     /**
+     * Update SQL query
+     * UPDATE Table SET $key = ? WHERE id = ? ----> [2, $id]
+     *
+     * @param integer $id
+     * @param array $fields
+     * @return bool
+     */
+    public function updateBy(array $where, array $fields)
+    {
+        $sql_parts = [];
+        $attributes = [];
+        foreach ($fields as $k => $v) {
+            $sql_parts[] = "$k = ?";
+            $attributes[] = $v;
+        }
+        foreach ($where as $k => $v) {
+            $where_parts[] = "$k = ?";
+            $attributes[] = $v;
+        }
+        $where_part = implode(', ', $where_parts);
+        $sql_part = implode(', ', $sql_parts);
+        //dump("UPDATE {$this->table} SET $sql_part WHERE $where_part");dd($attributes);
+        return $this->query("UPDATE {$this->table} SET $sql_part WHERE $where_part", $attributes);
+    }
+
+    /**
      * Query :
      * "UPDATE {$this->table} SET $sql_part WHERE $column_part"
      *

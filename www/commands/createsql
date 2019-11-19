@@ -49,6 +49,7 @@ $pdo->exec("CREATE TABLE `{$prefix}user` (
     `username`  varchar(255) NOT NULL,
     `password`  varchar(255) NOT NULL,
     `role_id`   tinyint(1) UNSIGNED NOT NULL,
+    `default_password`   tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY(`id`)
 )");
 echo "||";

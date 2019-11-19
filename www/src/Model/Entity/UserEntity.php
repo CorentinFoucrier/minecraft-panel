@@ -27,6 +27,12 @@ class UserEntity extends Entity
     private $role_id;
 
     /**
+     *
+     * @var int $default_password
+     */
+    private $default_password;
+
+    /**
      * @var RoleEntity $RoleEntity
      */
     private $RoleEntity;
@@ -108,6 +114,27 @@ class UserEntity extends Entity
         $this->role_id = $role_id;
         return $this;
     }
+
+        /**
+     * Get the value of defaultPassword
+     *
+     * @return int
+     */
+    public function getDefaultPassword(): int
+    {
+        return $this->default_password;
+    }
+    /**
+     * Set the value of defaultPassword
+     *
+     * @return  self
+     */
+    public function setDefaultPassword($default_password): self
+    {
+        $this->default_password = $default_password;
+        return $this;
+    }
+
     /**
      * Get the value of RoleEntity
      *

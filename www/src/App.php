@@ -46,23 +46,6 @@ class App
             session_start();
         }
 
-        $numPage = URLController::getPositiveInt('page');
-
-        if ($numPage !== null) {
-            // url /categories?page=1&parm2=pomme
-            if ($numPage == 1) {
-                $uri = explode('?', $_SERVER["REQUEST_URI"])[0];
-                $get = $_GET;
-                unset($get["page"]);
-                $query = http_build_query($get);
-                if (!empty($query)) {
-                    $uri = $uri . '?' . $query;
-                }
-                http_response_code(301);
-                header('location: ' . $uri);
-                exit();
-            }
-        }
     }
 
     public function getRouter($basePath = "/var/www"): RouterController
