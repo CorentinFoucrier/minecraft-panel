@@ -4,25 +4,26 @@ if [ -e .env ]; then
     source .env
 fi
 
-echo "-----------------------------------------------------"
-echo "Please, choose a free port for access to the panel"
-echo "or leave blank for default port [${CONTAINER_PORT}]:"
-echo "-----------------------------------------------------"
+echo -e "\e[1m\e[34m Please, choose a free port for access to the panel \e[39m[\e[33m${CONTAINER_PORT}\e[39m]:\e[0m"
+printf " > "
 read userPort
+echo ""
 
 if [[ "$userPort" == "" ]]; then
-    echo "Your panel will be run on the default port [${CONTAINER_PORT}]"
+    echo -e "\e[1m\e[32m Your panel will be run on the default port \e[33m${CONTAINER_PORT}\e[0m"
+    echo ""
 else
     sed -i -e "s/CONTAINER_PORT=${CONTAINER_PORT}/CONTAINER_PORT=${userPort}/g" .env
 fi
 
 serverIp () {
-    echo "---------------------"
-    echo "Enter your server IP:"
-    echo "---------------------"
+    echo -e "\e[1m\e[34m Enter your server IP\e[0m:"
+    printf " > "
     read userIp
+    echo ""
     if [[ "$userIp" == "" ]]; then
-        echo "You must enter your server IP!"
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m You must enter your server IP!\e[0m"
+        echo ""
         serverIp
     else
         sed -i -e "s/IP=${IP}/IP=${userIp}/g" .env
@@ -31,13 +32,14 @@ serverIp () {
 serverIp
 
 createUser () {
-    echo "--------------------------------------------------------"
-    echo "The panel need to create a new Unix user on your system"
-    echo "Please choose a non-existing username for this new user:"
-    echo "--------------------------------------------------------"
+    echo -e "\e[1m\e[34m The panel need to create a new Unix user on your system"
+    echo -e " Please choose a non-existing username for this new user\e[39m:\e[0m"
+    printf " > "
     read panelUser
+    echo ""
     if [[ "$panelUser" == "" ]]; then
-        echo "The name must not be blank!"
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m The name must not be blank!\e[0m"
+        echo ""
         createUser
     else
         sed -i -e "s/SHELL_USER=${SHELL_USER}/SHELL_USER=${panelUser}/g" .env
@@ -46,15 +48,25 @@ createUser () {
 createUser
 
 createPwd () {
-    echo "-------------------------------------"
-    echo "Now create a password for $panelUser:"
-    echo "-------------------------------------"
-    read panelPwd
-    if [[ "$panelPwd" == "" ]]; then
-        echo "The password must not be blank!"
-        createPwd
+    printf "\e[1m\e[34m Type a password for \e[33m$panelUser\e[39m:\e[0m "
+    read -s panelPwd
+    echo ""
+    printf "\e[1m\e[34m Confirm password:\e[0m "
+    read -s panelPwdConfirm
+    echo ""
+    echo ""
+    if [[ "$panelPwd" == "$panelPwdConfirm" ]]; then
+        if [[ "$panelPwd" == "" ]]; then
+            echo -e " \e[1m[\e[31mError\e[39m]\e[31m The password must not be blank!\e[0m"
+            echo ""
+            createPwd
+        else
+            sed -i -e "s/SHELL_PWD=${SHELL_PWD}/SHELL_PWD=${panelPwd}/g" .env
+        fi
     else
-        sed -i -e "s/SHELL_PWD=${SHELL_PWD}/SHELL_PWD=${panelPwd}/g" .env
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m Passwords are not the same!\e[0m"
+        echo ""
+        createPwd
     fi
 }
 createPwd
@@ -62,27 +74,29 @@ createPwd
 sudo useradd --create-home --shell /bin/bash --groups docker,sudo $panelUser && sudo echo $panelUser:$panelPwd | sudo /usr/sbin/chpasswd
 sleep 1
 sudo mkdir /home/$panelUser/minecraft_server
-echo "-------------------------------------------"
-echo "downloading the latest minecraft version..."
-echo "-------------------------------------------"
+echo ""
+echo -e "\e[1m\e[32m Downloading the latest minecraft version\e[33m . . .\e[0m"
+echo ""
+sleep 2
 sudo curl -o /home/$panelUser/minecraft_server/MC_1.14.4.jar https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
 sudo chmod -R 776 /home/$panelUser/minecraft_server
 sudo chmod 777 /home/$panelUser/minecraft_server/MC_1.14.4.jar
-echo "--------------------------------------"
-echo "Installation of the needed packages..."
-echo "--------------------------------------"
+echo ""
+echo -e "\e[1m\e[32m Installation of the needed packages\e[33m . . .\e[0m"
+echo ""
 sleep 2
 sudo apt-get install -y screen
 sudo apt-get install -y default-jdk
 sudo apt-get install -y openssh-server
 
 dataBase () {
-    echo "--------------------------"
-    echo "Enter a name for database:"
-    echo "--------------------------"
+    echo -e "\e[1m\e[34m Enter a name for database\e[39m:\e[0m"
+    printf " > "
     read database
+    echo ""
     if [[ "$database" == "" ]]; then
-        echo "You must enter a name for the database!"
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m You must enter a name for the database!\e[0m"
+        echo ""
         dataBase
     else
         sed -i -e "s/MYSQL_DATABASE=${MYSQL_DATABASE}/MYSQL_DATABASE=${database}/g" .env
@@ -91,27 +105,38 @@ dataBase () {
 dataBase
 
 rootPassword () {
-    echo "----------------------"
-    echo "Enter a root password:"
-    echo "----------------------"
-    read rootPwd
-    if [[ "$rootPwd" == "" ]]; then
-        echo "You must enter a root password!"
-        rootPassword
+    printf "\e[1m\e[34m Enter a root password\e[39m:\e[0m "
+    read -s rootPwd
+    echo ""
+    printf "\e[1m\e[34m Confirm password\e[39m:\e[0m "
+    read -s rootPwdConfirm
+    echo ""
+    echo ""
+    if [[ "$rootPwd" == "$rootPwdConfirm" ]]; then
+        if [[ "$rootPwd" == "" ]]; then
+            echo -e " \e[1m[\e[31mError\e[39m]\e[31m You must enter a root password!\e[0m"
+            rootPassword
+            echo ""
+        else
+            sed -i -e "s/MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}/MYSQL_ROOT_PASSWORD=${rootPwd}/g" .env
+        fi
     else
-        sed -i -e "s/MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}/MYSQL_ROOT_PASSWORD=${rootPwd}/g" .env
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m Passwords are not the same!\e[0m"
+        rootPassword
+        echo ""
     fi
 }
 rootPassword
 
 userName () {
-    echo "-----------------"
-    echo "Enter a username:"
-    echo "-----------------"
+    echo -e "\e[1m\e[34m Enter a username\e[39m:\e[0m"
+    printf " > "
     read userName
+    echo ""
     if [[ "$userName" == "" ]]; then
-        echo "You must enter a username!"
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m You must enter a username!\e[0m"
         userName
+        echo ""
     else
         sed -i -e "s/MYSQL_USER=${MYSQL_USER}/MYSQL_USER=${userName}/g" .env
     fi
@@ -119,43 +144,67 @@ userName () {
 userName
 
 userPassword () {
-    echo "----------------------"
-    echo "Enter a user password:"
-    echo "----------------------"
-    read userPwd
-    if [[ "$userPwd" == "" ]]; then
-        echo "You must enter a user password!"
-        userPassword
+    printf "\e[1m\e[34m Enter a user password\e[39m:\e[0m "
+    read -s userPwd
+    echo ""
+    printf "\e[1m\e[34m Confirm password\e[39m:\e[0m "
+    read -s userPwdConfirm
+    echo ""
+    echo ""
+    if [[ "$userPwd" == "$userPwdConfirm" ]]; then
+        if [[ "$userPwd" == "" ]]; then
+            echo -e " \e[1m[\e[31mError\e[39m]\e[31m You must enter a user password!\e[0m"
+            userPassword
+            echo ""
+        else
+            sed -i -e "s/MYSQL_PASSWORD=${MYSQL_PASSWORD}/MYSQL_PASSWORD=${userPwd}/g" .env
+        fi
     else
-        sed -i -e "s/MYSQL_PASSWORD=${MYSQL_PASSWORD}/MYSQL_PASSWORD=${userPwd}/g" .env
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m Passwords are not the same!\e[0m"
+        userPassword
+        echo ""
     fi
 }
 userPassword
 
 dbPrefix () {
-    echo "------------------------"
-    echo "Enter a database prefix:"
-    echo "------------------------"
+    echo -e "\e[1m\e[34m Enter a database prefix\e[39m:\e[0m"
+    printf " > "
     read userPrefix
+    echo ""
     if [[ "$userPrefix" == "" ]]; then
-        echo "You must enter a database prefix!"
+        echo -e " \e[1m[\e[31mError\e[39m]\e[31m You must enter a database prefix!\e[0m"
         dbPrefix
+        echo ""
     else
         sed -i -e "s/PREFIX=${PREFIX}/PREFIX=${userPrefix}_/g" .env
     fi
 }
 dbPrefix
 
+echo ""
+echo -e "\e[1m\e[32m Build the docker image\e[33m . . .\e[0m"
+echo ""
+sleep 1
 docker-compose build
 
+echo ""
+echo -e "\e[1m\e[32m Run the docker compose stack\e[33m . . .\e[0m"
+echo ""
+sleep 1
 docker-compose -f docker-compose.yml up -d
 
+echo ""
+echo -e "\e[1m\e[32m Update PHP Composer dependencies in the container '${CONTAINER_NAME}'\e[33m . . .\e[0m"
+echo ""
+sleep 1
 if [[ ${ENV_DEV} == "true" ]]; then
     docker exec ${CONTAINER_NAME} composer update
 else
     docker exec ${CONTAINER_NAME} composer update --no-dev
 fi
 
+echo ""
 docker exec ${CONTAINER_NAME} php commands/createsql
 
 docker exec ${CONTAINER_NAME} chmod -R 777 /var/minecraft_server/
