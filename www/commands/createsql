@@ -25,15 +25,30 @@ do {
     }
     break;
 } while ($attempts < $NUM_OF_ATTEMPTS);
+
+class progressBar
+{
+    private $total;
+    public function __construct(int $total)
+    {
+        $this->total = $total;
+    }
+    function done(int $done, string $info="", int $width=50) {
+        $perc = round(($done * 100) / $this->total);
+        $bar = (int)round(($width * $perc) / 100);
+        return sprintf("\e[32m %s%%\e[0m[\e[32m%s>%s\e[0m]%s\r", $perc, str_repeat("=", $bar), str_repeat(" ", $width-$bar), $info."\e[0m");
+    }
+}
+$barCreate = new progressBar(7);
 $prefix = getenv('PREFIX');
-echo "Creating Database".PHP_EOL;
+echo "\e[1m\e[33m Creating Database\e[0m".PHP_EOL;
 sleep(1);
-echo "[||";
+echo $barCreate->done(1);
 $pdo->exec("DROP TABLE `{$prefix}server`");
 $pdo->exec("DROP TABLE `{$prefix}user`");
 $pdo->exec("DROP TABLE `{$prefix}role`");
 $pdo->exec("DROP TABLE `{$prefix}permissions`");
-echo "||";
+echo $barCreate->done(2);
 $pdo->exec("CREATE TABLE `{$prefix}server` (
     `id`            int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     `name`          varchar(255) NOT NULL,
@@ -43,7 +58,7 @@ $pdo->exec("CREATE TABLE `{$prefix}server` (
     `version`       varchar(255) NOT NULL,
     PRIMARY KEY(`id`)
 )");
-echo "||";
+echo $barCreate->done(3);
 $pdo->exec("CREATE TABLE `{$prefix}user` (
     `id`        int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     `username`  varchar(255) NOT NULL,
@@ -52,13 +67,13 @@ $pdo->exec("CREATE TABLE `{$prefix}user` (
     `default_password`   tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY(`id`)
 )");
-echo "||";
+echo $barCreate->done(4);
 $pdo->exec("CREATE TABLE `{$prefix}role` (
     `id`        tinyint(1) UNSIGNED NOT NULL AUTO_INCREMENT,
     `role_name` varchar(255) NOT NULL DEFAULT 2,
     PRIMARY KEY(`id`)
 )");
-echo "||";
+echo $barCreate->done(5);
 $pdo->exec("CREATE TABLE `{$prefix}permissions` (
     `id`                 int(11) unsigned NOT NULL AUTO_INCREMENT,
     `user_id`            int(11) unsigned NOT NULL,
@@ -74,17 +89,20 @@ $pdo->exec("CREATE TABLE `{$prefix}permissions` (
     `co_admin`           tinyint(1) unsigned NOT NULL DEFAULT 1,
     PRIMARY KEY(`id`)
 )");
-echo "||||";
+echo $barCreate->done(6);
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
 $pdo->exec("TRUNCATE TABLE `{$prefix}server`");
 $pdo->exec("TRUNCATE TABLE `{$prefix}user`");
 $pdo->exec("TRUNCATE TABLE `{$prefix}role`");
 $pdo->exec("TRUNCATE TABLE `{$prefix}permissions`");
 $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
-echo "||]".PHP_EOL;
-echo "Instert default value to the database".PHP_EOL;
+echo $barCreate->done(7).PHP_EOL;
+echo "".PHP_EOL;
+
+$barInsert = new progressBar(4);
+echo "\e[1m\e[33m Instert default value to the database\e[0m".PHP_EOL;
 sleep(1);
-echo "[||";
+echo $barInsert->done(1);
 // Check what is the last minecraft version
 $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
 $versions = json_decode($json, true);
@@ -94,7 +112,7 @@ $pdo->exec("INSERT INTO `{$prefix}server` (
 ) VALUES (
     'Minecraft Panel', 8080, 0, 0, 'MC_{$version}'
 )");
-echo "||||";
+echo $barInsert->done(2);
 $pdo->exec("INSERT INTO `{$prefix}role` (
     `role_name`
 ) VALUES 
@@ -102,7 +120,7 @@ $pdo->exec("INSERT INTO `{$prefix}role` (
     ('co-admin'),
     ('moderator')
 ");
-echo "||||";
+echo $barInsert->done(3);
 $pdo->exec("INSERT INTO `{$prefix}permissions` (
     `user_id`
 ) VALUES
@@ -114,4 +132,5 @@ $pdo->exec("INSERT INTO `{$prefix}user` (
 ) VALUES (
     'admin', '{$passwordHash}', 1
 )");
-echo "||]".PHP_EOL;
+echo $barInsert->done(4).PHP_EOL;
+echo "".PHP_EOL;
