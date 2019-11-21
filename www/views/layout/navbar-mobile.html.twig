@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark d-block d-sm-block d-md-none w-100">
+    <span class="navbar-brand">{{title}}</span>
+    <button class="navbar-toggler float-right" type="button" data-toggle="collapse" data-target="#navbar-burger">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbar-burger">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item {% if route == "dashboard" %}active{% endif %}">
+                <a class="nav-link" href="{{ uri("dashboard") }}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/plugins">Pugins</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ uri("config") }}">Configuration</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ uri("worlds") }}">Gestion des mondes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ uri("players") }}">Tâches planifiées</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/scheduled-tasks">Tâches planifiées</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/file-export">Transfert de fichier</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ uri("coAdmin") }}">Co-administration</a>
+            </li>
+        </ul>
+    </div>
+</nav>

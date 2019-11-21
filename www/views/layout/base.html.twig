@@ -21,55 +21,12 @@
 <body>
     <div class="container-fluid content">
         <div class="row vh-100">
-            <nav id="sidebar" class="col-md-2 overflow">
-                <div class="row p-md-2 mb-4 d-md-flex flex-md-column">
-                    <p class="m-0 pl-3"><span class="text-primary">■</span> {{ username }}</p>
-                    <a href="{{ uri("logout") }}" class="m-0 pl-3 text-muted">&gt; Déconnexion</a>
-                </div>
-                <a href="{{ uri("dashboard") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "dashboard" %}bg-secondary{% endif %}">
-                        <i class="fas fa-tachometer-alt pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Tableau de bord</span>
-                    </div>
-                </a>
-                <a href="/plugins" class="text-reset text-decoration-none not-allowed wip">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
-                        <i class="fas fa-cubes pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Plugins</span>
-                    </div>
-                </a>
-                <a href="{{ uri("config") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "config" %}bg-secondary{% endif %}">
-                        <i class="fas fa-cog pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Configuration</span>
-                    </div>
-                </a>
-                <a href="{{ uri("worlds") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "worlds" %}bg-secondary{% endif %}">
-                        <i class="fas fa-globe-africa pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Gestion des mondes</span>
-                    </div>
-                </a>
-                <a href="{{ uri("players") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "players" %}bg-secondary{% endif %}">
-                        <i class="fas fa-user-friends d-md-flex align-items-md-center"></i><span class="pl-md-4">Gestion des joueurs</span>
-                    </div>
-                </a>
-                <a href="/scheduled-tasks" class="text-reset text-decoration-none not-allowed wip">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
-                        <i class="fas fa-calendar-alt pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Tâches planifiées</span>
-                    </div>
-                </a>
-                <a href="/file-export" class="text-reset text-decoration-none not-allowed wip">
-                    <div class="row p-md-2 pl-md-4 mb-md-3">
-                        <i class="fas fa-file-export pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Transfert de fichiers</span>
-                    </div>
-                </a>
-                <a href="{{ uri("coAdmin") }}" class="text-reset text-decoration-none">
-                    <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "coAdmin" %}bg-secondary{% endif %}">
-                        <i class="fas fa-users-cog pr-md-1 d-md-flex align-items-md-center"></i><span class="pl-md-4">Co-Administration</span>
-                    </div>
-                </a>
-            </nav>
+            {# Navbar desktop #}
+            {% include "layout/navbar.html.twig" %}
+            {% include "layout/navbar-mobile.html.twig" %}
 
             <div class="col-md-10 px-0">
-                <div class="navbar-top row p-md-2 m-md-0 d-md-flex align-items-md-center justify-content-md-between">
+                <div class="navbar-top row p-md-2 m-md-0 d-md-flex align-items-md-center justify-content-md-between d-none d-md-block">
                     <div class="title h4 m-md-0 col-md-6"><span class="text-uppercase">Minecraft Panel</span> - {{title}}</div>
                     <div class="m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
                         <div>
@@ -78,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="content" class="pt-5 overflow">{% block content %}{% endblock %}</div>
+                <div id="content" class="pt-md-5 overflow">{% block content %}{% endblock %}</div>
             </div>
         </div>
     </div>
