@@ -4,11 +4,18 @@ if [ -e .env ]; then
     source .env
 fi
 
+#EULA
+echo -e "\e[1m\e[34m For continue to use minecraft servers you need to accept mojang EULA."
+echo -e " Enter = accept / Control+C = rejet \e[39m(\e[32mhttps://account.mojang.com/documents/minecraft_eula\e[39m)\e[0m"
+printf " > "
+read eula
+echo ""
+
+# Container port
 echo -e "\e[1m\e[34m Please, choose a free port for access to the panel \e[39m[\e[33m${CONTAINER_PORT}\e[39m]:\e[0m"
 printf " > "
 read userPort
 echo ""
-
 if [[ "$userPort" == "" ]]; then
     echo -e "\e[1m\e[32m Your panel will be run on the default port \e[33m${CONTAINER_PORT}\e[0m"
     echo ""
@@ -16,14 +23,14 @@ else
     sed -i -e "s/CONTAINER_PORT=${CONTAINER_PORT}/CONTAINER_PORT=${userPort}/g" .env
 fi
 
+# Socket.io port
 echo -e "\e[1m\e[34m Please, choose a free port for Socket.io dependency."
 echo -e " Press 'Enter' if you don't know \e[39m[\e[33m${SOCKETIO_PORT}\e[39m]:\e[0m"
 printf " > "
 read userSocketPort
 echo ""
-
 if [[ "$userSocketPort" == "" ]]; then
-    echo -e "\e[1m\e[32m Your panel will be run on the default port \e[33m${SOCKETIO_PORT}\e[0m"
+    echo -e "\e[1m\e[32m Default port selected \e[33m${SOCKETIO_PORT}\e[0m"
     echo ""
 else
     sed -i -e "s/SOCKETIO_PORT=${SOCKETIO_PORT}/SOCKETIO_PORT=${userSocketPort}/g" .env
@@ -86,13 +93,24 @@ createPwd
 # Create Unix user
 sudo useradd --create-home --shell /bin/bash --groups docker,sudo $panelUser && sudo echo $panelUser:$panelPwd | sudo /usr/sbin/chpasswd
 sleep 1
+echo ""
+echo -e "\e[1m\e[32m Creating needed folders and files\e[33m . . .\e[0m"
+echo ""
 sudo mkdir /home/$panelUser/minecraft_server
+sudo chmod -R 777 /home/$panelUser/minecraft_server
+sudo touch /home/$panelUser/minecraft_server/eula.txt
+sudo sed -i -e "s/eula=false/eula=true/g" /home/$panelUser/minecraft_server/eula.txt
+sudo touch /home/$panelUser/minecraft_server/ops.json
+sudo touch /home/$panelUser/minecraft_server/whitelist.json
+sudo touch /home/$panelUser/minecraft_server/banned-players.json
+sudo mkdir /home/$panelUser/minecraft_server/logs
+sudo touch /home/$panelUser/minecraft_server/logs/latest.logs
+sudo echo "Success! Your installion is working\!" > /home/$panelUser/minecraft_server/logs/latest.logs
 echo ""
 echo -e "\e[1m\e[32m Downloading the latest minecraft version\e[33m . . .\e[0m"
 echo ""
 sleep 2
 sudo curl -o /home/$panelUser/minecraft_server/MC_1.14.4.jar https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
-sudo chmod -R 776 /home/$panelUser/minecraft_server
 sudo chmod 777 /home/$panelUser/minecraft_server/MC_1.14.4.jar
 echo ""
 echo -e "\e[1m\e[32m Installation of the needed packages\e[33m . . .\e[0m"
@@ -218,7 +236,7 @@ else
 fi
 
 echo ""
-docker exec ${CONTAINER_NAME} npm update && npm install
+docker exec ${CONTAINER_NAME} yarn install
 
 docker exec ${CONTAINER_NAME} php commands/createsql
 
