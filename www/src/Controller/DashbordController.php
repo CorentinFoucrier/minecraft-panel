@@ -18,7 +18,7 @@ class DashbordController extends Controller
         $ops = json_decode(file_get_contents(BASE_PATH.'minecraft_server/ops.json'), true);
         $token = bin2hex(random_bytes(8));
         $_SESSION['token'] = $token;
-        $socketUrl = $_SERVER['REQUEST_SCHEME'] ."://". $_SERVER['SERVER_NAME'] . getenv('SOCKETIO_PORT');
+        $socketUrl = $_SERVER['REQUEST_SCHEME'] ."://". $_SERVER['SERVER_NAME'] .":". getenv('SOCKETIO_PORT');
 
         return $this->render("dashboard", [
             'title' => "Tableau de board",
