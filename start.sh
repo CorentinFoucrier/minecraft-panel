@@ -26,7 +26,7 @@ if [[ "$userSocketPort" == "" ]]; then
     echo -e "\e[1m\e[32m Your panel will be run on the default port \e[33m${SOCKETIO_PORT}\e[0m"
     echo ""
 else
-    sed -i -e "s/SOCKETIO_PORT=${SOCKETIO_PORT}/SOCKETIO_PORT=${userPort}/g" .env
+    sed -i -e "s/SOCKETIO_PORT=${SOCKETIO_PORT}/SOCKETIO_PORT=${userSocketPort}/g" .env
 fi
 
 serverIp () {
