@@ -53,9 +53,12 @@ class ServerController extends Controller
 
     public function sendCommand(?string $p_command = null): void
     {
-        /* If sendCommand reached by AJAX post methode => $_POST['command']*/
         $server = $this->server->selectEverything(true);
-        if (!empty($_POST['command']) && $server->getStatus() == 2) {
+        /* If sendCommand() reached by AJAX post methode => $_POST['command'] */
+        if ( !empty($_POST['command'])
+            && $server->getStatus() == 2
+            && $_POST['token'] === $_SESSION['token']
+        ) {
             $command = htmlspecialchars($_POST['command']);
             $this->sshCommand($command);
             echo "done";

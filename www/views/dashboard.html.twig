@@ -47,7 +47,7 @@
                         <button onclick="serverRestart();" id="restartButton" class="btn btn-warning mr-md-1 mb-1 text-uppercase not-allowed" disabled><i class="fas fa-redo"></i> 
                             Redémmarer
                         </button>
-                        <button onclick="serverStop();" id="stopButton" class="btn btn-danger text-uppercase not-allowed" disabled><i class="fas fa-power-off"></i> 
+                        <button onclick="serverStop();" id="stopButton" class="btn btn-danger text-uppercase mr-md-1 mb-1 not-allowed" disabled><i class="fas fa-power-off"></i> 
                             Stop
                             <span id="stopButtonLoading"></span>
                         </button>
@@ -77,7 +77,6 @@
                             <div class="row">
                                 {# Console renderer #}
                                 <div id="log" class="border pl-1 overflow" style="height:200px;"></div>
-                                <input type="hidden" name="currentLine" id="currentLine" value="0">
                             </div>
                             
                             <div class="row pt-2">
@@ -97,9 +96,12 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="token" value="{{token}}">
 {% include "Includes/Modals/SelectVersionModal.html.twig" %}
 {% endblock %}
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    <script>var socket = io.connect('{{socketUrl}}');</script>
     <script src="assets/js/dashboard.js"></script>
     <script src="assets/js/console.js"></script>
     <script src="assets/js/selectVersion.js"></script>

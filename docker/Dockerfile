@@ -6,7 +6,9 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN apt-get update && apt-get install -y \
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+    apt-get update && apt-get install -y \
+    nodejs \
     apt-utils \
     gcc make autoconf \
     libc-dev pkg-config \

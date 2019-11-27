@@ -16,6 +16,19 @@ else
     sed -i -e "s/CONTAINER_PORT=${CONTAINER_PORT}/CONTAINER_PORT=${userPort}/g" .env
 fi
 
+echo -e "\e[1m\e[34m Please, choose a free port for Socket.io dependency."
+echo -e " Press 'Enter' if you don't know \e[39m[\e[33m${SOCKETIO_PORT}\e[39m]:\e[0m"
+printf " > "
+read userSocketPort
+echo ""
+
+if [[ "$userSocketPort" == "" ]]; then
+    echo -e "\e[1m\e[32m Your panel will be run on the default port \e[33m${SOCKETIO_PORT}\e[0m"
+    echo ""
+else
+    sed -i -e "s/SOCKETIO_PORT=${SOCKETIO_PORT}/SOCKETIO_PORT=${userPort}/g" .env
+fi
+
 serverIp () {
     echo -e "\e[1m\e[34m Enter your server IP\e[0m:"
     printf " > "
@@ -205,8 +218,15 @@ else
 fi
 
 echo ""
+docker exec ${CONTAINER_NAME} npm update && npm install
+
 docker exec ${CONTAINER_NAME} php commands/createsql
 
 docker exec ${CONTAINER_NAME} chmod -R 777 /var/minecraft_server/
+
+# If you are in dev mode you need to run Node manually
+if [[ ${ENV_DEV} == "false" ]]; then
+    docker exec -t -d ${CONTAINER_NAME} node /var/www/src/Server.js
+fi
 
 exit 0

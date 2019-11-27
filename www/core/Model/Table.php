@@ -100,14 +100,22 @@ class Table
         return $this->query("SELECT * FROM {$this->table} WHERE {$sql_part}", $attributes, $one);
     }
 
-    public function selectBy(string $what, array $where, bool $fetch = false)
+    /**
+     * Select a specific column from table where
+     * SELECT $column FROM table WHERE $where
+     *
+     * @param string $column
+     * @param array $where
+     * @param boolean $fetch
+     * @return void
+     */
+    public function selectBy(string $column, array $where, bool $fetch = false)
     {
         foreach ($where as $k => $v) {
             $where_parts[] = "$k = $v";
-            $attributes[] = $v;
         }
         $where_parts = implode(', ', $where_parts);
-        return $this->query("SELECT {$what} FROM {$this->table} WHERE {$where_parts}", null, $fetch);
+        return $this->query("SELECT {$column} FROM {$this->table} WHERE {$where_parts}", null, $fetch);
     }
 
     /**
@@ -153,7 +161,6 @@ class Table
         }
         $where_part = implode(', ', $where_parts);
         $sql_part = implode(', ', $sql_parts);
-        //dump("UPDATE {$this->table} SET $sql_part WHERE $where_part");dd($attributes);
         return $this->query("UPDATE {$this->table} SET $sql_part WHERE $where_part", $attributes);
     }
 
