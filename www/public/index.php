@@ -1,4 +1,7 @@
 <?php
+if (getenv('ENV_DEV') === false) {
+    error_reporting(E_ERROR | E_PARSE);
+}
 $basePath = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
 define('BASE_PATH', $basePath, true);
 

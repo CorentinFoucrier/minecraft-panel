@@ -97,15 +97,15 @@ echo ""
 echo -e "\e[1m\e[32m Creating needed folders and files\e[33m . . .\e[0m"
 echo ""
 sudo mkdir /home/$panelUser/minecraft_server
+sudo mkdir /home/$panelUser/minecraft_server/logs
 sudo chmod -R 777 /home/$panelUser/minecraft_server
 sudo touch /home/$panelUser/minecraft_server/eula.txt
 sudo sed -i -e "s/eula=false/eula=true/g" /home/$panelUser/minecraft_server/eula.txt
 sudo touch /home/$panelUser/minecraft_server/ops.json
 sudo touch /home/$panelUser/minecraft_server/whitelist.json
 sudo touch /home/$panelUser/minecraft_server/banned-players.json
-sudo mkdir /home/$panelUser/minecraft_server/logs
 sudo touch /home/$panelUser/minecraft_server/logs/latest.logs
-sudo echo "Success! Your installion is working\!" > /home/$panelUser/minecraft_server/logs/latest.logs
+sudo echo "Success! Your installion is working." > /home/$panelUser/minecraft_server/logs/latest.logs
 echo ""
 echo -e "\e[1m\e[32m Downloading the latest minecraft version\e[33m . . .\e[0m"
 echo ""

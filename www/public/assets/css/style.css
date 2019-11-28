@@ -24,6 +24,10 @@ body {
     resize: none; 
 }
 
+.custom-file-input ~ .custom-file-label::after {
+    content: "Choisir";
+}
+
 .debug {
     border: 1px solid red;
 }

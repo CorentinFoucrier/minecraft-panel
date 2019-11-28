@@ -66,13 +66,4 @@ io.on('connection', function (socket) {
     main();
 });
 
-// function temp() {
-//     fs.watchFile('/var/minecraft_server/logs/latest.log', { interval: 1000 }, function () {
-//         fs.readFile('/var/minecraft_server/logs/latest.log', 'utf8', function (err, contents) {
-//             console.log(contents);
-//             socket.emit('message', contents);
-//         });
-//     });
-// }
-
 server.listen(8000);
