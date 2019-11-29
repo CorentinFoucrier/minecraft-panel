@@ -1,16 +1,16 @@
 {% extends "layout/base.html.twig" %}
 
 {% block content %}
-    {% if errors in flash("alert") %}
+    {% for errors in flash("alert") %}
         <div class="alert alert-danger" role="alert">
             {{errors}}
         </div>
-    {% endif %}
-    {% if successes in flash("success") %}
+    {% endfor %}
+    {% for successes in flash("success") %}
         <div class="alert alert-success" role="alert">
             {{successes}}
         </div>
-    {% endif %}
+    {% endfor %}
 
     <section class="row m-4">
         <div class="col-md-6">
@@ -31,7 +31,7 @@
 
     <section class="row m-4">
         <div class="col-6">
-            <table class="table table-striped table-sm table-bordered">
+            <table class="table table-striped table-sm table-bordered table-dark">
                 <thead>
                     <tr>
                         <th>Monde</th>
@@ -44,7 +44,12 @@
                 {% for world in worlds %}
                     <tr>
                         <td>{{world}}</td>
-                        <td><button id="download" class="btn btn-primary btn-sm float-right" disabled><i class="fas fa-download"></i></button></td>
+                        <td>
+                            <form action="" method="post">
+                                <input type="hidden" name="worldName" value="{{world}}">
+                                <button id="download" class="btn btn-primary btn-sm float-right"><i class="fas fa-download"></i></button>
+                            </form>
+                        </td>
                         <td><button id="delete" class="btn btn-danger btn-sm float-right"><i class="far fa-trash-alt"></i></button></td>
                     </tr>
                 {% endfor %}

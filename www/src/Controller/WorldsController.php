@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use Core\Controller\Controller;
+use Core\Controller\Helpers\ZipController;
 
 class WorldsController extends Controller
 {
@@ -9,20 +10,38 @@ class WorldsController extends Controller
     {
         $this->userOnly();
         $this->hasPermission('worldsManagement');
+
+        if (!empty($_POST['worldName'])) {
+            $worldName = htmlspecialchars($_POST['worldName']);
+            if (ZipController::make(BASE_PATH.'minecraft_server/'.$worldName)) {
+                ignore_user_abort(true);
+                $fileName = '/var/minecraft_server/'.$worldName.'.zip';
+                header('Content-type: application/zip');
+                header('Content-Length: '.filesize($fileName));
+                header('Content-Disposition: attachment; filename="'.$worldName.'.zip"');
+                readfile($fileName);
+                if (connection_aborted()) {
+                    unlink($fileName);
+                }
+                unlink($fileName);
+            } else {
+                $this->getFlash()->addAlert("Erreur interne, le fichier n'a pas pu être compressé");
+            }
+        }
+
         if (!empty($_FILES)) {
             $path = BASE_PATH.'minecraft_server/';
-            if (is_string($file = $this->upload(
-                $path,
-                'world', ['zip'],
-                ['application/zip', 'application/x-zip-compressed',
-                'multipart/x-zip', 'application/x-compressed']
-            ))) {
+            $file = $this->upload(
+                    $path,
+                    'world', ['zip'],
+                    ['application/zip', 'application/x-zip-compressed',
+                    'multipart/x-zip', 'application/x-compressed']
+                );
+            if (is_string($file) && !is_null($file)) {
                 if ($this->unZip($path, $file)) {
                     unlink($path.$_FILES['world']['name']); 
                 }
             }
-        } else {
-            $this->getFlash()->addAlert('Veuillez choisir un fichier.');
         }
         $worlds = $this->getWorlds();
         $token = bin2hex(random_bytes(8));
