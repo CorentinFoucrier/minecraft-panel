@@ -8,9 +8,9 @@ use Core\Controller\Session\PhpSession;
 use App\Controller\ServerQueryController;
 use Core\Controller\Session\FlashService;
 use Core\Controller\Helpers\LogsController;
-use Core\Controller\DefineConstantsController;
 use Core\Controller\Database\DatabaseController;
 use Core\Controller\Database\DatabaseMysqlController;
+use Core\Controller\Helpers\ServerPropertiesController;
 use Core\Controller\UploadController;
 
 class App
@@ -40,12 +40,24 @@ class App
             $whoops->register();
         }
 
-        DefineConstantsController::define();
+        self::defineConstants();
 
         if (session_status() != PHP_SESSION_ACTIVE) {
             session_start();
         }
 
+    }
+
+    private function defineConstants(): void
+    {
+        define("PREFIX", getenv('PREFIX'));
+        define("RAM_MIN", "512M");
+        define("RAM_MAX", "1024M");
+        define("SHELL_USER", getenv("SHELL_USER"));
+        define("SELL_PWD", getenv("SHELL_PWD"));
+        define("SERVER_PROPERTIES", ServerPropertiesController::getContent());
+        define("ENABLE_QUERY", "true");
+        define("QUERY_PORT", "25565");
     }
 
     public function getRouter($basePath = "/var/www"): RouterController

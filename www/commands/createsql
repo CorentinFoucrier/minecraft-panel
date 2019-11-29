@@ -52,8 +52,6 @@ echo $barCreate->done(2);
 $pdo->exec("CREATE TABLE `{$prefix}server` (
     `id`            int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     `name`          varchar(255) NOT NULL,
-    `panel_port`    smallint(3) UNSIGNED NOT NULL,
-    `is_installed`  tinyint(1) UNSIGNED NOT NULL,
     `status`        tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
     `version`       varchar(255) NOT NULL,
     PRIMARY KEY(`id`)
@@ -108,9 +106,9 @@ $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
 $versions = json_decode($json, true);
 $version = array_key_first($versions['vanilla']['stable']);
 $pdo->exec("INSERT INTO `{$prefix}server` (
-    `name`, `panel_port`, `is_installed`, `status`, `version`
+    `name`, `status`, `version`
 ) VALUES (
-    'Minecraft Panel', 8080, 0, 0, 'MC_{$version}'
+    'Minecraft Panel', 0, 'MC_{$version}'
 )");
 echo $barInsert->done(2);
 $pdo->exec("INSERT INTO `{$prefix}role` (
