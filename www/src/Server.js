@@ -56,14 +56,14 @@ io.on('connection', function (socket) {
             console.error("error: " + error);
         });
     }
-    
-    fs.watchFile('/var/minecraft_server/logs/latest.log', { interval: 1200 }, function () {
+    main();
+    fs.watchFile('/var/minecraft_server/logs/latest.log', { interval: 1500 }, function () {
         setTimeout(function () {
             main();
         }, 500);
     });
     
-    main();
+    
 });
 
 server.listen(8000);

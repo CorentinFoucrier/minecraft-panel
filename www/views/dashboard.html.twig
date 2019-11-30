@@ -98,8 +98,23 @@
     </div>
     <input type="hidden" id="token" value="{{token}}">
 {% include "Includes/Modals/SelectVersionModal.html.twig" %}
+{% include "Includes/Modals/eula.html.twig" %}
 {% endblock %}
+
 {% block javascripts %}
+    <script>
+    {% for warnings in flash("warning") %}
+        toastr.options = {
+            "closeButton": true,
+            "positionClass": "toast-bottom-left",
+            "showDuration": "-1",
+            "hideDuration": "-1",
+            "timeOut": "-1",
+            "extendedTimeOut": "-1",
+        }
+        toastr.warning("{{warnings}}");
+    {% endfor %}
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
     <script>var socket = io.connect('{{socketUrl}}');</script>
     <script src="assets/js/dashboard.js"></script>

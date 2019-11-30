@@ -57,15 +57,17 @@ function checkStatus(){
     });
 }
 
-function serverStart() {
+function serverStart(accept) {
     event.preventDefault();
+    if (accept == true) { $('#eula').modal('hide') }
     socket.emit('start', "start");
     $('#log').empty(); // dump div.#log
     startButton.attr('disabled', 'disabled');
     toastr.success("Votre serveur va démarrer...", "Démmarage");
     startButtonLoading.addClass('ld ld-ring ld-spin'); // add a loading effect on the start button
     $.post("/start", {
-        token: token
+        token: token,
+        accept: accept
     }, function (data) {
         if (data == "loading") {
             socket.emit('statusCheck', "statusCheck");
@@ -74,7 +76,14 @@ function serverStart() {
             toastr.clear();
             setTimeout(function(){
                 toastr.error("Vous ne pouvez pas démmarer le serveur.", "Permission non accordée !");
-            }, 1100);
+            }, 1001);
+            checkStatus();
+        } else if (data === "eula") {
+            toastr.clear();
+            setTimeout(function(){
+                toastr.warning("EULA non accepté !");
+            }, 1001);
+            $('#eula').modal('show');
             checkStatus();
         } else {
             toastr.error("Une erreur est survenue !", "Erreur");
