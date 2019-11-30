@@ -5,7 +5,6 @@ namespace Core\Extension\Twig;
 use App\App;
 use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
-use Core\Controller\Session\FlashService;
 
 class FlashExtension extends AbstractExtension
 {

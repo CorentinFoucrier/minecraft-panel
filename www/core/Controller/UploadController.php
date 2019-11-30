@@ -36,7 +36,6 @@ class UploadController extends Controller
                         if (move_uploaded_file($file['tmp_name'], $path . $fileName)) {
                             //upload réussi
                             chmod($path . $fileName, 0777);
-                            $this->getFlash()->addSuccess("Téléversement réussi.");
                             return $fileName;
                         } else {
                             $this->getFlash()->addAlert('SQL Error!');

@@ -195,8 +195,13 @@ class PlayersController extends Controller
         }
     }
 
-    private function getJson(string $type): array
+    private function getJson(string $type): ?array
     {
-        return json_decode(file_get_contents(BASE_PATH."minecraft_server/$type.json"), true);
+        try {
+            return json_decode(file_get_contents(BASE_PATH."minecraft_server/$type.json"), true);
+        } catch (\Throwable $e) {
+            $this->getFlash()->addWarning("Le fichier \"$type.json\" n'a pas été trouvé! \nLancer le serveur une première fois et revenez ici.");
+            return null;
+        }
     }
 }

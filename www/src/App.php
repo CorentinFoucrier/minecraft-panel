@@ -1,7 +1,6 @@
 <?php
 namespace App;
 
-use Core\Controller\URLController;
 use App\Controller\ServerController;
 use Core\Controller\RouterController;
 use Core\Controller\Session\PhpSession;

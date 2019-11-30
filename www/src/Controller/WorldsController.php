@@ -78,7 +78,7 @@ class WorldsController extends Controller
      *
      * @return array
      */
-    private function getWorlds(): array
+    private function getWorlds(): ?array
     {
         $mc_serv_folder = glob(BASE_PATH.'minecraft_server/*', GLOB_ONLYDIR);
         foreach ($mc_serv_folder as $folderPath) {
@@ -102,12 +102,24 @@ class WorldsController extends Controller
     private function unZip(string $path, string $fileName): bool
     {
         $zip = new \ZipArchive;
-        $x = $zip->open("/var/minecraft_server/".$fileName);
-        if ($x === TRUE) {
-            $zip->extractTo("/var/minecraft_server/"); // change this to the correct site path
-            $zip->close();
-            return true;
-        } else {
+        try {
+            $x = $zip->open($path.$fileName);
+            if ($x === TRUE) {
+                for($i=0; $i < $zip->numFiles; $i++) {
+                    $nameI = $zip->getNameIndex($i);
+                    if ($nameI != './' && $nameI != '../' && $nameI != '__MACOSX/_') {
+                        $zip->extractTo( $path.str_replace('.zip', '', $fileName), array($zip->getNameIndex($i)) );
+                    }
+                }
+                $zip->close();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            if (getenv("ENV_DEV") !== false) {
+                throw new \Exception    ($e->getMessage());
+            }
             $this->getFlash()->addAlert('Une erreur est survenue lors de la décompression');
             return false;
         }

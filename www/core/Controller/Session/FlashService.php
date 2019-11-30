@@ -21,6 +21,11 @@ class FlashService
         $this->session->set("alert", $message);
     }
 
+    public function addWarning(string $message): void
+    {
+        $this->session->set("warning", $message);
+    }
+
     public function getMessages(string $key): array
     {
         $message =  $this->session->get($key, []);
