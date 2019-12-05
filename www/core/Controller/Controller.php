@@ -175,6 +175,7 @@ abstract class Controller
     {
         if (!isset($_SESSION['username']) || empty($_SESSION['username'])) {
             $this->redirect($this->getUri('login'));
+            exit();
         }
     }
 

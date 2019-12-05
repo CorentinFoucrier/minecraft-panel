@@ -8,6 +8,12 @@ body {
     flex-direction: column;
 }
 
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
 .content {
     flex: 1 0 auto;
 }

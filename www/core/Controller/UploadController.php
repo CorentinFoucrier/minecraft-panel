@@ -5,12 +5,12 @@ namespace Core\Controller;
 class UploadController extends Controller
 {
     /**
-     * Undocumented function
+     * Upload a file
      *
-     * @param string $path
-     * @param string $attrName
-     * @param array $exentions
-     * @param string $mimeTypes
+     * @param string $path Path of the file to upload
+     * @param string $attrName Name of HTML attribute 'name'
+     * @param array $exentions Array of extentions
+     * @param string $mimeTypes The MIME types
      * @return null|string
      */
     public function upload(
@@ -34,7 +34,7 @@ class UploadController extends Controller
                     if (isset($file['error']) && UPLOAD_ERR_OK === $file['error']) {
                         // If there are no errors, then testing the upload
                         if (move_uploaded_file($file['tmp_name'], $path . $fileName)) {
-                            //upload réussi
+                            // Success
                             chmod($path . $fileName, 0777);
                             return $fileName;
                         } else {

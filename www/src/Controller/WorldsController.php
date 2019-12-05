@@ -11,11 +11,12 @@ class WorldsController extends Controller
         $this->userOnly();
         $this->hasPermission('worldsManagement');
 
+        /* Triggered if the client request a download */
         if (!empty($_POST['worldName'])) {
             $worldName = htmlspecialchars($_POST['worldName']);
             if (ZipController::make(BASE_PATH.'minecraft_server/'.$worldName)) {
-                ignore_user_abort(true);
-                $fileName = '/var/minecraft_server/'.$worldName.'.zip';
+                ignore_user_abort(true); // If the client disconnect the script will stop
+                $fileName = BASE_PATH.'minecraft_server/'.$worldName.'.zip';
                 header('Content-type: application/zip');
                 header('Content-Length: '.filesize($fileName));
                 header('Content-Disposition: attachment; filename="'.$worldName.'.zip"');
@@ -29,14 +30,17 @@ class WorldsController extends Controller
             }
         }
 
+        /* Triggered when the client upload a file */
         if (!empty($_FILES)) {
             $path = BASE_PATH.'minecraft_server/';
+            /* Upload the file */
             $file = $this->upload(
                     $path,
                     'world', ['zip'],
                     ['application/zip', 'application/x-zip-compressed',
                     'multipart/x-zip', 'application/x-compressed']
                 );
+            /* if the file uploaded correctly unzip it */
             if (is_string($file) && !is_null($file)) {
                 if ($this->unZip($path, $file)) {
                     unlink($path.$_FILES['world']['name']); 
@@ -80,8 +84,8 @@ class WorldsController extends Controller
      */
     private function getWorlds(): ?array
     {
-        $mc_serv_folder = glob(BASE_PATH.'minecraft_server/*', GLOB_ONLYDIR);
-        foreach ($mc_serv_folder as $folderPath) {
+        $mcServerFolder = glob(BASE_PATH.'minecraft_server/*', GLOB_ONLYDIR);
+        foreach ($mcServerFolder as $folderPath) {
             foreach (scandir($folderPath) as $val) {
                 if ($val === "level.dat") {
                     $worlds[] = end(explode('/', $folderPath));
@@ -103,8 +107,13 @@ class WorldsController extends Controller
     {
         $zip = new \ZipArchive;
         try {
-            $x = $zip->open($path.$fileName);
-            if ($x === TRUE) {
+            $zipHandle = $zip->open($path.$fileName);
+            if ($zipHandle === TRUE) {
+                /* If there is no level.dat delete the downloaded .zip */
+                if ($zip->getFromName('level.dat') === false) {
+                    unlink($path.$_FILES['world']['name']);
+                    return false;
+                }
                 for($i=0; $i < $zip->numFiles; $i++) {
                     $nameI = $zip->getNameIndex($i);
                     if ($nameI != './' && $nameI != '../' && $nameI != '__MACOSX/_') {
@@ -118,7 +127,7 @@ class WorldsController extends Controller
             }
         } catch (\Exception $e) {
             if (getenv("ENV_DEV") !== false) {
-                throw new \Exception    ($e->getMessage());
+                throw new \Exception($e->getMessage());
             }
             $this->getFlash()->addAlert('Une erreur est survenue lors de la décompression');
             return false;
