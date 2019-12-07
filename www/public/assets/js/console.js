@@ -21,7 +21,7 @@ $(document.body).keyup(function(event) {
 
 $(document).ready(function () {
     var logs = $('#log');
-    socket.on('message', function(message) {
+    socket.on('console', function(message) {
         $.each(JSON.parse(message), function (_key, val) {
             var regex = /^[0-9]+$/gm;
             if ((regex.exec(val)) == null) {

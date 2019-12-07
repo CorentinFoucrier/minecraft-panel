@@ -9,18 +9,23 @@ var token = $('#token').val();
 // Check the minecraft server status when the document is ready.
 $(document).ready(checkStatus());
 
-socket.on('start', function (start) {
-    $('#log').empty();
-    startButton.attr('disabled', 'disabled');
-    startButtonLoading.addClass('ld ld-ring ld-spin');
+socket.on('client', function (data) {
+    switch (data) {
+        case "start":
+            $('#log').empty();
+            startButton.attr('disabled', 'disabled');
+            startButtonLoading.addClass('ld ld-ring ld-spin');
+            break;
+        case "stop":
+            stopButton.attr('disabled', 'disabled');
+            stopButtonLoading.addClass('ld ld-ring ld-spin');
+            break;
+        case "checkStatus":
+            checkStatus();
+            break;
+    }
 });
-socket.on('stop', function (stop) {
-    stopButton.attr('disabled', 'disabled');
-    stopButtonLoading.addClass('ld ld-ring ld-spin');
-});
-socket.on('statusCheck', function (statusCheck) {
-    checkStatus();
-});
+
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -60,7 +65,7 @@ function checkStatus(){
 function serverStart(accept) {
     event.preventDefault();
     if (accept == true) { $('#eula').modal('hide') }
-    socket.emit('start', "start");
+    socket.emit('nodejs', "start");
     $('#log').empty(); // dump div.#log
     startButton.attr('disabled', 'disabled');
     toastr.success("Votre serveur va démarrer...", "Démmarage");
@@ -70,7 +75,7 @@ function serverStart(accept) {
         accept: accept
     }, function (data) {
         if (data == "loading") {
-            socket.emit('statusCheck', "statusCheck");
+            socket.emit('nodejs', "checkStatus");
             checkStatus();
         } else if (data == "not allowed") {
             toastr.clear();
@@ -94,7 +99,7 @@ function serverStart(accept) {
 
 function serverStop() {
     event.preventDefault();
-    socket.emit('stop', 'stop');
+    socket.emit('nodejs', 'stop');
     stopButton.attr('disabled', 'disabled');
     stopButtonLoading.addClass('ld ld-ring ld-spin');
     $.post("/stop", {
@@ -104,7 +109,7 @@ function serverStop() {
             await sleep(5000);
             stopButtonLoading.removeClass();
             toastr.success("Votre serveur à bien été arrêté !", "Arrêt");
-            socket.emit('statusCheck', 'statusCheck');
+            socket.emit('nodejs', 'checkStatus');
             checkStatus();
         } else if (data == "not allowed") {
             toastr.error("Vous ne pouvez pas arrêter le serveur.", "Permission non accordée !");
