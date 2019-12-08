@@ -25,7 +25,7 @@ class DashbordController extends Controller
         }
         
         return $this->render("dashboard", [
-            'title' => "Tableau de board",
+            'title' => "Tableau de bord",
             'maxPlayers' => $maxPlayers,
             'version' => $version,
             'ops' => $ops,

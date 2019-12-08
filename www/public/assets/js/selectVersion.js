@@ -3,6 +3,7 @@ async function selectVersion(gameVersion) {
     var version = $('#'+gameVersion);
     var displayVersion = $('#version'); //span element
     var modal = $('#changeVersion');
+    var token = $('#token').val();
     var status = await checkStatus();
 
     if (status !== "started") {
@@ -10,7 +11,8 @@ async function selectVersion(gameVersion) {
             toastr.info("Début du téléchargement", "Téléchargement...");
             $.post("./selectVersion", {
                 version: version.val(),
-                gameVersion: gameVersion
+                gameVersion: gameVersion,
+                token: token
             }, async function (data) {
                 v = await getVersion();
                 if (data == "fromCache") {

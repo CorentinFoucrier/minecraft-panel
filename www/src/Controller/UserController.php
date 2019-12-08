@@ -22,7 +22,7 @@ class UserController extends Controller
         $this->notForLoggedIn();
         $username = $this->loginVerify();
         if (!empty($_POST['changePwd'])) {
-            $this->changeFirstPassword($_POST['username']);
+            $this->changeFirstPassword(htmlspecialchars($_POST['username']));
         }
 
         $token = bin2hex(random_bytes(16));
@@ -98,19 +98,23 @@ class UserController extends Controller
     {
         /* Condition is true when called by form on changeFirstPassword view */
         if (!empty($_POST) && isset($_POST['changePwd'])) {
-            $password = $_POST['password'];
-            $password_verify = $_POST['password_verify'];
+            $password = htmlspecialchars($_POST['password']);
+            $password_verify = htmlspecialchars($_POST['password_verify']);
             if ($password === $password_verify) {
-                $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
-                if ($this->user->updateBy(['username'=>$username], [
-                    'default_password' => '0',
-                    'password' => $passwordHash
-                ])) {
-                    /* Logged! */
-                    $_SESSION['username'] = $username;
-                    unset($_SESSION['token']);
-                    $this->redirect($this->getUri("dashboard"), 200);
-                    exit();
+                if (strlen($password) === 8) {
+                    $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
+                    if ($this->user->updateBy(['username'=>$username], [
+                        'default_password' => '0',
+                        'password' => $passwordHash
+                    ])) {
+                        /* Logged! */
+                        $_SESSION['username'] = $username;
+                        unset($_SESSION['token']);
+                        $this->redirect($this->getUri("dashboard"), 200);
+                        exit();
+                    }
+                } else {
+                    $this->getFlash()->addAlert('Votre mot de passe dois être d\'un minimum de 8 caractères');
                 }
             }
         }
