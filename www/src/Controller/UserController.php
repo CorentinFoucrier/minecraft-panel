@@ -101,7 +101,7 @@ class UserController extends Controller
             $password = htmlspecialchars($_POST['password']);
             $password_verify = htmlspecialchars($_POST['password_verify']);
             if ($password === $password_verify) {
-                if (strlen($password) === 8) {
+                if (strlen($password) >= 8) {
                     $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
                     if ($this->user->updateBy(['username'=>$username], [
                         'default_password' => '0',
