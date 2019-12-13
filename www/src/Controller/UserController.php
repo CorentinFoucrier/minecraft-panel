@@ -114,7 +114,7 @@ class UserController extends Controller
                         exit();
                     }
                 } else {
-                    $this->getFlash()->addAlert('Votre mot de passe dois être d\'un minimum de 8 caractères');
+                    $this->getFlash()->addAlert('Votre mot de passe doit être de minimum de 8 caractères');
                 }
             }
         }

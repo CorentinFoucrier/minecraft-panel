@@ -51,6 +51,7 @@ html {
 .input_pass:focus {
     box-shadow: none !important;
     outline: 0px !important;
+    border-radius: 0 0.25rem 0.25rem 0 !important;
 }
 .custom-checkbox .custom-control-input:checked~.custom-control-label::before {
     background-color: #008c45 !important;
