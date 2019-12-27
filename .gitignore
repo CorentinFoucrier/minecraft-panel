@@ -1,5 +1,4 @@
 # Files
-.env
 .vscode
 www/public/adminer.php
 www/public/debug.php
