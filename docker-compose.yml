@@ -1,27 +1,46 @@
-version: '3'
+version: "3"
 
 services:
   mc-panel.app:
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     build: ./docker
-    image: mc-panel-dev
+    image: korey03/mc-panel
     volumes:
-      - ./www:/var/www
+      - ${PWD}/www:/var/www
       - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server
     ports:
       - ${CONTAINER_PORT}:80
-      - 8000:8000
     networks:
       - mc-panel
     env_file:
       - .env
 
+  mc-panel.node:
+    container_name: ${NODE_NAME}
+    restart: unless-stopped
+    image: node:12
+    volumes:
+      - ${PWD}/www/nodejs:/var/www
+      - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server
+    ports:
+      - ${SOCKETIO_PORT}:8000
+    networks:
+      - mc-panel
+    env_file:
+      - .env
+    working_dir: /var/www
+    entrypoint: bash
+    command:
+      - -c
+      - |
+        tail -f /dev/null
+
   mc-panel.mysql:
     container_name: ${MYSQL_HOST}
     restart: unless-stopped
     image: mysql:5.6
-    networks: 
+    networks:
       - mc-panel
     env_file:
       - .env

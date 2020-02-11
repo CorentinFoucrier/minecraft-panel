@@ -13,12 +13,17 @@
                 <div class="input-group">
                     <select class="custom-select" name="vanilla" id="vanilla">
                         <option selected value="default">-- Choisir une version --</option>
-                        <option value="MC_1.14.4">MC 1.14.4</option>
-                        <option value="MC_1.14.3">MC 1.14.3</option>
-                        <option value="MC_1.14.2">MC 1.14.2</option>
-                        <option value="MC_1.14.1">MC 1.14.1</option>
+                        {% for key, value in versions.vanilla.stable %}
+                            <option value="MC_{{key}}">Minecraft
+                                {{key}}
+                            </option>
+                        {% endfor %}
                         <option value="default">_______Versions Snapshot_______</option>
-                        <option value="SNAP_19w42a">Snapshot 19w42a</option>
+                        {% for key, value in versions.vanilla.snapshot %}
+                            <option value="SNAP_{{key}}">Snapshot
+                                {{key}}
+                            </option>
+                        {% endfor %}
                     </select>
                     <div class="input-group-append">
                         <button class="btn btn-success" type="button" onclick="selectVersion('vanilla');">Choisir</button>
@@ -29,10 +34,11 @@
                 <div class="input-group">
                     <select class="custom-select not-allowed" name="spigot" id="spigot" disabled>
                         <option selected value="default">-- Choisir une version --</option>
-                        <option value="Spigot_1.14.4">Spigot 1.14.4</option>
-                        <option value="Spigot_1.14.3">Spigot 1.14.3</option>
-                        <option value="Spigot_1.14.2">Spigot 1.14.2</option>
-                        <option value="Spigot_1.14.1">Spigot 1.14.1</option>
+                        {% for key, value in versions.spigot %}
+                            <option value="Spigot_{{key}}">Spigot
+                                {{key}}
+                            </option>
+                        {% endfor %}
                     </select>
                     <div class="input-group-append">
                         <button class="btn btn-success not-allowed" type="button" onclick="selectVersion('spigot');" disabled>Choisir</button>
@@ -43,8 +49,11 @@
                 <div class="input-group">
                     <select class="custom-select not-allowed" name="forge" id="forge" disabled>
                         <option selected value="default">-- Choisir une version --</option>
-                        <option value="Forge_1.14.4_28.1.44">Forge 1.14.4 - 28.1.44</option>
-                        <option value="Forge_1.14.4_28.1.0">Forge 1.14.4 - 28.1.0</option>
+                        {% for key, value in versions.forge %}
+                            <option value="Spigot_{{key}}">Spigot
+                                {{key}}
+                            </option>
+                        {% endfor %}
                     </select>
                     <div class="input-group-append">
                         <button class="btn btn-success not-allowed" type="button" onclick="selectVersion('forge');" disabled>Choisir</button>

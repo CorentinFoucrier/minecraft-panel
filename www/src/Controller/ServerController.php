@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use phpseclib\Net\SSH2;
@@ -55,7 +56,8 @@ class ServerController extends Controller
     {
         $server = $this->server->selectEverything(true);
         /* If sendCommand() reached by AJAX post methode => $_POST['command'] */
-        if ( !empty($_POST['command'])
+        if (
+            !empty($_POST['command'])
             && $server->getStatus() == 2
             && $_POST['token'] === $_SESSION['token']
         ) {
@@ -97,7 +99,7 @@ class ServerController extends Controller
                             if ($link == null) {
                                 goto error;
                             } else {
-                                if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                                if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
                                     echo "fromCache";
                                 } else {
                                     $this->downloadServer($version, $link);
@@ -111,7 +113,7 @@ class ServerController extends Controller
                             if ($link == null) {
                                 goto error;
                             } else {
-                                if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                                if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
                                     echo "fromCache";
                                 } else {
                                     $this->downloadServer($version, $link);
@@ -129,7 +131,7 @@ class ServerController extends Controller
                     if ($link == null) {
                         echo "error";
                     } else {
-                        if (file_exists(BASE_PATH."minecraft_server/{$version}.jar")) {
+                        if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
                             echo "fromCache";
                         } else {
                             $this->downloadServer($version, $link);

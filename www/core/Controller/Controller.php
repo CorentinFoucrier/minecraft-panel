@@ -133,7 +133,7 @@ abstract class Controller
         if ($httpResponseCode) {
             http_response_code($httpResponseCode);
         }
-        return header('Location: '.$url);
+        return header('Location: ' . $url);
     }
 
     /**
@@ -245,7 +245,7 @@ abstract class Controller
      */
     protected function hasPermission(string $perm, bool $redirect = true): bool
     {
-        $perm = "get".ucfirst($perm);
+        $perm = "get" . ucfirst($perm);
         $this->loadModel('user');
         $this->loadModel('permissions');
         $userEntity = $this->user->select(['username' => $_SESSION['username']]);

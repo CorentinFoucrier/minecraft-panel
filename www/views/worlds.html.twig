@@ -44,18 +44,24 @@
                 </thead>
 
                 <tbody>
-                {% for world in worlds %}
-                    <tr>
-                        <td>{{world}}</td>
-                        <td>
-                            <form action="" method="post">
-                                <input type="hidden" name="worldName" value="{{world}}">
-                                <button id="download" class="btn btn-primary btn-sm float-right"><i class="fas fa-download"></i></button>
-                            </form>
-                        </td>
-                        <td><button id="delete" class="btn btn-danger btn-sm float-right"><i class="far fa-trash-alt"></i></button></td>
-                    </tr>
-                {% endfor %}
+                    {% for world in worlds %}
+                        <tr>
+                            <td>{{world}}</td>
+                            <td>
+                                <form action="" method="post">
+                                    <input type="hidden" name="worldName" value="{{world}}">
+                                    <button id="download" class="btn btn-primary btn-sm float-right">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <button id="delete" class="btn btn-danger btn-sm float-right">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -67,5 +73,9 @@
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
     <script src="assets/js/worlds.js"></script>
-    <script>$(document).ready(function () {bsCustomFileInput.init()});</script>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        });
+    </script>
 {% endblock %}

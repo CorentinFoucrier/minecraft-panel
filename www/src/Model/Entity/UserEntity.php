@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Core\Model\Entity;
@@ -115,7 +116,7 @@ class UserEntity extends Entity
         return $this;
     }
 
-        /**
+    /**
      * Get the value of defaultPassword
      *
      * @return int

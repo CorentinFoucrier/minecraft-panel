@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Core\Controller\Controller;
@@ -51,8 +52,7 @@ class ConfigController extends Controller
                 if ((preg_match('/(true|false)++/', $value)) === 1) {
                     $exclude[] = $key;
                 }
-                if (!in_array($key, $exclude)
-                    ) {
+                if (!in_array($key, $exclude)) {
                     $form->addGroup("col-sm-6");
                 }
                 /* Add select for possible default values that arn't in $config */
@@ -66,7 +66,7 @@ class ConfigController extends Controller
                                 'hard' => 'hard'
                             ],
                             'selected' => $value
-                            ]);
+                        ]);
                         break;
                     case 'gamemode':
                         $form->addSelect("$key", "$label", [
@@ -153,7 +153,7 @@ class ConfigController extends Controller
                 $const = constant($constStr);
             }
 
-            $constArray = get_defined_constants(true);//Get categorized array of defined constants
+            $constArray = get_defined_constants(true); //Get categorized array of defined constants
 
             if (array_key_exists($constStr, $constArray['user'])) {
                 /* If the constant is in user defined constant array replace default $value to $const */

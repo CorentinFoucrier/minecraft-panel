@@ -1,5 +1,7 @@
 <?php
+
 namespace Core\Controller\Session;
+
 /**
  * Manage $_SESSION informations
  */
@@ -62,7 +64,7 @@ class PhpSession implements SessionInterface, \ArrayAccess
         $this->ensureStarted();
         return array_key_exists($key, $_SESSION);
     }
-    
+
     public function offsetGet($offset): mixed
     {
         return $this->get($offset);

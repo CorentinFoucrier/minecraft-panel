@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Core\Controller\Controller;
@@ -23,8 +24,8 @@ class CoAdminController extends Controller
         $coAdmins = $this->user->select(['role_id' => 2], false); // Every coAdmins
         $token = bin2hex(random_bytes(8));
         $_SESSION['token'] = $token;
-        for ($i=0; $i < count($coAdmins); $i++) {
-            $permissionEntity = $this->permissions->select(['user_id'=>$coAdmins[$i]->getId()]);
+        for ($i = 0; $i < count($coAdmins); $i++) {
+            $permissionEntity = $this->permissions->select(['user_id' => $coAdmins[$i]->getId()]);
             $coAdminsPerms[$coAdmins[$i]->getUsername()] = GettersController::gettersToAssocArray($permissionEntity);
         }
 
@@ -75,7 +76,7 @@ class CoAdminController extends Controller
             $clicked = strtolower(join("_", $explodedStr));
 
             if ($token === $_SESSION['token']) {
-                $checked = ($checked == "true") ? "1" : "0" ;
+                $checked = ($checked == "true") ? "1" : "0";
                 $this->permissions->updateAnd([$clicked => $checked], ['user_id' => $userId]);
                 echo 'ok';
             } else {

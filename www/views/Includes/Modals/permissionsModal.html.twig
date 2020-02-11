@@ -1,33 +1,33 @@
 {% for coAdminPerms in coAdminsPerms %}
-<div class="modal fade" id="{{coAdminPerms.userId}}_permissionsModal" tabindex="-1" role="dialog" aria-labelledby="{{coAdminPerms.userId}}_permissionsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="{{coAdminPerms.userId}}_permissionsModalLabel">Modifier les droits</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        {% for key, value in coAdminPerms %}
-                            {% if loop.index != "1" and loop.index != "2" %}
-                                <div class="form-group col-6">
-                                    <div class="custom-control custom-switch">
-                                        <input id="{{coAdminPerms.userId}}_{{key}}" class="custom-control-input permission" name="{{key}}" type="checkbox" {% if value == "1" %}checked{% endif %}>
-                                        <label for="{{coAdminPerms.userId}}_{{key}}" class="custom-control-label">{{beautifyStr(key)}}</label>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+    <div class="modal fade" id="{{coAdminPerms.userId}}_permissionsModal" tabindex="-1" role="dialog" aria-labelledby="{{coAdminPerms.userId}}_permissionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="{{coAdminPerms.userId}}_permissionsModalLabel">Modifier les droits</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Terminer</button>
-                </div>
-            </form>
+                    <div class="modal-body">
+                        <div class="row">
+                            {% for key, value in coAdminPerms %}
+                                {% if loop.index != "1" and loop.index != "2" %}
+                                    <div class="form-group col-6">
+                                        <div class="custom-control custom-switch">
+                                            <input id="{{coAdminPerms.userId}}_{{key}}" class="custom-control-input permission" name="{{key}}" type="checkbox" {% if value == "1" %} checked {% endif %}>
+                                            <label for="{{coAdminPerms.userId}}_{{key}}" class="custom-control-label">{{beautifyStr(key)}}</label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Terminer</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endfor %}

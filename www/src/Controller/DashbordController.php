@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Core\Controller\Controller;
@@ -14,20 +15,24 @@ class DashbordController extends Controller
         $this->userOnly();
         $config = SERVER_PROPERTIES;
         $maxPlayers = $config['max-players'];
-        $version = $this->getVersion();
+        $currentVersion = $this->getVersion();
         $token = bin2hex(random_bytes(8));
         $_SESSION['token'] = $token;
-        $socketUrl = $_SERVER['REQUEST_SCHEME'] ."://". $_SERVER['SERVER_NAME'] .":". getenv('SOCKETIO_PORT');
+        $socketUrl = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME'] . ":" . getenv('SOCKETIO_PORT');
         try {
-            $ops = json_decode(file_get_contents(BASE_PATH.'minecraft_server/ops.json'), true);
+            $ops = json_decode(file_get_contents(BASE_PATH . 'minecraft_server/ops.json'), true);
         } catch (\Exception $e) {
             (getenv("ENV_DEV")) ? $this->getFlash()->addWarning("[Dev only]|'ops.json' n'existe pas !") : $ops = [];
         }
-        
+
+        $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
+        $versions = json_decode($json, true);
+
         return $this->render("dashboard", [
             'title' => "Tableau de bord",
             'maxPlayers' => $maxPlayers,
-            'version' => $version,
+            'currentVersion' => $currentVersion,
+            'versions' => $versions,
             'ops' => $ops,
             'token' => $token,
             'socketUrl' => $socketUrl
@@ -53,13 +58,13 @@ class DashbordController extends Controller
         $req = $this->server->selectEverything(true)->getVersion();
         $version = explode('_', $req);
         if ($version[0] == "MC") {
-            $v = $version = "Vanilla ".$version[1];
+            $v = $version = "Vanilla " . $version[1];
             if (!empty($_GET)) {
                 echo $v;
             }
             return $v;
         } elseif ($version[0] == "SNAP") {
-            $v = $version = "Snapshot ".$version[1];
+            $v = $version = "Snapshot " . $version[1];
             if (!empty($_GET)) {
                 echo $v;
             }

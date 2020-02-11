@@ -13,7 +13,7 @@ class ZipController
 
         $zip = new \ZipArchive();
         // Create an empty zip file
-        if (!$zip->open($path.".zip", \ZipArchive::CREATE)) {
+        if (!$zip->open($path . ".zip", \ZipArchive::CREATE)) {
             return false;
         }
 
@@ -36,9 +36,9 @@ class ZipController
                 if ($file != "." && $file != "..") {
                     /* If $file is a directory then add an empty dir else add the file to the ZIP*/
                     if (is_dir($file)) {
-                        $zip->addEmptyDir(str_replace($path.'/', '', $file.'/'));
+                        $zip->addEmptyDir(str_replace($path . '/', '', $file . '/'));
                     } else if (is_file($file)) {
-                        $zip->addFromString(str_replace($path.'/', '', $file), file_get_contents($file));
+                        $zip->addFromString(str_replace($path . '/', '', $file), file_get_contents($file));
                     }
                 }
             }

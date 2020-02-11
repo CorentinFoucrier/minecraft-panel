@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 use App\Controller\ServerController;
@@ -44,7 +45,6 @@ class App
         if (session_status() != PHP_SESSION_ACTIVE) {
             session_start();
         }
-
     }
 
     private function defineConstants(): void

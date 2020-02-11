@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Controller;
 
 use App\App;
@@ -40,6 +41,6 @@ class URLController
     {
         $uri = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"];
         $folder = App::getInstance()->getRouter()->url($routeName, $params);
-        return $uri. $folder;
+        return $uri . $folder;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Controller;
 
 class FormBuilderController
@@ -99,6 +100,6 @@ class FormBuilderController
                 {$this->button}
             </form>\n
         HTML;
-        return (string)$this->html;
+        return (string) $this->html;
     }
 }

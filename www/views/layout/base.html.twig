@@ -1,59 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {% if ENV_DEV %}
-        <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.css">
-    {% else %}
-        <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.min.css">
-    {% endif %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/loadingio/loading.css@v2.0.0/dist/loading.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/loadingio/loading.css@v2.0.0/dist/loading.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    {% block stylesheet %}{% endblock %}
-    <title>{{title}}</title>
-</head>
-<body>
-    <div class="container-fluid content">
-        <div class="row vh-100">
-            {# Navbar desktop #}
-            {% include "layout/navbar.html.twig" %}
-            {% include "layout/navbar-mobile.html.twig" %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% if ENV_DEV %}
+            <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.css">
+        {% else %}
+            <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.min.css">
+        {% endif %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/loadingio/loading.css@v2.0.0/dist/loading.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/loadingio/loading.css@v2.0.0/dist/loading.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.min.css">
+        <link rel="stylesheet" href="assets/css/style.css"> {% block stylesheet %}{% endblock %}
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <div class="container-fluid content">
+            <div
+                class="row vh-100">
+                {# Navbar desktop #}
+                {% include "layout/navbar.html.twig" %}
+                {% include "layout/navbar-mobile.html.twig" %}
 
-            <div class="col-md-10 px-0">
-                <div class="navbar-top row p-md-2 m-md-0 d-md-flex align-items-md-center justify-content-md-between d-none d-md-block">
-                    <div class="title h4 m-md-0 col-md-6"><span class="text-uppercase">Minecraft Panel</span> - {{title}}</div>
-                    <div class="m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
-                        <div>
-                            <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/fr.svg" alt="Drapeau Français"></a>
-                            <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/gb.svg" alt="United Kingdom Flag"></a>
+                <div class="col-md-10 px-0">
+                    <div class="navbar-top row p-md-2 m-md-0 d-md-flex align-items-md-center justify-content-md-between d-none d-md-block">
+                        <div class="title h4 m-md-0 col-md-6">
+                            <span class="text-uppercase">Minecraft Panel</span>
+                            -
+                            {{title}}</div>
+                        <div class="m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
+                            <div>
+                                <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/fr.svg" alt="Drapeau Français"></a>
+                                <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/gb.svg" alt="United Kingdom Flag"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content" class="pt-md-5 overflow"> {% block content %}{% endblock %}
                         </div>
                     </div>
                 </div>
-                <div id="content" class="pt-md-5 overflow">{% block content %}{% endblock %}</div>
             </div>
-        </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-    <script src="assets/js/toastr_options.js"></script>
-    <script>
-        $('.wip').click(function(event) {
-            event.preventDefault();
-            toastr.info("cette fonctionnalité n'est pas encore disponible." ,"En developpement...")
-        });
-        const psContent = new PerfectScrollbar('#content');
-        const psSidebar = new PerfectScrollbar('#sidebar');
-    </script>
-    {% block javascripts %}{% endblock %}
-</body>
-</html>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+            <script src="assets/js/toastr_options.js"></script>
+            <script>
+                $('.wip').click(function (event) {
+                    event.preventDefault();
+                    toastr.info("cette fonctionnalité n'est pas encore disponible.", "En developpement...")
+                });
+                const psContent = new PerfectScrollbar('#content');
+                const psSidebar = new PerfectScrollbar('#sidebar');
+            </script>
+            {% block javascripts %}{% endblock %}
+        </body>
+    </html>

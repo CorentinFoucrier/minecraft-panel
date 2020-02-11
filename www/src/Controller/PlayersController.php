@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Core\Controller\Controller;
@@ -24,14 +25,14 @@ class PlayersController extends Controller
             !empty($_POST) &&
             htmlspecialchars($_POST['token']) === $_SESSION['token']
         ) {
-            $type =   htmlspecialchars( end(explode('_', array_key_first($_POST))) );
-            $name =   htmlspecialchars( $_POST['add_'.$type] );
-            $reason = htmlspecialchars( $_POST['reason'] );
+            $type =   htmlspecialchars(end(explode('_', array_key_first($_POST))));
+            $name =   htmlspecialchars($_POST['add_' . $type]);
+            $reason = htmlspecialchars($_POST['reason']);
 
             /* If server is not started run the php script... */
             if ($this->server->selectEverything(true)->getStatus() != 2) {
                 $this->addToList($type, $name, $reason);
-            /* ...else send the appropiate commande the the server */
+                /* ...else send the appropiate commande the the server */
             } else {
                 $this->sendCommand($type, $name, false, $reason);
                 sleep(2);
@@ -59,7 +60,7 @@ class PlayersController extends Controller
     {
         $client = new \GuzzleHttp\Client();
         try {
-            $response = $client->request('GET', 'https://api.mojang.com/users/profiles/minecraft/'.$name);
+            $response = $client->request('GET', 'https://api.mojang.com/users/profiles/minecraft/' . $name);
         } catch (\Exception $e) {
             if (getenv("ENV_DEV")) {
                 throw $e;
@@ -108,7 +109,7 @@ class PlayersController extends Controller
         $jsonPhp = $this->getJson($type);
         $jsonPhp[] = $infos;
         if (!is_int(file_put_contents(
-            BASE_PATH."minecraft_server/{$type}.json",
+            BASE_PATH . "minecraft_server/{$type}.json",
             json_encode($jsonPhp, JSON_PRETTY_PRINT)
         ))) {
             $this->getFlash()->addAlert("Erreur d'écriture !");
@@ -141,7 +142,7 @@ class PlayersController extends Controller
             }
             /* Transform this new array into json format and write it into .json */
             if (is_int(file_put_contents(
-                BASE_PATH."minecraft_server/{$type}.json",
+                BASE_PATH . "minecraft_server/{$type}.json",
                 json_encode($resultArray, JSON_PRETTY_PRINT)
             ))) {
                 echo "done";
@@ -163,7 +164,7 @@ class PlayersController extends Controller
         $regex = "/^([0-9-]+)\T([0-9:]+)(.*)/";
         preg_match($regex, $time->format(\DateTime::ATOM), $matches);
         array_shift($matches);
-        $timeArray = array_replace( $matches, [2 => str_replace(':', '', $matches[2])] );
+        $timeArray = array_replace($matches, [2 => str_replace(':', '', $matches[2])]);
         $timeStr = implode(' ', $timeArray);
         return $timeStr;
     }
@@ -199,7 +200,7 @@ class PlayersController extends Controller
     private function getJson(string $type): ?array
     {
         try {
-            return json_decode(file_get_contents(BASE_PATH."minecraft_server/$type.json"), true);
+            return json_decode(file_get_contents(BASE_PATH . "minecraft_server/$type.json"), true);
         } catch (\Throwable $e) {
             $this->getFlash()->addWarning("Le fichier \"$type.json\" n'a pas été trouvé! \nLancer le serveur une première fois et revenez ici.");
             return null;

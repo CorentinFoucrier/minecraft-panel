@@ -22,17 +22,26 @@
     </thead>
 
     <tbody>
-    {% for player in bannedPlayers %}
-        <tr>
-            <td class="align-middle">{{player.name}}</td>
-            <td class="align-middle">{{player.uuid}}</td>
-            <td class="align-middle">
-                Le <strong class="text-primary">{{player.created|date("d/m/Y")}}</strong> à <strong class="text-primary">{{player.created|date("h:i")}}</strong><br />
-                Par : {{player.source}}<br />
-                Pour : {{player.reason}}
-            </td>
-            <td class="align-middle"><button class="btn btn-danger btn-sm float-right mx-auto delete"><i class="far fa-trash-alt"></i></button></td>
-        </tr>
-    {% endfor %}
+        {% for player in bannedPlayers %}
+            <tr>
+                <td class="align-middle">{{player.name}}</td>
+                <td class="align-middle">{{player.uuid}}</td>
+                <td class="align-middle">
+                    Le
+                    <strong class="text-primary">{{player.created|date("d/m/Y")}}</strong>
+                    à
+                    <strong class="text-primary">{{player.created|date("h:i")}}</strong><br/>
+                    Par :
+                    {{player.source}}<br/>
+                    Pour :
+                    {{player.reason}}
+                </td>
+                <td class="align-middle">
+                    <button class="btn btn-danger btn-sm float-right mx-auto delete">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>

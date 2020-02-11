@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Model;
 
 use \Core\Controller\Database\DatabaseController;
@@ -38,7 +39,7 @@ class Table
                 3 => "ClassTable"] */
             $class_name = end($parts); // We just want the "end" of this array
             // Build a string with the user defined prefix, remove "Table" and go to lowercase
-            $this->table = PREFIX.strtolower(str_replace('Table', '', $class_name));
+            $this->table = PREFIX . strtolower(str_replace('Table', '', $class_name));
         }
     }
 
@@ -179,11 +180,11 @@ class Table
         $column_parts = [];
         foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = :$k";
-            $attributes[":".$k] = "$v";
+            $attributes[":" . $k] = "$v";
         }
         foreach ($columns as $k => $v) {
             $column_parts[] = "$k = :$k";
-            $attributes[":".$k] = "$v";
+            $attributes[":" . $k] = "$v";
         }
         $sql_part = implode(', ', $sql_parts);
         $column_part = implode(' AND ', $column_parts);

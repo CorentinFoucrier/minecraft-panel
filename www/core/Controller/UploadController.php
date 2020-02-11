@@ -18,8 +18,7 @@ class UploadController extends Controller
         string $attrName,
         array $exentions,
         array $mimeTypes
-    ): ?string
-    {
+    ): ?string {
         $file = $_FILES[$attrName];
         $fileName = htmlspecialchars($file['name']);
         // If file is not empty

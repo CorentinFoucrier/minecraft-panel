@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use xPaw\MinecraftPing;

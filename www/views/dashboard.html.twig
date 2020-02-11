@@ -6,10 +6,13 @@
         <div class="col-md-4 mb-3 mb-md-0">
             <div class="card">
                 <div class="card-header h6">
-                    Version: <span class="float-right" id="version">{{version}}</span>
+                    Current version:
+                    <span class="float-right" id="version">{{currentVersion}}</span>
                 </div>
                 <div class="card-body">
-                    <p class="card-text text-success"><i class="far fa-check-circle"></i> Version à jour !</p>
+                    <p class="card-text text-success">
+                        <i class="far fa-check-circle"></i>
+                        Version à jour !</p>
                     <button class="btn btn-dark btn-sm float-right" data-toggle="modal" data-target="#changeVersion">Changer la version</button>
                 </div>
             </div>
@@ -40,14 +43,17 @@
                     </div>
                     <br/>
                     <div class="row float-right">
-                        <button onclick="serverStart();" id="startButton" class="btn btn-primary mr-md-1 mb-1 text-uppercase not-allowed" disabled><i class="fas fa-play"></i> 
+                        <button onclick="serverStart();" id="startButton" class="btn btn-primary mr-md-1 mb-1 text-uppercase not-allowed" disabled>
+                            <i class="fas fa-play"></i>
                             Démarrer
                             <span id="startButtonLoading"></span>
                         </button>
-                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning mr-md-1 mb-1 text-uppercase not-allowed" disabled><i class="fas fa-redo"></i> 
+                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning mr-md-1 mb-1 text-uppercase not-allowed" disabled>
+                            <i class="fas fa-redo"></i>
                             Redémmarer
                         </button>
-                        <button onclick="serverStop();" id="stopButton" class="btn btn-danger text-uppercase mr-md-1 mb-1 not-allowed" disabled><i class="fas fa-power-off"></i> 
+                        <button onclick="serverStop();" id="stopButton" class="btn btn-danger text-uppercase mr-md-1 mb-1 not-allowed" disabled>
+                            <i class="fas fa-power-off"></i>
                             Stop
                             <span id="stopButtonLoading"></span>
                         </button>
@@ -62,27 +68,34 @@
             <div class="card mb-3">
                 <div class="row no-gutters">
                     <div class="console-side col-md-2 d-md-flex flex-md-column justify-content-md-center d-none d-md-block">
-                        <h5 class="text-center mt-md-3"><b>Opérateurs</b></h5>
+                        <h5 class="text-center mt-md-3">
+                            <b>Opérateurs</b>
+                        </h5>
                         <ul>
-                        {% for op in ops %}
-                            <li>{{op.name}}</li>
-                        {% endfor %}
+                            {% for op in ops %}
+                                <li>{{op.name}}</li>
+                            {% endfor %}
                         </ul>
                         <div class="mt-md-auto mb-md-3 mx-md-auto">
-                            <a href="#" class="btn btn-success btn-sm not-allowed wip"><i class="fas fa-plus"></i> Ajouter un opérateur</a>
+                            <a href="#" class="btn btn-success btn-sm not-allowed wip">
+                                <i class="fas fa-plus"></i>
+                                Ajouter un opérateur</a>
                         </div>
                     </div>
                     <div class="col-md-10 p-md-2">
                         <div class="card-body py-md-0">
-                            <div class="row">
+                            <div
+                                class="row">
                                 {# Console renderer #}
                                 <div id="log" class="border pl-1 overflow" style="height:200px;"></div>
                             </div>
-                            
+
                             <div class="row pt-2">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <div class="input-group-text bg-dark"><i class="fas fa-terminal"></i></div>
+                                        <div class="input-group-text bg-dark">
+                                            <i class="fas fa-terminal"></i>
+                                        </div>
                                     </div>
                                     <input class="form-control" type="text" name="send-command" id="send-command">
                                     <div class="input-group-append">
@@ -97,26 +110,27 @@
         </div>
     </div>
     <input type="hidden" id="token" value="{{token}}">
-{% include "Includes/Modals/SelectVersionModal.html.twig" %}
-{% include "Includes/Modals/eula.html.twig" %}
+    {% include "Includes/Modals/SelectVersionModal.html.twig" %}
+    {% include "Includes/Modals/eula.html.twig" %}
 {% endblock %}
 
 {% block javascripts %}
     <script>
-    {% for warnings in flash("warning") %}
-        toastr.options = {
-            "closeButton": true,
-            "positionClass": "toast-bottom-left",
-            "showDuration": "-1",
-            "hideDuration": "-1",
-            "timeOut": "-1",
-            "extendedTimeOut": "-1",
-        }
-        toastr.warning("{{warnings}}");
-    {% endfor %}
+        {% for warnings in flash("warning") %}
+            toastr.options = {
+                "closeButton": true,
+                "positionClass": "toast-bottom-left",
+                "showDuration": "-1",
+                "hideDuration": "-1",
+                "timeOut": "-1",
+                "extendedTimeOut": "-1"
+            }
+            toastr.warning("{{ warnings }}");{% endfor %}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-    <script>var socket = io.connect('{{socketUrl}}');</script>
+    <script>
+        var socket = io.connect('{{ socketUrl }}');
+    </script>
     <script src="assets/js/dashboard.js"></script>
     <script src="assets/js/console.js"></script>
     <script src="assets/js/selectVersion.js"></script>

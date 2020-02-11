@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Core\Controller\Controller;
@@ -103,7 +104,7 @@ class UserController extends Controller
             if ($password === $password_verify) {
                 if (strlen($password) >= 8) {
                     $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
-                    if ($this->user->updateBy(['username'=>$username], [
+                    if ($this->user->updateBy(['username' => $username], [
                         'default_password' => '0',
                         'password' => $passwordHash
                     ])) {

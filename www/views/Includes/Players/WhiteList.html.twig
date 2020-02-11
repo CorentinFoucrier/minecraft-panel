@@ -20,12 +20,16 @@
     </thead>
 
     <tbody>
-    {% for player in whitelist %}
-        <tr>
-            <td>{{player.name}}</td>
-            <td>{{player.uuid}}</td>
-            <td><button class="btn btn-danger btn-sm float-right delete"><i class="far fa-trash-alt"></i></button></td>
-        </tr>
-    {% endfor %}
+        {% for player in whitelist %}
+            <tr>
+                <td>{{player.name}}</td>
+                <td>{{player.uuid}}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm float-right delete">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>

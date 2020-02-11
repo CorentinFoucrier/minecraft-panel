@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Core\Controller\Controller;
@@ -19,18 +20,20 @@ class ControlsController extends Controller
      */
     public function start(): void
     {
-        $eula = BASE_PATH."minecraft_server/eula.txt";
+        $eula = BASE_PATH . "minecraft_server/eula.txt";
 
         if ($_POST['accept'] === "true") {
-            if ( !file_exists($eula) ) {
-                $h=fopen($eula, "-w");fclose($h); // create eula.txt if not exist
+            if (!file_exists($eula)) {
+                $h = fopen($eula, "-w");
+                fclose($h); // create eula.txt if not exist
                 file_put_contents($eula, "eula=true");
             } else {
                 file_put_contents($eula, "eula=true");
             }
         }
 
-        if ( !empty($_POST['token'])
+        if (
+            !empty($_POST['token'])
             && $this->hasPermission('startAndStop', false)
             && $_POST['token'] === $_SESSION['token']
         ) {
@@ -43,7 +46,9 @@ class ControlsController extends Controller
                         echo "eula";
                         exit();
                     }
-                } catch (\Exception $e) { echo "error"; }
+                } catch (\Exception $e) {
+                    echo "error";
+                }
                 /* If isn't start or has an error then start it */
                 $req = $this->server->selectEverything(true);
                 /* If the server is in stopped or error state */
@@ -55,12 +60,12 @@ class ControlsController extends Controller
                         exit('Login failed!');
                     }
                     $ssh->write("screen -R minecraft_server\n");
-                    $ssh->write("cd /home/".SHELL_USER."/minecraft_server\n");
+                    $ssh->write("cd /home/" . SHELL_USER . "/minecraft_server\n");
                     $cn = getenv('CONTAINER_NAME');
                     // If java command failed the command following pipes is launch.
                     $version = $this->server->selectEverything(true)->getVersion();
                     $ssh->write(
-                        "java -Xms".RAM_MIN." -Xmx".RAM_MAX." -jar $version.jar -nogui && docker exec $cn php commands/jarError\n"
+                        "java -Xms" . RAM_MIN . " -Xmx" . RAM_MAX . " -jar $version.jar -nogui && docker exec $cn php commands/jarError\n"
                     );
                     // The default state is "in loading" an AJAX script will send a request to know if the server is up.
                     $ssh->read();
@@ -83,7 +88,8 @@ class ControlsController extends Controller
      */
     public function stop(): void
     {
-        if ( !empty($_POST['token'])
+        if (
+            !empty($_POST['token'])
             && $this->hasPermission('startAndStop', false)
             && $_POST['token'] === $_SESSION['token']
         ) {

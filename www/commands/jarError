@@ -1,9 +1,11 @@
 #!/usr/bin/env php
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 if (php_sapi_name() != "cli") {
     fwrite(
         STDERR,
-        PHP_EOL."File only in CLI".PHP_EOL
+        PHP_EOL . "File only in CLI" . PHP_EOL
     );
     die(1);
 }
@@ -25,7 +27,7 @@ $prefix = getenv('PREFIX');
 
 $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpassword);
 
-$req = $pdo->query("SELECT * FROM ". $prefix ."server");
+$req = $pdo->query("SELECT * FROM " . $prefix . "server");
 $req->setFetchMode(PDO::FETCH_OBJ);
 $result = $req->fetchObject();
 /**
@@ -34,8 +36,9 @@ $result = $req->fetchObject();
  */
 if ($result->status != 0) {
     $pdo->exec(
-        "UPDATE ". $prefix ."server
+        "UPDATE " . $prefix . "server
         SET `status` = '3'
         WHERE `id` = '1'
-    ");
+    "
+    );
 }

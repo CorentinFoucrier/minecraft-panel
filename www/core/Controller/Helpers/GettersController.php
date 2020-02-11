@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Controller\Helpers;
 
 use Core\Model\Entity;

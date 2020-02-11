@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Controller\Helpers;
 
 use Core\Controller\Controller;
@@ -23,11 +24,11 @@ class ServerPropertiesController extends Controller
         preg_match_all($regex, $fileContent, $matches, PREG_SET_ORDER, 0);
 
         /* Generate $config array as $key => $value */
-        for ($i=0; $i < count($matches); $i++) {
+        for ($i = 0; $i < count($matches); $i++) {
             $config[$matches[$i][1]] = htmlspecialchars($matches[$i][2], ENT_QUOTES);
         }
 
-        ksort($config);//Sort alphabeticly
+        ksort($config); //Sort alphabeticly
 
         return $config;
     }
