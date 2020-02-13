@@ -1,121 +1,128 @@
 /* GENERAL */
-@import url('https://fonts.googleapis.com/css?family=Ubuntu&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Ubuntu&display=swap");
 * {
-    font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
 }
 
-html, body {
-    height: 100%;
+*::selection {
+  background: #008542;
+  color: #fff;
+}
+
+html,
+body {
+  height: 100%;
 }
 body {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .content {
-    flex: 1 0 auto;
+  flex: 1 0 auto;
 }
 
 .footer {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .not-allowed {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
 
-.noresize { /* no resize for <textarea>*/
-    resize: none; 
+.noresize {
+  /* no resize for <textarea>*/
+  resize: none;
 }
 
 .custom-file-input ~ .custom-file-label::after {
-    content: "Choisir";
+  content: "Choisir";
 }
 
 .debug {
-    border: 1px solid red;
+  border: 1px solid red;
 }
 
 /* TOASTR JS OVERRIDE */
 #toast-container > div {
-    opacity: 1;
-    box-shadow: none;
+  opacity: 1;
+  box-shadow: none;
 }
 
 /* NAVBAR-TOP */
 .navbar-top {
-    box-shadow: 0px 3px 2px 0px rgb(35, 35, 35);
-    background-color: #282828;
-    position: absolute;
-    width: 100%;
-    z-index: 1;
+  box-shadow: 0px 3px 2px 0px rgb(35, 35, 35);
+  background-color: #282828;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
 }
 
 .title {
-    color: #FDFDFD;
+  color: #fdfdfd;
 }
 
 .flag {
-    height: 20px;
-    width: 20px;
+  height: 20px;
+  width: 20px;
 }
 
 /* SIDE BAR */
 nav {
-    z-index: 2;
-    background-color: #1e1e1e;
-    color: #FDFDFD;
+  z-index: 2;
+  background-color: #1e1e1e;
+  color: #fdfdfd;
 }
 
 nav > div.items {
-    display: inline !important;
-    overflow-y: auto !important;
+  display: inline !important;
+  overflow-y: auto !important;
 }
 
 nav > a div.active {
-    background-color: rgba(89, 89, 89, 0.534);
+  background-color: rgba(89, 89, 89, 0.534);
 }
 
 nav > a div:hover {
-    background-color: rgba(89, 89, 89, 0.534);
+  background-color: rgba(89, 89, 89, 0.534);
 }
 
 nav div {
-    font-size: 0.9em;
+  font-size: 0.9em;
 }
 
 .overflow {
-    height:100vh;
-    width:100%;
-    overflow:hidden!important;
-    position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden !important;
+  position: relative;
 }
 
 /* DASHBOARD */
 
 .console-side {
-    border-right: 1px solid #1e1e1e;
-    background-color: #1e1e1e;
-    border-radius: 4px 0 0 4px;
+  border-right: 1px solid #1e1e1e;
+  background-color: #1e1e1e;
+  border-radius: 4px 0 0 4px;
 }
 
 .console-side ul {
-    list-style: inside;
+  list-style: inside;
 }
 
 .console-input {
-    border-top: 1px solid #D8D8D8;
+  border-top: 1px solid #d8d8d8;
 }
 
 /* TABLES */
 table {
-    width: auto!important;
+  width: auto !important;
 }
 
 /* BOOTSTRAP OVERRIDE */

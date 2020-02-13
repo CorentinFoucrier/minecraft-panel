@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use phpseclib\Net\SSH2;
 use Core\Controller\Controller;
-use Core\Controller\Helpers\LogsController;
 
 /**
  * This class related to the minecraft
@@ -18,16 +17,10 @@ class ServerController extends Controller
     }
 
     /**
-     * Get the latest.log file
-     * for an AJAX call and return
-     * n last line of this file to display
-     * minecraft console
+     * AJAX: Check the BDD stored server status and return it to the client.
+     *
+     * @return void
      */
-    public function getLog()
-    {
-        return LogsController::getLog();
-    }
-
     public function checkStatus(): void
     {
         $req = $this->server->selectEverything(true);
@@ -52,10 +45,14 @@ class ServerController extends Controller
         }
     }
 
-    public function sendCommand(?string $p_command = null): void
+    /**
+     * AJAX: Send a Minecraft command to Minecraft server console
+     *
+     * @return void
+     */
+    public function sendCommand(): void
     {
         $server = $this->server->selectEverything(true);
-        /* If sendCommand() reached by AJAX post methode => $_POST['command'] */
         if (
             !empty($_POST['command'])
             && $server->getStatus() == 2
@@ -80,53 +77,40 @@ class ServerController extends Controller
     {
         $status = $this->server->selectBy('status', ['id' => 1], true)->getStatus();
         if (!empty($_POST) && $status != 2) {
-            if ($this->hasPermission('sendCommand', false)) {
-                $version = $_POST['version']; // Version number
-                $gameVersion = $_POST['gameVersion']; // Game Version eg. "Vanilla"
-                $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
-                $versions = json_decode($json, true);
+            if ($this->hasPermission('changeVersion', false)) {
+                $version = $_POST['version']; // Version eg. Release_1.14.4
+                $gameVersion = $_POST['gameVersion']; // Game Version eg. "vanilla"
+                $versionNumber = explode('_', $version)[1];
                 if ($gameVersion === "vanilla") {
-                    /**
-                     * expected values:
-                     * array("0" => "MC", "1" => "1.14.4") OR
-                     * array("0" => "SNAP", "1" => "19w42a")
-                     * @var array $vanilla
-                     */
-                    $vanilla = explode('_', $version);
-                    switch ($vanilla[0]) {
-                        case 'MC':
-                            $link = $versions[$gameVersion]['stable'][$vanilla[1]];
-                            if ($link == null) {
-                                goto error;
-                            } else {
-                                if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
-                                    echo "fromCache";
-                                } else {
-                                    $this->downloadServer($version, $link);
-                                    echo "downloaded";
-                                }
-                                $this->server->update(1, ['version' => $version]);
+                    if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
+                        if ($this->server->update(1, ['version' => $version])) {
+                            echo "fromCache";
+                        } else {
+                            echo "error";
+                        }
+                    } else {
+                        $json = file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+                        $mojangVersions = json_decode($json, true);
+                        for ($i = 0; $i < count($mojangVersions['versions']); $i++) {
+                            $index = in_array($versionNumber, $mojangVersions['versions'][$i]);
+                            if ($index) {
+                                $launchermetaLink = json_decode(file_get_contents($mojangVersions['versions'][$i]['url']), true);
+                                $link = $launchermetaLink['downloads']['server']['url'];
+                                break;
                             }
-                            break;
-                        case 'SNAP':
-                            $link = $versions[$gameVersion]['snapshot'][$vanilla[1]];
-                            if ($link == null) {
-                                goto error;
-                            } else {
-                                if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
-                                    echo "fromCache";
-                                } else {
-                                    $this->downloadServer($version, $link);
-                                    echo "downloaded";
-                                }
-                                $this->server->update(1, ['version' => $version]);
-                            }
-                            break;
-                        default:
-                            error: echo "error";
-                            break;
+                        }
+                        if (
+                            $link != null
+                            && !$this->downloadServer($version, $link)
+                            && !$this->server->update(1, ['version' => $version])
+                        ) {
+                            echo "downloaded";
+                        } else {
+                            echo "error";
+                        }
                     }
                 } elseif ($gameVersion === "spigot" || $gameVersion === "forge") {
+                    $versions = json_decode(file_get_contents('https://pastebin.com/raw/LVdci0Ck'), true);
                     $link = $versions[$gameVersion][explode('_', $version)[1]];
                     if ($link == null) {
                         echo "error";
@@ -148,19 +132,23 @@ class ServerController extends Controller
         }
     }
 
+    /**
+     * Send the command to the Minecraft Console via SSH protocol
+     *
+     * @param string $command The Minecraft command to send
+     * @return void
+     */
     public function sshCommand(string $command): void
     {
-        $command = str_replace(['\'', '"'], ['\\u0027', '\\u0022'], $command);
+        $command = str_replace(['\'', '"'], ['\\u0027', '\\u0022'], $command); // Replace quotes by thier respective unicodes.
         $ssh = new SSH2(getenv('IP'));
         try {
             $ssh->login(SHELL_USER, SELL_PWD);
         } catch (\Exception $e) {
             if (!empty($_POST['command'])) {
                 echo "error";
-                exit();
-            } else {
-                exit();
             }
+            exit();
         }
         /**
          * @see https://theterminallife.com/sending-commands-into-a-screen-session/
@@ -168,8 +156,15 @@ class ServerController extends Controller
         $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
     }
 
-    private function downloadServer(string $version, string $link): void
+    /**
+     * Initiates the download of the Minecraft server.jar|spigot.jar|forge.jar
+     *
+     * @param string $version Version tag & number eg. MC_1.14.4
+     * @param string $link Direct download link to server.jar
+     * @return int|false the number of bytes that were written to the file, or false on failure
+     */
+    private function downloadServer(string $version, string $link)
     {
-        file_put_contents("/var/minecraft_server/$version.jar", fopen($link, 'r'));
+        return file_put_contents(BASE_PATH . "minecraft_server/$version.jar", fopen($link, 'r'));
     }
 }

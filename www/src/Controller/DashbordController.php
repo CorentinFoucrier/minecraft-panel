@@ -10,6 +10,7 @@ class DashbordController extends Controller
     {
         $this->loadModel('server');
     }
+
     public function showDashboad()
     {
         $this->userOnly();
@@ -22,22 +23,40 @@ class DashbordController extends Controller
         try {
             $ops = json_decode(file_get_contents(BASE_PATH . 'minecraft_server/ops.json'), true);
         } catch (\Exception $e) {
-            (getenv("ENV_DEV")) ? $this->getFlash()->addWarning("[Dev only]|'ops.json' n'existe pas !") : $ops = [];
+            (getenv("ENV_DEV")) ? $this->getFlash()->addWarning('[Dev only]|"ops.json" n\'existe pas !') : $ops = [];
         }
 
-        $json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
-        $versions = json_decode($json, true);
+        $versions = json_decode(file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json"), true);
+        if (is_array($versions)) {
+            $vanilla = [
+                "release" => [],
+                "snapshot" => []
+            ];
+
+            for ($i = 0; $i < count($versions['versions']); $i++) {
+                $version = $versions['versions'][$i];
+                if ($version['type'] == "release") {
+                    array_push($vanilla['release'], $version['id']);
+                } elseif ($version['type'] == "snapshot") {
+                    array_push($vanilla['snapshot'], $version['id']);
+                }
+            }
+        }
+
+        $otherVersions = json_decode(file_get_contents("https://pastebin.com/raw/LVdci0Ck"), true);
 
         return $this->render("dashboard", [
             'title' => "Tableau de bord",
             'maxPlayers' => $maxPlayers,
             'currentVersion' => $currentVersion,
-            'versions' => $versions,
+            'vanilla' => $vanilla,
+            'otherVersions' => $otherVersions,
             'ops' => $ops,
             'token' => $token,
             'socketUrl' => $socketUrl
         ]);
     }
+
     /**
      * Get online players through AJAX
      * Route: /getOnlinePlayers
@@ -48,6 +67,7 @@ class DashbordController extends Controller
         $players = $this->getServerQuery()->getPlayers();
         echo $players['online'];
     }
+
     /**
      * Get active minecraft version
      * Route: /getVersion
@@ -56,21 +76,10 @@ class DashbordController extends Controller
     public function getVersion(): string
     {
         $req = $this->server->selectEverything(true)->getVersion();
-        $version = explode('_', $req);
-        if ($version[0] == "MC") {
-            $v = $version = "Vanilla " . $version[1];
-            if (!empty($_GET)) {
-                echo $v;
-            }
-            return $v;
-        } elseif ($version[0] == "SNAP") {
-            $v = $version = "Snapshot " . $version[1];
-            if (!empty($_GET)) {
-                echo $v;
-            }
-            return $v;
-        } else {
-            return $version = ucfirst(str_replace('_', ' ', $req));
+        $version = ucfirst(str_replace('_', ' ', $req));
+        if (!empty($_GET)) {
+            echo $version;
         }
+        return $version;
     }
 }

@@ -1,31 +1,10 @@
-var stopButton = $('#stopButton');
-var startButton = $('#startButton');
-var restartButton = $('#restartButton');
-var stopButtonLoading = $('#stopButtonLoading');
-var startButtonLoading = $('#startButtonLoading');
-var psLog = new PerfectScrollbar('#log');
-var token = $('#token').val();
-
-// Check the minecraft server status when the document is ready.
-$(document).ready(checkStatus());
-
-socket.on('client', data => {
-    switch (data) {
-        case "start":
-            $('#log').empty();
-            startButton.attr('disabled', 'disabled');
-            startButtonLoading.addClass('ld ld-ring ld-spin');
-            break;
-        case "stop":
-            stopButton.attr('disabled', 'disabled');
-            stopButtonLoading.addClass('ld ld-ring ld-spin');
-            break;
-        case "checkStatus":
-            checkStatus();
-            break;
-    }
-});
-
+let stopButton = $('#stopButton');
+let startButton = $('#startButton');
+let restartButton = $('#restartButton');
+let stopButtonLoading = $('#stopButtonLoading');
+let startButtonLoading = $('#startButtonLoading');
+let psLog = new PerfectScrollbar('#log');
+let token = $('#token').val();
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -60,7 +39,7 @@ const checkStatus = () => {
     });
 }
 
-function serverStart(accept) {
+const serverStart = accept => {
     event.preventDefault();
     if (accept == true) { $('#eula').modal('hide') }
     socket.emit('nodejs', "start");
@@ -134,3 +113,27 @@ const sendCommand = () => {
         }
     }, "text");
 }
+
+socket.on('getVersion', version => {
+    $('#version').html(version);
+});
+
+socket.on('client', data => {
+    switch (data) {
+        case "start":
+            $('#log').empty();
+            startButton.attr('disabled', 'disabled');
+            startButtonLoading.addClass('ld ld-ring ld-spin');
+            break;
+        case "stop":
+            stopButton.attr('disabled', 'disabled');
+            stopButtonLoading.addClass('ld ld-ring ld-spin');
+            break;
+        case "checkStatus":
+            checkStatus();
+            break;
+    }
+});
+
+// Check the minecraft server status when the document is ready.
+$(document).ready(checkStatus());

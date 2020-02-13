@@ -1,10 +1,10 @@
-var id;
-var token;
+let id;
+let token;
 
-function deleteCoAdmin(id, token) {
-    $.post("/coAdmin/delete/"+id+"/"+token, {deleteCoAdmin: "delete"}, function(data) {
+const deleteCoAdmin = (id, token) => {
+    $.post("/coAdmin/delete/" + id + "/" + token, { deleteCoAdmin: "delete" }, (data) => {
         if (data === 'deleted') {
-            $("#"+id).fadeOut(500, function() { $(this).remove(); });
+            $("#" + id).fadeOut(500, () => $(this).remove());
             toastr.info("Utilisateur supprimé avec succès.");
         } else {
             toastr.error("Une erreur est survenue !");
@@ -12,22 +12,22 @@ function deleteCoAdmin(id, token) {
     });
 }
 
-function editCoAdmin(p_id, p_token) {
+const editCoAdmin = (p_id, p_token) => {
     id = p_id;
     token = p_token;
-    $('#'+p_id+'_permissionsModal').modal('toggle');
+    $('#' + p_id + '_permissionsModal').modal('toggle');
 }
 
-$('.permission').click(function() {
-    var checked = $(this).prop('checked');
-    var clicked = $(this).attr('name');
+$('.permission').click(() => {
+    let checked = $(this).prop('checked');
+    let clicked = $(this).attr('name');
 
     $.post("/coAdmin/edit", {
         checked: checked,
         token: token,
         id: id,
         clicked: clicked
-    }, function(data) {
+    }, (data) => {
         if (data !== 'ok') {
             toastr.error("Une erreur est survenue !");
         }

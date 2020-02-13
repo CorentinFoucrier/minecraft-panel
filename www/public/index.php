@@ -1,4 +1,5 @@
 <?php
+
 if (getenv('ENV_DEV') === "false") {
     error_reporting(E_ERROR | E_PARSE);
 }
@@ -17,13 +18,13 @@ $app->getRouter($basePath)
     ->match('/co-administrators', 'CoAdmin#showCoAdmin', 'coAdmin')
     ->match('/worlds', 'Worlds#showWorlds', 'worlds')
     ->match('/players', 'Players#showPlayers', 'players')
-    
+
     ->get('/', 'Dashbord#showDashboad', 'dashboard')
     ->get('/checkStatus', 'Server#checkStatus', 'check_status')
     ->get('/getOnlinePlayers', 'Dashbord#getOnlinePlayers', 'getOnlinePlayers')
     ->get('/getVersion', 'Dashbord#getVersion', 'getVersion')
     ->get('/logout', 'User#logout', 'logout')
-    
+
     ->post('/start', 'Controls#start', 'server_start')
     ->post('/restart', 'Controls#restart', 'server_restart')
     ->post('/stop', 'Controls#stop', 'server_stop')

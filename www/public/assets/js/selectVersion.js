@@ -1,55 +1,49 @@
-async function selectVersion(gameVersion) {
+const selectVersion = async gameVersion => {
     event.preventDefault();
-    var version = $('#'+gameVersion);
-    var displayVersion = $('#version'); //span element
-    var modal = $('#changeVersion');
-    var token = $('#token').val();
-    var status = await checkStatus();
+    let version = $('#' + gameVersion).val();
+    let formatedVersion = $('#' + gameVersion).val().replace('_', ' ');
+    let displayVersion = $('#version');
+    let modal = $('#changeVersion');
+    let token = $('#token').val();
+    let status = await checkStatus();
 
     if (status !== "started") {
-        if (version.val() !== "default") {
+        if (version !== "default") {
             toastr.info("Début du téléchargement", "Téléchargement...");
             $.post("./selectVersion", {
-                version: version.val(),
+                version: version,
                 gameVersion: gameVersion,
                 token: token
-            }, async function (data) {
-                v = await getVersion();
+            }, async (data) => {
                 if (data == "fromCache") {
-                    displayVersion.html(v);
+                    socket.emit('nodejs', formatedVersion);
+                    displayVersion.html(formatedVersion);
                     modal.modal('hide');
-                    toastr.success("Votre version a bien été changée !", "Charger depuis le cache.");
+                    toastr.clear();
+                    setTimeout(() => {
+                        toastr.success("Votre version a bien été changée !", "Charger depuis le cache.");
+                    }, 1100);
                 } else if (data == "downloaded") {
-                    displayVersion.html(v);
+                    socket.emit('nodejs', formatedVersion);
+                    displayVersion.html(formatedVersion);
                     modal.modal('hide');
-                    toastr.success("Votre version a bien été télécharger et changé !", "Téléchagement et changement !")
+                    toastr.success("Votre version a bien été télécharger et changé !", "Téléchagement et changement !");
                 } else if (data == "not allowed") {
                     toastr.clear();
-                    setTimeout(function(){
+                    setTimeout(() => {
                         toastr.error("Vous n'êtes pas autorisé à changer la version du serveur.", "Permission non accordée !");
                     }, 1100);
                 } else {
                     toastr.clear();
-                    setTimeout(function(){
+                    setTimeout(() => {
                         toastr.error("Une erreur est survenue", "Erreur!");
                     }, 1100);
                 }
-            },"text");
-        } else if (data == "error") {
-            toastr.error("Aucune version n'a été trouvée !", "Erreur !");
+            }, "text");
         } else {
             toastr.error("Veuillez choisir une verison.", "Aucune version selectionnée");
         }
     } else {
         toastr.error("Veuillez arrêter votre serveur avant de changer de version.", "Une erreur est survenue !");
     }
-}
-
-function getVersion() {
-    return new Promise(resolve => {
-        $.get("/getVersion", {g:"v"},
-            function (data) {
-                resolve(data);
-            }, "text");
-    })
 }

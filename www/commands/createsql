@@ -104,9 +104,8 @@ echo "\e[1m\e[33m Instert default value to the database\e[0m" . PHP_EOL;
 sleep(1);
 echo $barInsert->done(1);
 // Check what is the last minecraft version
-$json = file_get_contents('https://pastebin.com/raw/LVdci0Ck');
-$versions = json_decode($json, true);
-$version = array_key_first($versions['vanilla']['stable']);
+$versions = json_decode(file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json"), true);
+$version = $versions['latest']['release'];
 $pdo->exec("INSERT INTO `{$prefix}server` (
     `name`, `status`, `version`
 ) VALUES (
