@@ -4,6 +4,7 @@ namespace App;
 
 use App\Controller\ServerController;
 use Core\Controller\RouterController;
+use Core\Controller\UploadController;
 use Core\Controller\Session\PhpSession;
 use App\Controller\ServerQueryController;
 use Core\Controller\Session\FlashService;
@@ -11,22 +12,19 @@ use Core\Controller\Helpers\LogsController;
 use Core\Controller\Database\DatabaseController;
 use Core\Controller\Database\DatabaseMysqlController;
 use Core\Controller\Helpers\ServerPropertiesController;
-use Core\Controller\UploadController;
 
 class App
 {
 
-    private static $INSTANCE;
+    private static App $INSTANCE;
 
-    public $title;
+    private RouterController $router;
 
-    private $router;
-
-    private $db_instance;
+    private DatabaseController $db_instance;
 
     public static function getInstance()
     {
-        if (is_null(self::$INSTANCE)) {
+        if (!isset(self::$INSTANCE)) {
             self::$INSTANCE = new App();
         }
         return self::$INSTANCE;
@@ -61,7 +59,7 @@ class App
 
     public function getRouter($basePath = "/var/www"): RouterController
     {
-        if (is_null($this->router)) {
+        if (!isset($this->router)) {
             $this->router = new RouterController($basePath . 'views');
         }
         return $this->router;
@@ -73,15 +71,15 @@ class App
      * @param string $tableName
      * @return object
      */
-    public function getTable(string $tableName)
+    public function getTable(string $tableName): object
     {
-        $tableName = "\\App\\Model\\Table\\" . ucfirst($tableName) . "Table";
-        return new $tableName($this->getDb());
+        $nameSpaceTable = "\\App\\Model\\Table\\" . ucfirst($tableName) . "Table";
+        return new $nameSpaceTable($this->getDb(), $tableName);
     }
 
     public function getDb(): DatabaseController
     {
-        if (is_null($this->db_instance)) {
+        if (!isset($this->db_instance)) {
             $this->db_instance = new DatabaseMysqlController(
                 getenv('MYSQL_DATABASE'),
                 getenv('MYSQL_USER'),

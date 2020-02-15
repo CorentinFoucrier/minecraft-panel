@@ -5,24 +5,17 @@ namespace Core\Controller\Session;
 interface SessionInterface
 {
     /**
-     * recupère une  info en session
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Get a session info
      */
     public function get(string $key, $default = null);
 
     /**
-     * mettre une  info en session
-     * @param string $key
-     * @param mixed $value
+     * Set a session info
      */
     public function set(string $key, $value): void;
 
-
     /**
-     * supprime une  info en session
-     * @param string $key
+     * Delete a session info
      */
     public function delete(string $key): void;
 }

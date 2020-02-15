@@ -4,13 +4,10 @@ namespace Core\Controller\Session;
 
 class ArraySession implements SessionInterface
 {
-    private $session = [];
+    private array $session = [];
 
     /**
-     * recupère une  info en session
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Get a session info
      */
     public function get(string $key, $default = null)
     {
@@ -21,9 +18,7 @@ class ArraySession implements SessionInterface
     }
 
     /**
-     * mettre une  info en session
-     * @param string $key
-     * @param mixed $value
+     * Set a session info
      */
     public function set(string $key, $value): void
     {
@@ -32,8 +27,7 @@ class ArraySession implements SessionInterface
 
 
     /**
-     * supprime une  info en session
-     * @param string $key
+     * Delete a session info
      */
     public function delete(string $key): void
     {

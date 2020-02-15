@@ -7,7 +7,7 @@ use Core\Controller\Controller;
 class ServerPropertiesController extends Controller
 {
 
-    public static $filePath = BASE_PATH . 'minecraft_server/server.properties';
+    public static string $filePath = BASE_PATH . 'minecraft_server/server.properties';
 
     public static function getContent(): ?array
     {

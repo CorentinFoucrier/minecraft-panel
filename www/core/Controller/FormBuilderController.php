@@ -5,11 +5,11 @@ namespace Core\Controller;
 class FormBuilderController
 {
 
-    private $html;
+    private string $html;
 
-    private $button;
+    private string $button;
 
-    private $first_time = true;
+    private bool $first_time = true;
 
     public function __construct(string $title)
     {
@@ -70,7 +70,7 @@ class FormBuilderController
         HTML;
     }
 
-    public function addCheckbox(string $id, string $value, string $label)
+    public function addCheckbox(string $id, string $value, string $label): void
     {
         if ($value === "true" || $value === true) {
             $checked = 'checked=""';
@@ -86,7 +86,7 @@ class FormBuilderController
 
     public function addSubmit(string $id, string $value, string $class): void
     {
-        $this->button .= <<<HTML
+        $this->button = <<<HTML
         <button type="submit" id="{$id}" class="{$class}">{$value}</button>\n
         HTML;
     }

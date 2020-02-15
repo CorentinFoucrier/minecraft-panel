@@ -6,30 +6,19 @@ use Core\Model\Entity;
 
 class ServerEntity extends Entity
 {
-    /**
-     * @var int $id
-     */
-    private $id;
-    /**
-     * @var string $name
-     */
-    private $name;
-    /**
-     * @var int $panel_port
-     */
-    private $panel_port;
-    /**
-     * @var int $is_installed
-     */
-    private $is_installed;
-    /**
-     * @var int $status
-     */
-    private $status;
-    /**
-     * @var string
-     */
-    private $version;
+
+    private int $id;
+
+    private string $name;
+
+    private int $panel_port;
+
+    private int $is_installed;
+
+    private int $status;
+
+    private string $version;
+
     /**
      * Get the value of id
      *

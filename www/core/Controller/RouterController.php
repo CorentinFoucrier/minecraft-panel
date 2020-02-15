@@ -5,7 +5,7 @@ namespace Core\Controller;
 class RouterController
 {
 
-    private $router;
+    private \AltoRouter $router;
 
     public function __construct()
     {
@@ -52,7 +52,7 @@ class RouterController
             }
         } else {
             // no route was matched
-            header($_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
+            header("Location: " . $this->url('error', ["code" => 404]));
             exit();
         }
     }

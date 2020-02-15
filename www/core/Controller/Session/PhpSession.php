@@ -9,10 +9,6 @@ class PhpSession implements SessionInterface, \ArrayAccess
 {
     /**
      * Get $_SESSION value of $key
-     * 
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
      */
     public function get(string $key, $default = null)
     {
@@ -22,12 +18,9 @@ class PhpSession implements SessionInterface, \ArrayAccess
         }
         return $default;
     }
+
     /**
      * Set $_SESSION $key and the $value in a sub array
-     * 
-     * @param string $key
-     * @param mixed $value
-     * @return void
      */
     public function set(string $key, $value): void
     {
@@ -37,9 +30,6 @@ class PhpSession implements SessionInterface, \ArrayAccess
 
     /**
      * Delete session $key
-     * 
-     * @param string $key
-     * @return void
      */
     public function delete(string $key): void
     {
@@ -49,8 +39,6 @@ class PhpSession implements SessionInterface, \ArrayAccess
 
     /**
      * Start the session if isn't started yet.
-     *
-     * @return void
      */
     private function ensureStarted(): void
     {
@@ -59,6 +47,14 @@ class PhpSession implements SessionInterface, \ArrayAccess
         }
     }
 
+    /*
+        \ArrayAccess Interface methodes below
+        https://www.php.net/manual/en/class.arrayaccess.php
+    */
+
+    /**
+     * Check if $key exists
+     */
     public function offsetExists($key): bool
     {
         $this->ensureStarted();

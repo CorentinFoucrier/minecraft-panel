@@ -3,43 +3,31 @@
 namespace Core\Model;
 
 use \Core\Controller\Database\DatabaseController;
+use Core\Controller\URLController;
 
-class Table
+abstract class Table
 {
-    /**
-     * Our Database Object
-     *
-     * @var DatabaseController
-     */
-    protected $db;
 
-    /**
-     * Table Name
-     *
-     * @var string
-     */
-    protected $table;
+    protected DatabaseController $db;
+
+    protected string $table;
 
     /**
      * This constructor is called by App\App\getTable() method
      *
      * @param DatabaseController $db
      */
-    public function __construct(DatabaseController $db)
+    public function __construct(DatabaseController $db, string $tableName)
     {
         $this->db = $db;
-        // Singleton patern
-        if (is_null($this->table)) {
-            //App\Model\Table\ClassTable
-            $parts = explode('\\', get_class($this)); // Get class and explode it into an array at backslash
-            /* array[
-                0 => "App"
-                1 => "Model"
-                2 => "Table"
-                3 => "ClassTable"] */
-            $class_name = end($parts); // We just want the "end" of this array
-            // Build a string with the user defined prefix, remove "Table" and go to lowercase
-            $this->table = PREFIX . strtolower(str_replace('Table', '', $class_name));
+        if (!isset($this->table)) {
+            // Build a string with the user defined prefix
+            $this->table = PREFIX . $tableName;
+        } else if (getenv("ENV_DEV") === "true") {
+            throw new \Exception("\$this->table must be uninitialized '" . $this->table . "' given.");
+        } else {
+            header("Location: " . URLController::getUri('error', ["code" => 500]));
+            exit();
         }
     }
 

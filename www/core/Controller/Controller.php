@@ -16,9 +16,7 @@ use Core\Extension\Twig\BeautifyStrExtension;
 abstract class Controller
 {
 
-    private $twig;
-
-    private $app;
+    private Environment $twig;
 
     /**
      * Render the HTML view of a .twig file
@@ -44,7 +42,7 @@ abstract class Controller
      */
     private function getTwig(): Environment
     {
-        if (is_null($this->twig)) {
+        if (!isset($this->twig)) {
             $loader = new FilesystemLoader(BASE_PATH . 'www/views/');
             $this->twig = new Environment($loader);
             //Global
@@ -60,20 +58,6 @@ abstract class Controller
     }
 
     /**
-     * Get an the current instance of App or
-     * create a new App if not exist
-     *
-     * @return App
-     */
-    protected function getApp(): App
-    {
-        if (is_null($this->app)) {
-            $this->app = App::getInstance();
-        }
-        return $this->app;
-    }
-
-    /**
      * Generate the url of a route name eg. /foo/bar/1
      * without the domain name
      *
@@ -83,7 +67,7 @@ abstract class Controller
      */
     protected function generateUrl(string $routeName, array $params = []): string
     {
-        return $this->getApp()->getRouter()->url($routeName, $params);
+        return App::getInstance()->getRouter()->url($routeName, $params);
     }
 
     /**
@@ -93,9 +77,10 @@ abstract class Controller
      * @param string $tableName
      * @return void
      */
-    protected function loadModel(string $tableName): void
+    protected function loadModel(string $tableName)
     {
-        $this->$tableName = $this->getApp()->getTable($tableName);
+        // Add properties dynamically to Core\Controller as many time as loadModel is called
+        $this->$tableName = App::getInstance()->getTable($tableName);
     }
 
     /**
@@ -106,7 +91,7 @@ abstract class Controller
      */
     protected function getFlash(): FlashService
     {
-        return $this->getApp()->getFlash();
+        return App::getInstance()->getFlash();
     }
 
     /**
@@ -143,7 +128,7 @@ abstract class Controller
      */
     protected function getServer(): ServerController
     {
-        return $this->getApp()->getServer();
+        return App::getInstance()->getServer();
     }
 
     /**
@@ -153,7 +138,7 @@ abstract class Controller
      */
     protected function getLogs(): LogsController
     {
-        return $this->getApp()->getLogs();
+        return App::getInstance()->getLogs();
     }
 
     /**
@@ -163,7 +148,7 @@ abstract class Controller
      */
     protected function getServerQuery(): ServerQueryController
     {
-        return $this->getApp()->getServerQuery();
+        return App::getInstance()->getServerQuery();
     }
 
     /**
@@ -211,7 +196,7 @@ abstract class Controller
 
     protected function upload(string $path, string $attrName, array $extention, array $mimeTypes): ?string
     {
-        return $this->getApp()->getUpload()->upload($path, $attrName, $extention, $mimeTypes);
+        return App::getInstance()->getUpload()->upload($path, $attrName, $extention, $mimeTypes);
     }
 
     /**

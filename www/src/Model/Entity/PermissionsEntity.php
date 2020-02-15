@@ -6,65 +6,30 @@ use Core\Model\Entity;
 
 class PermissionsEntity extends Entity
 {
-    /**
-     * @var int $id
-     */
-    private $id;
 
-    /**
-     * @var int $user_id
-     */
-    private $user_id;
+    private int $id;
 
-    /**
-     * @var int $start_and_stop
-     */
-    private $start_and_stop;
+    private int $user_id;
 
-    /**
-     * @var int $change_version
-     */
-    private $change_version;
+    private int $start_and_stop;
 
-    /**
-     * @var int $send_command
-     */
-    private $send_command;
+    private int $change_version;
 
-    /**
-     * @var int $plugins
-     */
-    private $plugins;
+    private int $send_command;
 
-    /**
-     * @var int $config
-     */
-    private $config;
+    private int $plugins;
 
-    /**
-     * @var int $world_management
-     */
-    private $worlds_management;
+    private int $config;
 
-    /**
-     * @var int $players_management
-     */
-    private $players_management;
+    private int $worlds_management;
 
-    /**
-     * @var int $scheduled_tasks
-     */
-    private $scheduled_tasks;
+    private int $players_management;
 
-    /**
-     * @var int $file_export
-     */
-    private $file_export;
+    private int $scheduled_tasks;
 
-    /**
-     * @var int $co_admin
-     */
-    private $co_admin;
+    private int $file_export;
+
+    private int $co_admin;
 
     public function getId(): ?int
     {

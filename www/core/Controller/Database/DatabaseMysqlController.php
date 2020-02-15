@@ -7,7 +7,7 @@ use \PDO;
 class DatabaseMysqlController extends DatabaseController
 {
 
-    private $pdo;
+    private PDO $pdo;
 
     public function __construct(
         string $db_name,
@@ -25,10 +25,9 @@ class DatabaseMysqlController extends DatabaseController
 
     public function getPDO(): \PDO
     {
-        if (is_null($this->pdo)) {
+        if (!isset($this->pdo)) {
             $pdo = new PDO(
-                "mysql:host=" . $this->db_host .
-                    ";dbname=" . $this->db_name,
+                "mysql:host={$this->db_host};dbname={$this->db_name}",
                 $this->db_user,
                 $this->db_pass
             );
@@ -40,9 +39,18 @@ class DatabaseMysqlController extends DatabaseController
         return $this->pdo;
     }
 
+    /**
+     * Make PDO query request
+     *
+     * @param string $statement eg. "SELECT * FROM {table}"
+     * @param string|null $class_name
+     * @param boolean $one
+     * @return void
+     */
     public function query(string $statement, ?string $class_name = null, bool $one = false)
     {
         $req = $this->getPDO()->query($statement);
+
         if (
             strpos($statement, 'UPDATE') === 0 ||
             strpos($statement, 'INSERT') === 0 ||
@@ -50,11 +58,13 @@ class DatabaseMysqlController extends DatabaseController
         ) {
             return $req;
         }
+
         if (is_null($class_name)) {
             $req->setFetchMode(PDO::FETCH_OBJ);
         } else {
             $req->setFetchMode(PDO::FETCH_CLASS, $class_name);
         }
+
         if ($one) {
             $datas = $req->fetch();
         } else {

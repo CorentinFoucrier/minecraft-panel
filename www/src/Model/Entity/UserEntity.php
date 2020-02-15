@@ -7,36 +7,18 @@ use App\Model\Entity\RoleEntity;
 
 class UserEntity extends Entity
 {
-    /**
-     * @var int $id
-     */
-    private $id;
 
-    /**
-     * @var string $username
-     */
-    private $username;
+    private int $id;
 
-    /**
-     * @var string $password
-     */
-    private $password;
+    private string $username;
 
-    /**
-     * @var int $role_id
-     */
-    private $role_id;
+    private string $password;
 
-    /**
-     *
-     * @var int $default_password
-     */
-    private $default_password;
+    private int $role_id;
 
-    /**
-     * @var RoleEntity $RoleEntity
-     */
-    private $RoleEntity;
+    private int $default_password;
+
+    private RoleEntity $RoleEntity;
 
     /**
      * Get the value of id

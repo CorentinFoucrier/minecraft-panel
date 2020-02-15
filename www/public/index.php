@@ -24,6 +24,7 @@ $app->getRouter($basePath)
     ->get('/getOnlinePlayers', 'Dashbord#getOnlinePlayers', 'getOnlinePlayers')
     ->get('/getVersion', 'Dashbord#getVersion', 'getVersion')
     ->get('/logout', 'User#logout', 'logout')
+    ->get('/error/[i:code]', 'Error#show', 'error')
 
     ->post('/start', 'Controls#start', 'server_start')
     ->post('/restart', 'Controls#restart', 'server_restart')

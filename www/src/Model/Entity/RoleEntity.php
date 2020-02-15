@@ -6,14 +6,10 @@ use Core\Model\Entity;
 
 class RoleEntity extends Entity
 {
-    /**
-     * @var int $id
-     */
-    private $id;
-    /**
-     * @var string $role_name
-     */
-    private $role_name;
+
+    private int $id;
+
+    private string $role_name;
 
     /**
      * Get the value of id

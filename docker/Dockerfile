@@ -1,4 +1,4 @@
-FROM chialab/php-dev:7.3-apache
+FROM chialab/php-dev:7.4-apache
 
 ENV APACHE_DOCUMENT_ROOT /var/www/public
 
