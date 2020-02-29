@@ -3,11 +3,12 @@ const io = require('socket.io')(http);
 const fs = require('fs');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+var Client = require('ssh2').Client;
 let currentConnections = {};
 
 io.on('connection', (socket) => {
-    currentConnections[socket.id] = { currentSocket: socket };
-    currentConnections[socket.id].currentLine = 0;
+    currentConnections[socket.id] = { currentSocket: socket }; // Get the current socket client ojbect
+    currentConnections[socket.id].currentLine = 0; // Add a "currentLine" property to this object
 
     // At connection send 100 last lines to client...
     getLines(100)
@@ -43,7 +44,7 @@ io.on('connection', (socket) => {
 
 const getTotalLines = async () => {
     const { stdout, stderr } = await exec('cat /var/minecraft_server/logs/latest.log | wc -l', { shell: true });
-    if (stderr) { console.error("error: " + stderr); }
+    if (stderr) { console.error(stderr); }
     return parseInt(stdout.replace("\\n", ""));
 };
 
@@ -66,6 +67,30 @@ const onFileChange = () => {
         }
     }).catch(e => console.error(e));
 };
+
+setInterval(() => {
+    var conn = new Client();
+    conn.on('ready', function () {
+        // console.log('Client :: ready');
+        conn.exec("ps aux | grep java | grep " + process.env.SHELL_USER + " | grep -v grep | awk {'print $3,$4'}", function (err, stream) {
+            if (err) throw err;
+            stream.on('close', function (code) {
+                // console.log("exit code: " + code);
+                conn.end();
+            }).on('data', function (data) {
+                // console.log('STDOUT: ' + data);
+                io.sockets.emit('monitoring', '' + data);
+            }).stderr.on('data', function (data) {
+                console.error('STDERR: ' + data);
+            });
+        });
+    }).connect({
+        host: process.env.IP,
+        port: 22,
+        username: process.env.SHELL_USER,
+        password: process.env.SHELL_PWD
+    });
+}, 1000);
 
 fs.watchFile(
     '/var/minecraft_server/logs/latest.log',

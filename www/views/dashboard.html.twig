@@ -28,17 +28,22 @@
                         <div class="col-sm-4">
                             <i class="fas fa-user-friends h2"></i><br/>
                             Nombre de joueurs<br/>
-                            <span id="playersOnline">...</span>/{{maxPlayers}}
+                            <span id="playersOnline">...</span> / 
+                            {% if maxPlayers %}
+                                {{maxPlayers}}
+                            {% else %}
+                                ?
+                            {% endif %}
                         </div>
                         <div class="col-sm-4">
                             <i class="fas fa-microchip h2"></i><br/>
                             Utilisation CPU<br/>
-                            N/A %
+                            <span id="cpu">N/A</span> %
                         </div>
                         <div class="col-sm-4">
                             <i class="fas fa-memory h2"></i><br/>
                             Utilisation RAM<br/>
-                            N/A %
+                            <span id="ram">N/A</span> %
                         </div>
                     </div>
                     <br/>
