@@ -2,14 +2,10 @@
 .vscode
 www/public/adminer.php
 www/public/debug.php
-www/src/NodeTest.js
 
 # Folders
 www/vendor
 www/nodejs/node_modules
 www/mcp_
-www/public/assets/scss
-www/public/assets/.sass-cache
 www/composer.lock
 tests/
-minecraft_server/

@@ -9,8 +9,7 @@ class CoAdminController extends Controller
 {
     public function __construct()
     {
-        $this->loadModel('user');
-        $this->loadModel('permissions');
+        $this->loadModel('user', 'permissions');
     }
 
     public function showCoAdmin()
@@ -18,10 +17,10 @@ class CoAdminController extends Controller
         $this->userOnly();
         $this->adminOnly();
         /* From ajax addCoAdmin */
-        if (!empty($_POST['coAdminInput'])) {
+        if (!empty(htmlspecialchars($_POST['coAdminInput']))) {
             $pwd = $this->addCoAdmin();
         }
-        $coAdmins = $this->user->select(['role_id' => 2], false); // Every coAdmins
+        $coAdmins = $this->user->select(['role_id' => 2], true); // Every coAdmins
         $token = bin2hex(random_bytes(8));
         $_SESSION['token'] = $token;
         for ($i = 0; $i < count($coAdmins); $i++) {
@@ -51,8 +50,8 @@ class CoAdminController extends Controller
         if ($this->adminOnly() === FALSE) {
             echo 'error';
         } else {
-            if (!empty($_POST['deleteCoAdmin']) && $token === $_SESSION['token']) {
-                if ($this->user->delete($id)) {
+            if (!empty(htmlspecialchars($_POST['deleteCoAdmin'])) && $token === $_SESSION['token']) {
+                if ($this->user->deleteById($id)) {
                     echo 'deleted';
                 }
             }
@@ -68,17 +67,22 @@ class CoAdminController extends Controller
     public function editPermissions()
     {
         if (!empty($_POST)) {
-            $userId = $_POST['id'];
-            $checked = $_POST['checked'];
-            $token = $_POST['token'];
-            $clicked = $_POST['clicked'];
-            $explodedStr = preg_split('/(?=[A-Z])/', $clicked, -1, PREG_SPLIT_NO_EMPTY);
-            $clicked = strtolower(join("_", $explodedStr));
+            $userId = htmlspecialchars($_POST['id']);
+            $checked = htmlspecialchars($_POST['checked']);
+            $token = htmlspecialchars($_POST['token']);
+            $p_name = htmlspecialchars($_POST['name']);
+            // Split at each uppercase letter
+            $explodedStr = preg_split('/(?=[A-Z])/', $p_name, -1, PREG_SPLIT_NO_EMPTY);
+            // Then join the array with an underscore
+            $name = strtolower(join("_", $explodedStr));
 
             if ($token === $_SESSION['token']) {
-                $checked = ($checked == "true") ? "1" : "0";
-                $this->permissions->updateAnd([$clicked => $checked], ['user_id' => $userId]);
-                echo 'ok';
+                $checked = ($checked === "true") ? 1 : 0; // Replace boolean value by 1 or 0 (bdd accepted values)
+                if ($this->permissions->update($userId, [$name => $checked])) {
+                    echo 'ok';
+                } else {
+                    echo 'error';
+                }
             } else {
                 echo 'error';
             }

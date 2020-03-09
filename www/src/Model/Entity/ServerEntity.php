@@ -11,13 +11,13 @@ class ServerEntity extends Entity
 
     private string $name;
 
-    private int $panel_port;
-
-    private int $is_installed;
-
     private int $status;
 
     private string $version;
+
+    private int $ram_min;
+
+    private int $ram_max;
 
     /**
      * Get the value of id
@@ -60,46 +60,6 @@ class ServerEntity extends Entity
         return $this;
     }
     /**
-     * Get the value of panel_port
-     *
-     * @return integer|null
-     */
-    public function getPanelPort(): ?int
-    {
-        return $this->panel_port;
-    }
-    /**
-     * Set the value of panel_port
-     *
-     * @param integer $panel_port
-     * @return self
-     */
-    public function setPanelPort(int $panel_port): self
-    {
-        $this->panel_port = $panel_port;
-        return $this;
-    }
-    /**
-     * Get the value of is_installed
-     *
-     * @return integer|null
-     */
-    public function getIsInstalled(): ?int
-    {
-        return $this->is_installed;
-    }
-    /**
-     * Set the value of is_installed
-     *
-     * @param integer $is_installed
-     * @return self
-     */
-    public function setIsInstalled(int $is_installed): self
-    {
-        $this->is_installed = $is_installed;
-        return $this;
-    }
-    /**
      * Get the value of status
      *
      * @return integer|null
@@ -137,6 +97,46 @@ class ServerEntity extends Entity
     public function setVersion(int $version): self
     {
         $this->version = $version;
+        return $this;
+    }
+    /**
+     * Get the value of ram_min
+     *
+     * @return integer|null
+     */
+    public function getRamMin(): ?int
+    {
+        return $this->ram_min;
+    }
+    /**
+     * Set the value of ram_min
+     *
+     * @param integer $ram_min
+     * @return self
+     */
+    public function setRamMin(int $ram_min): self
+    {
+        $this->ram_min = $ram_min;
+        return $this;
+    }
+    /**
+     * Get the value of ram_max
+     *
+     * @return integer|null
+     */
+    public function getRamMax(): ?int
+    {
+        return $this->ram_max;
+    }
+    /**
+     * Set the value of ram_max
+     *
+     * @param integer $ram_max
+     * @return self
+     */
+    public function setRamMax(int $ram_max): self
+    {
+        $this->ram_max = $ram_max;
         return $this;
     }
 }

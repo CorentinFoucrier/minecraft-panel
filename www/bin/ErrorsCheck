@@ -1,0 +1,41 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ *******
+ * This file is called by docker exec commmand
+ * The docker command follows the java command and is launched at each stop
+ *******
+ */
+
+namespace Bin;
+
+if (PHP_SAPI !== "cli") {
+    echo "File only in CLI";
+    die(1);
+}
+
+$basePath = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
+require_once $basePath . 'www/vendor/autoload.php';
+
+$app = \App\App::getInstance();
+$app::load();
+
+class ErrorsCheck extends \Core\Controller\Controller
+{
+    public function run()
+    {
+        $this->loadModel('server');
+        $serverEntity = $this->server->selectEverything();
+        // If server is stopped or in loading mode there is an error
+        // otherwise it's been stopped by user
+        if (
+            $serverEntity->getStatus() === SERVER_STOPPED ||
+            $serverEntity->getStatus() === SERVER_LOADING
+        ) {
+            $this->server->update($serverEntity->getId(), ['status' => 3]);
+        }
+    }
+}
+
+(new ErrorsCheck)->run();

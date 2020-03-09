@@ -1,21 +1,32 @@
 // Target the selected tab and store it name in "tab" var
-let tab = $('a.active').attr('id').split('_')[0];
-$('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
-    tab = e.target.id.split('_')[0];
+let listName = $('a.active').attr('id').split('_')[0];
+
+$('a[data-toggle="tab"]').on('click', e => {
+    listName = e.target.id.split('_')[0];
 });
 
 // Trigged when "trash" button is clicked
-$('button.delete').click(() => {
-    let tableRow = $(this).parent().parent();
-    let name = tableRow.children().first().html();
-    let token = $('#token').val();
+$('button.delete').click(e => {
+    const username = e.target.dataset.username;
+    const token = $('#token').val();
 
-    $.post("/players/deleteFromList/" + tab, { name: name, token: token }, data => {
+    $.post("/players/deleteFromList", {
+        listName: listName,
+        username: username,
+        token: token
+    }, data => {
         if (data === "done") {
-            tableRow.fadeOut(500, () => $(this).remove());
+            $('#' + username).fadeOut(500, () => $(this).remove());
             toastr.info("Joueur supprimé avec succès.");
         } else {
             toastr.error("Erreur !");
         }
     });
+});
+
+$(document).ready(() => {
+    const hash = document.location.hash;
+    if (hash !== "") {
+        $('a' + hash + '_tab').tab('show');
+    }
 });

@@ -4,7 +4,7 @@ namespace Core\Controller\Helpers;
 
 class ZipController
 {
-    static public function make($path): bool
+    public static function make($path): bool
     {
         // To avoid mistconfigured server
         if (!extension_loaded('zip') || !file_exists($path)) {
@@ -13,7 +13,7 @@ class ZipController
 
         $zip = new \ZipArchive();
         // Create an empty zip file
-        if (!$zip->open($path . ".zip", \ZipArchive::CREATE)) {
+        if (!$zip->open($path . ".zip", \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) {
             return false;
         }
 
@@ -29,23 +29,22 @@ class ZipController
             /**
              * We can use foreach because the first param of \RecursiveIteratorIterator
              * have a type hint of the Traversable interface that allow us to use foreach.
-             * @see https://www.php.net/manual/fr/class.traversable.php
+             * @see https://www.php.net/manual/en/class.traversable.php
              */
             foreach ($files as $file) {
-                /* If is not "." and ".." folders */
-                if ($file != "." && $file != "..") {
-                    /* If $file is a directory then add an empty dir else add the file to the ZIP*/
-                    if (is_dir($file)) {
-                        $zip->addEmptyDir(str_replace($path . '/', '', $file . '/'));
-                    } else if (is_file($file)) {
-                        $zip->addFromString(str_replace($path . '/', '', $file), file_get_contents($file));
-                    }
+                // $file is a SplFileInfo[] see: https://www.php.net/manual/en/class.splfileinfo.php#splfileinfo.synopsis
+                // Skip directories they would be added automatically
+                if (!$file->isDir()) {
+                    $zip->addFromString(str_replace($path . '/', '', $file), file_get_contents($file));
                 }
             }
         } else if (is_file($path)) {
             /* Add the file to the ZIP archive */
             $zip->addFromString(basename($path), file_get_contents($path));
+        } else {
+            return false;
         }
+
         return $zip->close();
     }
 }

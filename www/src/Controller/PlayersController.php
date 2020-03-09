@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Core\Controller\Controller;
+use GuzzleHttp\Client;
 
 class PlayersController extends Controller
 {
@@ -20,23 +21,24 @@ class PlayersController extends Controller
     {
         $this->userOnly();
         $this->hasPermission('playersManagement');
-        /* If post and a valid token ->addToList */
+        // If $_POST and a valid token ->addToList
         if (
-            !empty($_POST) &&
-            htmlspecialchars($_POST['token']) === $_SESSION['token']
+            !empty($_POST)
+            && htmlspecialchars($_POST['token']) === $_SESSION['token']
         ) {
             $type =   htmlspecialchars(end(explode('_', array_key_first($_POST))));
             $name =   htmlspecialchars($_POST['add_' . $type]);
             $reason = htmlspecialchars($_POST['reason']);
 
-            /* If server is not started run the php script... */
-            if ($this->server->selectEverything(true)->getStatus() != 2) {
+            // If server is not started run the php script...
+            if ($this->server->selectEverything()->getStatus() != SERVER_STARTED) {
                 $this->addToList($type, $name, $reason);
-                /* ...else send the appropiate commande the the server */
             } else {
+                // ...else send the appropiate commande the the server
                 $this->sendCommand($type, $name, false, $reason);
-                sleep(2);
             }
+            sleep(2);
+            $this->redirect($this->getUri('players') . "#$type");
         }
 
         $_SESSION['token'] = bin2hex(random_bytes(8));
@@ -58,11 +60,11 @@ class PlayersController extends Controller
      */
     private function addToList(string $type, string $name, string $reason): bool
     {
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
         try {
             $response = $client->request('GET', 'https://api.mojang.com/users/profiles/minecraft/' . $name);
         } catch (\Exception $e) {
-            if (getenv("ENV_DEV")) {
+            if (getenv("ENV_DEV") === "true") {
                 throw $e;
             } else {
                 $this->getFlash()->addAlert(
@@ -74,7 +76,7 @@ class PlayersController extends Controller
         $uuid = json_decode($response->getBody(), true)['id'];
         /**
          * Regex for valid UUID format expected by JSON server files.
-         * Like from this "7125ba8b1c864508b92bb5c042ccfe2b" to this 7125ba8b-1c86-4508-b92bb-5c042ccfe2b
+         * From "069a79f444e94726a5befca90e38aaf5" to "069a79f4-44e9-4726-a5be-fca90e38aaf5"
          * @var string $regex
          */
         $regex = "/^([a-f0-9]{8})\-?([a-f0-9]{4})\-?([a-f0-9]{4})\-?([a-f0-9]{4})\-?([a-f0-9]{12})$/";
@@ -86,7 +88,7 @@ class PlayersController extends Controller
             return FALSE;
         }
 
-        /* Check if player already exist. */
+        // Check if player already exist.
         foreach ($this->getJson($type) as $value) {
             if ($value['name'] == $name) {
                 $this->getFlash()->addAlert("Le joueur {$name} est déjà dans la liste !");
@@ -104,7 +106,7 @@ class PlayersController extends Controller
             $infos['created']   = $this->formatAtomDate();
             $infos['source']    = "Panel";
             $infos['expires']   = "forever";
-            $infos['reason']    = (empty($reason)) ? 'No reason :(' : $reason;
+            $infos['reason']    = (empty($reason)) ? 'N/A' : $reason;
         }
         $jsonPhp = $this->getJson($type);
         $jsonPhp[] = $infos;
@@ -120,36 +122,39 @@ class PlayersController extends Controller
 
     /**
      * From AJAX delete a player of one of JSON lists
-     * Route: /players/deleteFromList/[*:type]
+     * Route: /players/deleteFromList
      *
-     * @param string $type
      * @return void
      */
-    public function deleteFromList(string $type): void
+    public function deleteFromList(): void
     {
-        $name = $_POST['name'];
-        if (
-            $this->server->selectEverything(true)->getStatus() != 2 &&
-            !empty($name) &&
-            $_POST['token'] === $_SESSION['token']
-        ) {
-            $resultArray = [];
-            /* Rebuild a new array from actual json file without the name we want to delete */
-            foreach ($this->getJson($type) as $value) {
-                if ($value['name'] !== $name) {
-                    $resultArray[] = $value;
+        if (!empty($_POST)) {
+            $username = htmlspecialchars($_POST['username']);
+            $token = htmlspecialchars($_POST['token']);
+            $listName = htmlspecialchars($_POST['listName']);
+            if (
+                $this->server->selectEverything()->getStatus() != SERVER_STARTED &&
+                !empty($username) &&
+                $token === $_SESSION['token']
+            ) {
+                $resultArray = [];
+                // Rebuild a new array from actual json file without the name we want to delete
+                foreach ($this->getJson($listName) as $value) {
+                    if ($value['name'] !== $username) {
+                        $resultArray[] = $value;
+                    }
                 }
-            }
-            /* Transform this new array into json format and write it into .json */
-            if (is_int(file_put_contents(
-                BASE_PATH . "minecraft_server/{$type}.json",
-                json_encode($resultArray, JSON_PRETTY_PRINT)
-            ))) {
+                // Transform this new array into json format and write it into .json
+                if (is_int(file_put_contents(
+                    BASE_PATH . "minecraft_server/{$listName}.json",
+                    json_encode($resultArray, JSON_PRETTY_PRINT)
+                ))) {
+                    echo "done";
+                }
+            } else {
+                $this->sendCommand($listName, $name, true);
                 echo "done";
             }
-        } else {
-            $this->sendCommand($type, $name, true);
-            echo "done";
         }
     }
 
@@ -169,29 +174,29 @@ class PlayersController extends Controller
         return $timeStr;
     }
 
-    private function sendCommand(string $type, string $name, bool $ajax = false, string $reason = ""): void
+    private function sendCommand(string $listName, string $name, bool $ajax = false, string $reason = ""): void
     {
-        $reason = ($reason === "") ? "Banned by server" : $reason;
-        switch ($type) {
+        $reason = ($reason === "") ? "N/A" : $reason;
+        switch ($listName) {
             case 'ops':
                 if ($ajax) {
-                    $this->getServer()->sshCommand("deop $name");
+                    $this->sendMinecraftCommand("deop $name");
                 } else {
-                    $this->getServer()->sshCommand("op $name");
+                    $this->sendMinecraftCommand("op $name");
                 }
                 break;
             case 'whitelist':
                 if ($ajax) {
-                    $this->getServer()->sshCommand("whitelist remove $name");
+                    $this->sendMinecraftCommand("whitelist remove $name");
                 } else {
-                    $this->getServer()->sshCommand("whitelist add $name");
+                    $this->sendMinecraftCommand("whitelist add $name");
                 }
                 break;
             case 'banned-players':
                 if ($ajax) {
-                    $this->getServer()->sshCommand("pardon $name");
+                    $this->sendMinecraftCommand("pardon $name");
                 } else {
-                    $this->getServer()->sshCommand("ban $name $reason");
+                    $this->sendMinecraftCommand("ban $name $reason");
                 }
                 break;
         }

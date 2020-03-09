@@ -10,47 +10,46 @@ command.blur(() => {
     $(this).data("hasFocus", false);
 });
 
-// Once a key is pressed event triggered
-$(document.body).keyup(event => {
-    /**
-     * If the pressed key is equal to 13 it's the ENTER key
-     * and if input has "hasFosus" to true then call sendCommand();
-     */
-    if (event.which === 13 && command.data("hasFocus")) {
+// If the pressed key is equal to 13 it's the ENTER key
+// and if input has "hasFosus" to true then call sendCommand();
+$(document.body).keypress(e => {
+    let keycode = (e.keyCode ? e.keyCode : e.which); // Support every web browser
+    if (keycode === 13) {
         sendCommand();
     }
 });
 
+// When document is ready retrieve the console with socket.io
 $(document).ready(() => {
-    let logs = $('#log');
-
-    socket.on('console', (message) => {
-        $.each(JSON.parse(message), (_key, val) => {
-            let regex = /^[0-9]+$/gm;
+    const logs = $('#log');
+    socket.on('console', (datas) => {
+        let arr = datas.slice(1, -3).split("\\n");
+        $.each(datas.split(/[\r\n]+/), (_key, val) => {
+            const regex = /^[0-9]+$/gm;
             if ((regex.exec(val)) == null) {
                 logs.append("<p class=\"m-0\">" + escapeHtml(val) + "</p>");
-                $("#log").scrollTop($("#log")[0].scrollHeight);
+                logs.scrollTop(logs[0].scrollHeight);
             }
         });
+        // Refresh the number of players are online.
+        $.post("./getOnlinePlayers", { token: token }, (data) => {
+            if (data) {
+                data = JSON.parse(data);
+                $('#playersOnline').html(data.online);
+            } else {
+                $('#playersOnline').html("...");
+            }
+        }, "text");
     });
-
-    // Refresh the number of players are online.
-    $.get("./getOnlinePlayers", {}, (data) => {
-        if (data) {
-            $('#playersOnline').html(data);
-        } else {
-            $('#playersOnline').html("0");
-        }
-    }, "text");
-
-    const escapeHtml = (text) => {
-        let map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, (m) => map[m]);
-    }
 });
+
+const escapeHtml = (text) => {
+    let map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+}

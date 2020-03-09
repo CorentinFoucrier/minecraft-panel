@@ -2,9 +2,7 @@
 
 namespace Core\Controller\Helpers;
 
-use Core\Controller\Controller;
-
-class ServerPropertiesController extends Controller
+class ServerPropertiesController
 {
 
     public static string $filePath = BASE_PATH . 'minecraft_server/server.properties';

@@ -23,7 +23,7 @@
 
     <tbody>
         {% for player in bannedPlayers %}
-            <tr>
+            <tr id="{{player.name}}">
                 <td class="align-middle">{{player.name}}</td>
                 <td class="align-middle">{{player.uuid}}</td>
                 <td class="align-middle">
@@ -37,8 +37,8 @@
                     {{player.reason}}
                 </td>
                 <td class="align-middle">
-                    <button class="btn btn-danger btn-sm float-right mx-auto delete">
-                        <i class="far fa-trash-alt"></i>
+                    <button class="btn btn-danger btn-sm float-right mx-auto delete" data-username="{{player.name}}">
+                        <i style="pointer-events: none;" class="far fa-trash-alt"></i>
                     </button>
                 </td>
             </tr>

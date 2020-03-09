@@ -18,15 +18,15 @@ const editCoAdmin = (p_id, p_token) => {
     $('#' + p_id + '_permissionsModal').modal('toggle');
 }
 
-$('.permission').click(() => {
-    let checked = $(this).prop('checked');
-    let clicked = $(this).attr('name');
+$("input[type=checkbox]").on("click", (e) => {
+    let checked = e.target.checked;
+    let name = e.target.name;
 
     $.post("/coAdmin/edit", {
         checked: checked,
         token: token,
         id: id,
-        clicked: clicked
+        name: name
     }, (data) => {
         if (data !== 'ok') {
             toastr.error("Une erreur est survenue !");

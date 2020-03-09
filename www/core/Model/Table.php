@@ -2,7 +2,7 @@
 
 namespace Core\Model;
 
-use \Core\Controller\Database\DatabaseController;
+use Core\Controller\Database\DatabaseController;
 use Core\Controller\URLController;
 
 abstract class Table
@@ -21,10 +21,10 @@ abstract class Table
     {
         $this->db = $db;
         if (!isset($this->table)) {
-            // Build a string with the user defined prefix
-            $this->table = PREFIX . $tableName;
+            // Build a string with user defined prefix eg. mcp_server
+            $this->table = PREFIX . strtolower($tableName);
         } else if (getenv("ENV_DEV") === "true") {
-            throw new \Exception("\$this->table must be uninitialized '" . $this->table . "' given.");
+            throw new \Exception("\$this->table must not be initialized '" . $this->table . "' given.");
         } else {
             header("Location: " . URLController::getUri('error', ["code" => 500]));
             exit();
@@ -32,12 +32,23 @@ abstract class Table
     }
 
     /**
-     * W.I.P
-     * Not sure to keep this method
+     * @see Core\Controller\PaginatedQueryController::getNbPages
+     * @param boolean $fetchAll
+     * @return void
      */
-    public function count()
+    public function count(bool $fetchAll = false)
     {
-        return $this->query("SELECT COUNT(id) as nbrow FROM {$this->table}", null, true);
+        return $this->query("SELECT COUNT(id) as nbrow FROM {$this->table}", null, $fetchAll);
+    }
+
+    /**
+     * @see Core\Controller\PaginatedQueryController::getNbPages
+     * @param integer $id
+     * @return void
+     */
+    public function countById(int $id)
+    {
+        return $this->query("SELECT COUNT(id) as nbrow FROM {$this->table} WHERE id = ?", [$id], true, null);
     }
 
     /**
@@ -45,9 +56,9 @@ abstract class Table
      *
      * @return void
      */
-    public function lastId()
+    public function lastId(bool $fetchAll = false)
     {
-        return $this->query("SELECT MAX(id) AS id FROM {$this->table}", null, true);
+        return $this->query("SELECT MAX(id) AS id FROM {$this->table}", null, $fetchAll);
     }
 
     /**
@@ -56,28 +67,31 @@ abstract class Table
      * @param int $id
      * @return void
      */
-    public function findById(int $id)
+    public function findById(int $id, bool $fetchAll = false)
     {
-        return $this->query("SELECT * FROM {$this->table} WHERE id = {$id}", null, true);
+        return $this->query("SELECT * FROM {$this->table} WHERE id = ?", [$id], $fetchAll);
     }
 
     /**
-     * W.I.P
-     * Not sure to keep this method
+     * SELECT * FROM Table WHERE $column
+     *
+     * @param array $column SQL column name
+     * @param boolean $fetchAll Set to true if you need fetchAll
+     * @return void
      */
-    public function findBy(string $column, bool $one)
+    public function findBy(array $column, bool $fetchAll = false)
     {
-        return $this->query("SELECT $column FROM {$this->table}", null, $one);
+        return $this->query("SELECT * FROM {$this->table} WHERE $column", null, $fetchAll);
     }
 
     /**
      * Find lines in a table with a multiple WHERE condition
      *
      * @param array $fields
-     * @param boolean $one
+     * @param boolean $fetchAll Set to true if you need fetchAll
      * @return void
      */
-    public function select(array $fields, bool $one = true)
+    public function select(array $fields, bool $fetchAll = false)
     {
         $sql_parts = [];
         $attributes = [];
@@ -85,26 +99,29 @@ abstract class Table
             $sql_parts[] = "$k = ?";
             $attributes[] = $v;
         }
-        $sql_part = implode(' AND ', $sql_parts);
-        return $this->query("SELECT * FROM {$this->table} WHERE {$sql_part}", $attributes, $one);
+        $sql_part = join(' AND ', $sql_parts);
+        return $this->query("SELECT * FROM {$this->table} WHERE {$sql_part}", $attributes, $fetchAll);
     }
 
     /**
-     * Select a specific column from table where
-     * SELECT $column FROM table WHERE $where
+     * Select specific columns from table with multiple where conditions
+     * SELECT $columns FROM table WHERE $where
      *
-     * @param string $column
+     * @param string $columns
      * @param array $where
-     * @param boolean $fetch
+     * @param boolean $fetchAll Set to true if you need fetchAll
      * @return void
      */
-    public function selectBy(string $column, array $where, bool $fetch = false)
+    public function selectBy(array $columns, array $where, bool $fetchAll = false)
     {
+        $where_parts = [];
         foreach ($where as $k => $v) {
-            $where_parts[] = "$k = $v";
+            $where_parts[] = "$k = '$v'";
         }
-        $where_parts = implode(', ', $where_parts);
-        return $this->query("SELECT {$column} FROM {$this->table} WHERE {$where_parts}", null, $fetch);
+        $columns = join(', ', $columns);
+        $where_parts = join(' AND ', $where_parts);
+        // Possible statement: "SELECT username, email FROM users WHERE country = France AND city = Paris"
+        return $this->query("SELECT {$columns} FROM {$this->table} WHERE {$where_parts}", null, $fetchAll);
     }
 
     /**
@@ -124,8 +141,8 @@ abstract class Table
             $attributes[] = $v;
         }
         $attributes[] = $id;
-        $sql_part = implode(', ', $sql_parts);
-        return $this->query("UPDATE {$this->table} SET $sql_part WHERE id = ?", $attributes, true);
+        $sql_part = join(', ', $sql_parts);
+        return $this->query("UPDATE {$this->table} SET $sql_part WHERE id = ?", $attributes);
     }
 
     /**
@@ -148,8 +165,8 @@ abstract class Table
             $where_parts[] = "$k = ?";
             $attributes[] = $v;
         }
-        $where_part = implode(', ', $where_parts);
-        $sql_part = implode(', ', $sql_parts);
+        $where_part = join(', ', $where_parts);
+        $sql_part = join(', ', $sql_parts);
         return $this->query("UPDATE {$this->table} SET $sql_part WHERE $where_part", $attributes);
     }
 
@@ -168,15 +185,15 @@ abstract class Table
         $column_parts = [];
         foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = :$k";
-            $attributes[":" . $k] = "$v";
+            $attributes[":$k"] = "$v";
         }
         foreach ($columns as $k => $v) {
             $column_parts[] = "$k = :$k";
-            $attributes[":" . $k] = "$v";
+            $attributes[":$k"] = "$v";
         }
-        $sql_part = implode(', ', $sql_parts);
-        $column_part = implode(' AND ', $column_parts);
-        return $this->query("UPDATE {$this->table} SET $sql_part WHERE $column_part", $attributes, true);
+        $sql_part = join(', ', $sql_parts);
+        $column_part = join(' AND ', $column_parts);
+        return $this->query("UPDATE {$this->table} SET $sql_part WHERE $column_part", $attributes);
     }
 
     /**
@@ -184,14 +201,14 @@ abstract class Table
      * "INSERT INTO {$this->table} SET $sql_part"
      *
      * @param array $fields
-     * @param boolean $class
+     * @param boolean $entityClass
      * @return boolean
      */
-    public function create(array $fields, $class = false)
+    public function create(array $fields, $entityClass = false)
     {
         $sql_parts = [];
         $attributes = [];
-        if ($class) {
+        if ($entityClass) {
             $methods = get_class_methods($fields);
             $array = [];
             foreach ($methods as $value) {
@@ -206,18 +223,30 @@ abstract class Table
             $sql_parts[] = "$k = ?";
             $attributes[] = $v;
         }
-        $sql_part = implode(', ', $sql_parts);
-        return $this->query("INSERT INTO {$this->table} SET $sql_part", $attributes, true);
+        $sql_part = join(', ', $sql_parts);
+        return $this->query("INSERT INTO {$this->table} SET $sql_part", $attributes);
     }
 
-    public function delete($id)
+    /**
+     * DELETE FROM Table WHERE $id
+     *
+     * @param integer $id SQL id
+     * @return void
+     */
+    public function deleteById(int $id)
     {
-        return $this->query("DELETE FROM {$this->table} WHERE id = ?", [$id], true);
+        return $this->query("DELETE FROM {$this->table} WHERE id = ?", [$id]);
     }
 
-    public function selectEverything(bool $fetch = false)
+    /**
+     * SELECT * FROM Table
+     *
+     * @param boolean $fetchAll Set to true if you need fetchAll
+     * @return void
+     */
+    public function selectEverything(bool $fetchAll = false)
     {
-        return $this->query("SELECT * FROM {$this->table}", null, $fetch);
+        return $this->query("SELECT * FROM {$this->table}", null, $fetchAll);
     }
 
     /**
@@ -225,28 +254,30 @@ abstract class Table
      *
      * @param string $statement eg. "SELECT bar FROM foo".
      * @param array|null $attributes
-     * @param boolean $one Determines the result that you want fetch(true) or fetchAll(false) default: fetchAll.
+     * @param boolean $fetchAll Determines the result that you want fetch(false) or fetchAll(true) default: fetch.
      * @param string|null $class_name If you want to use a different class name of the class where you are.
      * @return void
      */
-    public function query(string $statement, ?array $attributes = null, bool $one = false, ?string $class_name = null)
+    public function query(string $statement, ?array $attributes = null, bool $fetchAll = false, ?string $class_name = null)
     {
         if (is_null($class_name)) {
+            // Transform the actual table class to an Entity eg. ServerTable to ServerEntity
             $class_name = str_replace('Table', 'Entity', get_class($this));
         }
 
+        // If attributes are set it's a prepare query
         if ($attributes) {
             return $this->db->prepare(
                 $statement,
                 $attributes,
                 $class_name,
-                $one
+                $fetchAll
             );
         } else {
             return $this->db->query(
                 $statement,
                 $class_name,
-                $one
+                $fetchAll
             );
         }
     }

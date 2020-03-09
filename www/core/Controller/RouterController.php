@@ -37,8 +37,8 @@ class RouterController
 
     public function run(): void
     {
+        // Array with route information on success, false on failure (no match).
         $match = $this->router->match();
-
         if (is_array($match)) {
             $_SESSION['route'] = $match['name'];
             if (strpos($match['target'], "#")) {

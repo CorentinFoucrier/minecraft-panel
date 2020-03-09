@@ -5,12 +5,9 @@ namespace Core\Controller;
 use App\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use App\Controller\ServerController;
 use Core\Extension\Twig\URIExtension;
 use Core\Extension\Twig\FlashExtension;
-use App\Controller\ServerQueryController;
 use Core\Controller\Session\FlashService;
-use Core\Controller\Helpers\LogsController;
 use Core\Extension\Twig\BeautifyStrExtension;
 
 abstract class Controller
@@ -28,6 +25,7 @@ abstract class Controller
      */
     protected function render(string $view, array $variables = []): void
     {
+        $variables['DEBUG_TIME'] = round(microtime(true) - START_DEBUG_TIME, 3);
         echo $this->getTwig()->render(
             $view . '.html.twig',
             $variables
@@ -72,15 +70,17 @@ abstract class Controller
 
     /**
      * Used to instantiate a model class in src/Model/Table
-     * Called by this->loadModel in any Controller that extents of Core\Controller
+     * Called by this->loadModel in any Controller who extents of Core\Controller
      *
      * @param string $tableName
      * @return void
      */
-    protected function loadModel(string $tableName)
+    protected function loadModel(string ...$tableNames)
     {
-        // Add properties dynamically to Core\Controller as many time as loadModel is called
-        $this->$tableName = App::getInstance()->getTable($tableName);
+        // Add properties dynamically to Core\Controller as many time as loadModel is called who contain object of tableName
+        foreach ($tableNames as $tableName) {
+            $this->$tableName = App::getInstance()->getTable(ucfirst($tableName));
+        }
     }
 
     /**
@@ -119,36 +119,6 @@ abstract class Controller
             http_response_code($httpResponseCode);
         }
         return header('Location: ' . $url);
-    }
-
-    /**
-     * Get Server Controller
-     *
-     * @return ServerController
-     */
-    protected function getServer(): ServerController
-    {
-        return App::getInstance()->getServer();
-    }
-
-    /**
-     * Get Logs Controller
-     *
-     * @return LogsController
-     */
-    protected function getLogs(): LogsController
-    {
-        return App::getInstance()->getLogs();
-    }
-
-    /**
-     * Get SeverQuery Controller
-     *
-     * @return ServerQueryController
-     */
-    protected function getServerQuery(): ServerQueryController
-    {
-        return App::getInstance()->getServerQuery();
     }
 
     /**
@@ -194,11 +164,6 @@ abstract class Controller
         }
     }
 
-    protected function upload(string $path, string $attrName, array $extention, array $mimeTypes): ?string
-    {
-        return App::getInstance()->getUpload()->upload($path, $attrName, $extention, $mimeTypes);
-    }
-
     /**
      * Remove a directory in recursive mode.
      *
@@ -226,23 +191,40 @@ abstract class Controller
      * Check if the connected user has the permission passed in params or not.
      *
      * @param string $perm permission name in camelCase
+     * @param bool $redirect turn to false to get a boolean return of permission
      * @return bool
      */
     protected function hasPermission(string $perm, bool $redirect = true): bool
     {
-        $perm = "get" . ucfirst($perm);
-        $this->loadModel('user');
-        $this->loadModel('permissions');
-        $userEntity = $this->user->select(['username' => $_SESSION['username']]);
-        $permEntity = $this->permissions->select(['user_id' => $userEntity->getId()]);
+        $this->loadModel('user', 'permissions');
+        $username = $_SESSION['username'];
+        $getPerm = "get" . ucfirst($perm);
+        $currentUserId = $this->user->selectBy(['id'], ['username' => $username])->getId();
+        $permEntity = $this->permissions->findById($currentUserId);
 
-        if ($permEntity->$perm() == 0 && $redirect) {
+        if ($permEntity->$getPerm() === 0 && $redirect) {
             $this->redirect($this->generateUrl('dashboard'));
             exit();
-        } elseif ($permEntity->$perm() == 1) {
+        } elseif ($permEntity->$getPerm() == 1) {
             return TRUE;
         } else {
             return FALSE;
         }
+    }
+
+    /**
+     * Send the command to the Minecraft Console via SSH protocol
+     *
+     * @param string $command The Minecraft command to send
+     * @return void
+     */
+    protected function sendMinecraftCommand(string $command): void
+    {
+        $command = str_replace(['\'', '"'], ['\\u0027', '\\u0022'], $command); // Replace quotes by thier respective unicodes.
+        $ssh = App::getInstance()->getSsh();
+        /**
+         * @see https://theterminallife.com/sending-commands-into-a-screen-session/
+         */
+        $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
     }
 }

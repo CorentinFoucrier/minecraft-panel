@@ -91,6 +91,13 @@ class FormBuilderController
         HTML;
     }
 
+    public function addToken(string $token): void
+    {
+        $this->html .= <<<HTML
+        <input type="hidden" id="{$token}" name="token" value="{$token}">\n
+        HTML;
+    }
+
     public function getForm(): string
     {
         $this->html .= <<<HTML

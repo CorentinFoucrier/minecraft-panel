@@ -1,5 +1,11 @@
 #!/bin/bash
 
+####
+# /!\ BETA Warning /!\
+# This file is a temporary solution before
+# creating a proper installation in HTML/PHP
+####
+
 if [ -e .env ]; then
     source .env
 else
@@ -250,15 +256,13 @@ fi
 
 echo ""
 echo -e "\e[1m\e[32m Install Yarn packages\e[33m\e[0m"
-docker exec ${CONTAINER_NAME} yarn install
-sleep 4
-docker exec ${CONTAINER_NAME} php /var/www/commands/createsql
-sleep 4
-docker exec ${CONTAINER_NAME} chmod -R 777 /var/minecraft_server/
-sleep 4
+docker exec ${NODE_NAME} yarn install
+sleep 2
+docker exec ${CONTAINER_NAME} chmod -R 777 /var/minecraft_server/ && php /var/www/bin/createsql
+sleep 2
 # If you are in dev mode you need to run Node manually
 if [[ ${ENV_DEV} == "false" ]]; then
-    docker exec -t -d ${CONTAINER_NAME} node /var/www/src/Server.js
+    docker exec -t -d ${NODE_NAME} node /var/www/server.js
 fi
 
 exit 0

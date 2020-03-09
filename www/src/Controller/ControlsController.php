@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
+use App\App;
 use Core\Controller\Controller;
-use phpseclib\Net\SSH2;
 
 class ControlsController extends Controller
 {
@@ -38,39 +38,30 @@ class ControlsController extends Controller
             && $_POST['token'] === $_SESSION['token']
         ) {
             if (file_exists($eula)) {
-                try {
-                    $eulaTxt = file_get_contents($eula);
-                    $regex = '/(.+)=(.*)/m';
-                    preg_match_all($regex, $eulaTxt, $matches, PREG_SET_ORDER, 0);
-                    if (end($matches[0]) == "false") {
-                        echo "eula";
-                        exit();
-                    }
-                } catch (\Exception $e) {
-                    echo "error";
+                $eulaTxt = file_get_contents($eula);
+                preg_match_all('/(.+)=(.*)/m', $eulaTxt, $matches, PREG_SET_ORDER, 0);
+                // If eula.txt exist but set to false.
+                if (end($matches[0]) == "false") {
+                    echo "eula";
+                    exit();
                 }
-                /* If isn't start or has an error then start it */
-                $req = $this->server->selectEverything(true);
-                /* If the server is in stopped or error state */
-                if ($req->getStatus() === 0 || $req->getStatus() === 3) {
-                    $ssh = new SSH2(getenv('IP'));
-                    try {
-                        $ssh->login(SHELL_USER, SELL_PWD);
-                    } catch (\Exception $e) {
-                        exit('Login failed!');
-                    }
+                $req = $this->server->selectEverything();
+                if ($req->getStatus() === SERVER_STOPPED || $req->getStatus() === SERVER_ERROR) {
+                    echo ($this->server->update($req->getId(), ['status' => SERVER_LOADING])) ? "loading" : "error";
+                    $version = $req->getVersion();
+                    $ssh = App::getInstance()->getSsh();
                     $ssh->write("screen -R minecraft_server\n");
                     $ssh->write("cd /home/" . SHELL_USER . "/minecraft_server\n");
                     $cn = getenv('CONTAINER_NAME');
-                    // If java command failed the command following pipes is launch.
-                    $version = $this->server->selectEverything(true)->getVersion();
+                    // When the java command is terminated the command following pipes is launched.
                     $ssh->write(
-                        "java -Xms" . RAM_MIN . " -Xmx" . RAM_MAX . " -jar $version.jar -nogui && docker exec $cn php commands/jarError\n"
+                        "java -Xms" . $req->getRamMin() . "M -Xmx" . $req->getRamMax() . "M -jar $version.jar -nogui || docker exec $cn php bin/ErrorsCheck\n"
                     );
                     // The default state is "in loading" an AJAX script will send a request to know if the server is up.
                     $ssh->read();
-                    $this->server->update($req->getId(), ['status' => 1]);
-                    echo "loading";
+                    if ($this->server->selectEverything()->getStatus() === SERVER_STOPPED) {
+                        echo "error";
+                    }
                 }
             } else {
                 echo "eula";
@@ -93,12 +84,12 @@ class ControlsController extends Controller
             && $this->hasPermission('startAndStop', false)
             && $_POST['token'] === $_SESSION['token']
         ) {
-            $req = $this->server->selectEverything(true);
+            $req = $this->server->selectEverything();
             /* If is start then stop it */
-            if ($req->getStatus() == 2) {
+            if ($req->getStatus() === SERVER_STARTED) {
                 // Save server status in db
-                if ($this->server->update($req->getId(), ['status' => 0])) {
-                    $this->getServer()->sshCommand('stop');
+                if ($this->server->update($req->getId(), ['status' => SERVER_STOPPED])) {
+                    $this->sendMinecraftCommand('stop');
                     echo "stopped"; // Send confirmation to JavaScript client
                 } else {
                     echo "error";

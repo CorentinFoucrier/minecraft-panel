@@ -23,7 +23,7 @@ class DashbordController extends Controller
         try {
             $ops = json_decode(file_get_contents(BASE_PATH . 'minecraft_server/ops.json'), true);
         } catch (\Exception $e) {
-            (getenv("ENV_DEV")) ? $this->getFlash()->addWarning('[Dev only]|"ops.json" n\'existe pas !') : $ops = [];
+            (getenv("ENV_DEV") === "true") ? $this->getFlash()->addWarning('[Dev only]|"ops.json" n\'existe pas !') : $ops = [];
         }
 
         $versions = json_decode(file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json"), true);
@@ -58,24 +58,13 @@ class DashbordController extends Controller
     }
 
     /**
-     * Get online players through AJAX
-     * Route: /getOnlinePlayers
-     * @return void
-     */
-    public function getOnlinePlayers(): void
-    {
-        $players = $this->getServerQuery()->getPlayers();
-        echo $players['online'];
-    }
-
-    /**
      * Get active minecraft version
      * Route: /getVersion
      * @return string
      */
     public function getVersion(): string
     {
-        $req = $this->server->selectEverything(true)->getVersion();
+        $req = $this->server->selectEverything()->getVersion();
         $version = ucfirst(str_replace('_', ' ', $req));
         if (!empty($_GET)) {
             echo $version;

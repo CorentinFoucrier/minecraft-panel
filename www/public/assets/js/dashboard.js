@@ -13,7 +13,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const checkStatus = () => {
     return new Promise(resolve => {
-        $.get("/checkStatus", {}, async data => {
+        $.post("/checkStatus", { token: token }, async data => {
             if (data == "loading") {
                 startBtnLoading.addClass('ld ld-ring ld-spin');
                 await sleep(1000);
@@ -77,12 +77,15 @@ const serverStop = () => {
     event.preventDefault();
     socket.emit('nodejs', 'stop');
     stopBtn.attr('disabled', 'disabled');
+    restartBtn.attr('disabled', 'disabled');
     stopBtnLoading.addClass('ld ld-ring ld-spin');
     $.post("/stop", {
         token: token
     }, async data => {
         if (data == "stopped") {
             await sleep(5000);
+            cpu.html('N/A');
+            ram.html('N/A');
             stopBtnLoading.removeClass();
             toastr.success("Votre serveur à bien été arrêté !", "Arrêt");
             socket.emit('nodejs', 'checkStatus');
@@ -132,6 +135,7 @@ socket.on('client', data => {
             break;
         case "stop":
             stopBtn.attr('disabled', 'disabled');
+            restartBtn.attr('disabled', 'disabled');
             stopBtnLoading.addClass('ld ld-ring ld-spin');
             break;
         case "checkStatus":

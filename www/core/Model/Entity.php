@@ -2,6 +2,6 @@
 
 namespace Core\Model;
 
-class Entity
+abstract class Entity
 {
 }

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\App;
 use Core\Controller\Controller;
 use Core\Controller\Helpers\ZipController;
+use Core\Controller\UploadController;
 
 class WorldsController extends Controller
 {
@@ -35,7 +37,7 @@ class WorldsController extends Controller
         if (!empty($_FILES)) {
             $path = BASE_PATH . 'minecraft_server/';
             /* Upload the file */
-            $file = $this->upload(
+            $file = UploadController::upload(
                 $path,
                 'world',
                 ['zip'],
@@ -45,9 +47,9 @@ class WorldsController extends Controller
                 ]
             );
             /* if the file uploaded correctly unzip it */
-            if (is_string($file) && !is_null($file)) {
+            if (is_string($file)) {
                 if ($this->unZip($path, $file)) {
-                    unlink($path . $_FILES['world']['name']);
+                    unlink($path . $file);
                 }
             }
         }
@@ -64,17 +66,20 @@ class WorldsController extends Controller
 
     /**
      * AJAX request for deleting a minecraft World
-     * Route: /worlds/delete/[*:worldName]/[*:token]
+     * Route: /worlds/delete
      *
      * @return void
      */
-    public function deleteWorlds(string $worldName, string $token)
+    public function deleteWorlds()
     {
-        if ($_POST['deleteWorld'] && $_SESSION['token'] == $token) {
-            $worldName = urldecode($worldName);
-            $dir = BASE_PATH . "minecraft_server/" . $worldName;
-            if ($this->rmDirectoryRecursivly($dir)) {
-                echo "deleted";
+        if (!empty($_POST)) {
+            $token = htmlspecialchars($_POST['token']);
+            $worldName = htmlspecialchars($_POST['worldName']);
+            if ($token === $_SESSION['token']) {
+                $dir = BASE_PATH . "minecraft_server/" . $worldName;
+                if ($this->rmDirectoryRecursivly($dir)) {
+                    echo "deleted";
+                }
             }
         }
     }
@@ -84,7 +89,7 @@ class WorldsController extends Controller
      * A minecraft world has always a level.dat file
      * A world in app is defined by this rule
      *
-     * @return array
+     * @return null|array
      */
     private function getWorlds(): ?array
     {
@@ -109,13 +114,15 @@ class WorldsController extends Controller
      */
     private function unZip(string $path, string $fileName): bool
     {
+        $ssh = App::getInstance()->getSsh();
+        $su = SHELL_USER;
+        $baseName = "/home/$su/minecraft_server/" . str_replace(".zip", "", $fileName);
         $zip = new \ZipArchive;
         try {
-            $zipHandle = $zip->open($path . $fileName);
-            if ($zipHandle === TRUE) {
+            if ($zip->open($path . $fileName) === true) {
                 /* If there is no level.dat delete the downloaded .zip */
                 if ($zip->getFromName('level.dat') === false) {
-                    unlink($path . $_FILES['world']['name']);
+                    unlink($path . $fileName);
                     return false;
                 }
                 for ($i = 0; $i < $zip->numFiles; $i++) {
@@ -124,13 +131,22 @@ class WorldsController extends Controller
                         $zip->extractTo($path . str_replace('.zip', '', $fileName), array($zip->getNameIndex($i)));
                     }
                 }
-                $zip->close();
-                return true;
+                $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
+                $ssh->write("sudo chmod -R 777 $baseName && sudo chown -R $su:$su $baseName\n");
+                $ssh->setTimeout(10);
+                $output = $ssh->read('/.*@.*[$|#]|.*[pP]assword.*/', $ssh::READ_REGEX);
+                if (preg_match('/.*[pP]assword.*/', $output)) {
+                    $ssh->write(SHELL_PWD . PHP_EOL);
+                    $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
+                    return $zip->close();
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
         } catch (\Exception $e) {
-            if (getenv("ENV_DEV") !== false) {
+            if (getenv("ENV_DEV") === "true") {
                 throw new \Exception($e->getMessage());
             }
             $this->getFlash()->addAlert('Une erreur est survenue lors de la décompression');

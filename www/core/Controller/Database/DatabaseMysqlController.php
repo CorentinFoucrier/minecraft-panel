@@ -44,13 +44,13 @@ class DatabaseMysqlController extends DatabaseController
      *
      * @param string $statement eg. "SELECT * FROM {table}"
      * @param string|null $class_name
-     * @param boolean $one
-     * @return void
+     * @param boolean $fetchAll false = Single fetch by default
      */
-    public function query(string $statement, ?string $class_name = null, bool $one = false)
+    public function query(string $statement, ?string $class_name = null, bool $fetchAll = false)
     {
         $req = $this->getPDO()->query($statement);
 
+        // If the statement is UPDATE, INSERT or DELETE return the result (bool)
         if (
             strpos($statement, 'UPDATE') === 0 ||
             strpos($statement, 'INSERT') === 0 ||
@@ -58,26 +58,39 @@ class DatabaseMysqlController extends DatabaseController
         ) {
             return $req;
         }
+        // If the statement is SELECT continue
 
+        // If there is a class set fetch mode to PDO::FETCH_CLASS else set to OBJ
         if (is_null($class_name)) {
             $req->setFetchMode(PDO::FETCH_OBJ);
         } else {
             $req->setFetchMode(PDO::FETCH_CLASS, $class_name);
         }
 
-        if ($one) {
-            $datas = $req->fetch();
-        } else {
+        // If fetchAll is set to true do a fetchAll on request
+        if ($fetchAll) {
             $datas = $req->fetchAll();
+        } else {
+            $datas = $req->fetch();
         }
 
         return $datas;
     }
 
-    public function prepare(string $statement, array $attributes, ?string $class_name = null, bool $one = false)
+    /**
+     * Make PDO prepare request
+     *
+     * @param string $statement eg. "SELECT * FROM {table}"
+     * @param array $attributes An array of attribures
+     * @param string|null $class_name
+     * @param boolean $fetchAll false = Single fetch by default
+     */
+    public function prepare(string $statement, array $attributes, ?string $class_name = null, bool $fetchAll = false)
     {
         $req = $this->getPDO()->prepare($statement);
         $res = $req->execute($attributes);
+
+        // If the statement is UPDATE, INSERT or DELETE return the result (bool)
         if (
             strpos($statement, 'UPDATE') === 0 ||
             strpos($statement, 'INSERT') === 0 ||
@@ -85,15 +98,20 @@ class DatabaseMysqlController extends DatabaseController
         ) {
             return $res;
         }
+        // If the statement is SELECT continue
+
+        // If there is a class set fetch mode to PDO::FETCH_CLASS else set to OBJ
         if (is_null($class_name)) {
             $req->setFetchMode(PDO::FETCH_OBJ);
         } else {
             $req->setFetchMode(PDO::FETCH_CLASS, $class_name);
         }
-        if ($one) {
-            $datas = $req->fetch();
-        } else {
+
+        // If fetchAll is set to true do a fetchAll on request
+        if ($fetchAll) {
             $datas = $req->fetchAll();
+        } else {
+            $datas = $req->fetch();
         }
 
         return $datas;

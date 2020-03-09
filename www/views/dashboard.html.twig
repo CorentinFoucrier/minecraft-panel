@@ -53,7 +53,7 @@
                             Démarrer
                             <span id="startButtonLoading"></span>
                         </button>
-                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning mr-md-1 mb-1 text-uppercase not-allowed" disabled>
+                        <button onclick="serverRestart();" id="restartButton" class="btn btn-warning mr-md-1 mb-1 text-uppercase not-allowed wip" disabled>
                             <i class="fas fa-redo"></i>
                             Redémmarer
                         </button>
@@ -84,13 +84,13 @@
                         <div class="mt-md-auto mb-md-3 mx-md-auto">
                             <a href="#" class="btn btn-success btn-sm not-allowed wip">
                                 <i class="fas fa-plus"></i>
-                                Ajouter un opérateur</a>
+                                Ajouter un opérateur
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-10 p-md-2">
                         <div class="card-body py-md-0">
-                            <div
-                                class="row">
+                            <div class="row">
                                 {# Console renderer #}
                                 <div id="log" class="border pl-1 overflow" style="height:200px;"></div>
                             </div>
@@ -130,13 +130,14 @@
                 "timeOut": "-1",
                 "extendedTimeOut": "-1"
             }
-            toastr.warning("{{ warnings }}");{% endfor %}
+            toastr.warning("{{ warnings }}");
+        {% endfor %}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js" crossorigin></script>
     <script>
         const socket = io.connect('{{ socketUrl }}');
     </script>
-    <script src="assets/js/dashboard.js"></script>
-    <script src="assets/js/console.js"></script>
-    <script src="assets/js/selectVersion.js"></script>
+    <script src="{{ uri("dashboard") }}assets/js/dashboard.js"></script>
+    <script src="{{ uri("dashboard") }}assets/js/console.js"></script>
+    <script src="{{ uri("dashboard") }}assets/js/selectVersion.js"></script>
 {% endblock %}

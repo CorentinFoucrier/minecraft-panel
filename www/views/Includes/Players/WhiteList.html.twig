@@ -21,12 +21,12 @@
 
     <tbody>
         {% for player in whitelist %}
-            <tr>
+            <tr id="{{player.name}}">
                 <td>{{player.name}}</td>
                 <td>{{player.uuid}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm float-right delete">
-                        <i class="far fa-trash-alt"></i>
+                    <button class="btn btn-danger btn-sm float-right delete" data-username="{{player.name}}">
+                        <i style="pointer-events: none;" class="far fa-trash-alt"></i>
                     </button>
                 </td>
             </tr>

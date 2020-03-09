@@ -13,23 +13,33 @@ class ConfigController extends Controller
     {
         $this->userOnly();
         $this->hasPermission('config');
-        if (!empty($_POST) && !is_null(SERVER_PROPERTIES)) {
-            if (!$this->writeServerProperties($_POST)) {
+        // When $_POST ->writeServerProperties
+        if (htmlspecialchars($_POST['token']) === $_SESSION['token'] && !empty(SERVER_PROPERTIES)) {
+            $post = [];
+            foreach ($_POST as $key => $value) {
+                $post[htmlspecialchars($key)] = htmlspecialchars($value);
+            }
+            if (!$this->writeServerProperties($post)) {
                 $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
                 Démarrer le serveur pour générer le fichier.");
             }
+            $this->getFlash()->addSuccess("Configuration mise à jour !");
             $this->redirect($this->generateUrl('config'));
         }
 
-        /* If server.properties is not null display config form */
-        if (!is_null(SERVER_PROPERTIES)) {
+        // If server.properties is not null generate and display config form
+        if (!empty(SERVER_PROPERTIES)) {
+            $token = bin2hex(random_bytes(8));
+            $_SESSION['token'] = $token;
             $form = new FormBuilderController('server.propreties');
             $config = SERVER_PROPERTIES; // Retrieve server.properties content
+
             foreach ($config as $key => $value) {
+                $value = trim($value);
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key));
                 /**
-                 * If 'true' is matched, that's a boolean then when 'true'
-                 * add select with default selected value as 'true', same with 'false'
+                 * If 'true' is matched, that's a boolean
+                 * add checkbox already checked if 'true' and empty if 'false'
                  */
                 if ((preg_match('/(true|false)++/', $value)) === 1) {
                     if (!in_array($key, ["enable-rcon", "enable-query", "broadcast-rcon-to-ops"])) {
@@ -38,24 +48,26 @@ class ConfigController extends Controller
                     }
                 }
             }
+
             $form->addGroup('col-12');
             foreach ($config as $key => $value) {
+                $value = trim($value);
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key));
-                /* Add the name of fields that we don't displayed in the exclude array below */
+                // Add the name of fields that we don't displayed in the exclude array below
                 $exclude = [
                     "server-ip", "rcon.password",
                     "enable-rcon", "enable-query",
                     "rcon.port", "query.port",
                     "broadcast-rcon-to-ops"
                 ];
-                /* If is a boolean add $key to the exclude array */
+                // If is a boolean add $key to the exclude array
                 if ((preg_match('/(true|false)++/', $value)) === 1) {
                     $exclude[] = $key;
                 }
                 if (!in_array($key, $exclude)) {
                     $form->addGroup("col-sm-6");
                 }
-                /* Add select for possible default values that arn't in $config */
+                // Add select for possible default values that arn't in $config
                 switch ($key) {
                     case 'difficulty':
                         $form->addSelect("$key", "$label", [
@@ -93,7 +105,7 @@ class ConfigController extends Controller
                         ]);
                         break;
                 }
-                /* Treatment for string but not boolean and custom select fields above */
+                // Treatment for string but not boolean and custom select fields above
                 if ((preg_match('/^(?!true$|false$)[a-zA-Z]++/', $value)) === 1) {
                     if (!in_array($key, ["difficulty", "gamemode", "level-type"])) {
                         $form->addField("text", "$key", "$label", [
@@ -104,7 +116,7 @@ class ConfigController extends Controller
                         ]);
                     }
                 }
-                /* Treatment for integer $value */
+                // Treatment for integer $value
                 if (preg_match('/[0-9]/', $value)) {
                     if (!in_array($key, ["rcon.port", "query.port"])) {
                         $form->addField("number", "$key", "$label", [
@@ -114,7 +126,7 @@ class ConfigController extends Controller
                         ]);
                     }
                 }
-                /* Treatment for empty $value */
+                // Treatment for empty $value
                 if ($value === "") {
                     if (!in_array($key, ["server-ip", "rcon.password"])) {
                         $form->addField("text", "$key", "$label", [
@@ -126,15 +138,18 @@ class ConfigController extends Controller
                     }
                 }
             }
-            $form->addSubmit("send", "Envoyer", "btn btn-success btn-sm");
+            $form->addSubmit("send", "Sauvegarder", "btn btn-success btn-sm");
+            $form->addToken($token);
 
             return $this->render("config", [
                 'title' => "Configurations",
                 'form' => $form->getForm()
             ]);
         } else {
-            $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
-            Démarrer le serveur pour générer le fichier.");
+            $this->getFlash()->addAlert(
+                "Le fichier serveur.properties n'a pas été trouvé.\n
+                Démarrer le serveur pour générer le fichier."
+            );
             return $this->render("noConfig", [
                 'title' => "Configuration non trouvé!"
             ]);
@@ -144,26 +159,26 @@ class ConfigController extends Controller
     private function writeServerProperties(array $post): bool
     {
         $config = SERVER_PROPERTIES;
-        /* this foreach will integrate user constants values */
+        // this foreach will integrate user constants values
         foreach ($config as $key => $value) {
-            /* Change the actual $key to constant eg. my-key => MY_KEY */
+            // Change the actual $key to constant eg. my-key => MY_KEY
             $constStr = strtoupper(str_replace(['.', '-'], '_', $key));
             if (defined($constStr)) {
-                /* If is defined, put the value of the constant in $const */
+                // If is defined, put the value of the constant in $const
                 $const = constant($constStr);
             }
 
             $constArray = get_defined_constants(true); //Get categorized array of defined constants
 
             if (array_key_exists($constStr, $constArray['user'])) {
-                /* If the constant is in user defined constant array replace default $value to $const */
+                // If the constant is in user defined constant array replace default $value to $const
                 $config[$key] = $const;
             } else {
                 $config[$key] = $value;
             }
         }
 
-        /* Convert $config array to original properties file with user entries */
+        // Convert $config array to original properties file with user entries
         $serverProperties = "# I'm an auto generated file ;)\n";
         foreach ($config as $key => $value) {
             if (key_exists($key, $post)) {

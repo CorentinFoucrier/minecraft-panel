@@ -1,12 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
-if (php_sapi_name() != "cli") {
-    fwrite(
-        STDERR,
-        PHP_EOL . "File only in CLI" . PHP_EOL
-    );
+if (PHP_SAPI !== "cli") {
+    echo "File only in CLI";
     die(1);
 }
 
@@ -64,6 +60,8 @@ $pdo->exec("CREATE TABLE `{$prefix}server` (
     `name`          varchar(255) NOT NULL,
     `status`        tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
     `version`       varchar(255) NOT NULL,
+    `ram_min`       int(4) NOT NULL DEFAULT 512,
+    `ram_max`       int(4) NOT NULL DEFAULT 1024,
     PRIMARY KEY(`id`)
 )");
 

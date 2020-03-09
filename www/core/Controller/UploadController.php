@@ -2,7 +2,7 @@
 
 namespace Core\Controller;
 
-class UploadController extends Controller
+class UploadController
 {
     /**
      * Upload a file
@@ -13,14 +13,14 @@ class UploadController extends Controller
      * @param string $mimeTypes The MIME types
      * @return null|string
      */
-    public function upload(
+    public static function upload(
         string $path,
         string $attrName,
         array $exentions,
         array $mimeTypes
     ): ?string {
         $file = $_FILES[$attrName];
-        $fileName = htmlspecialchars($file['name']);
+        $fileName = str_replace(' ', '_', htmlspecialchars($file['name']));
         // If file is not empty
         if (!empty($fileName)) {
             $fileExt  = pathinfo($fileName, PATHINFO_EXTENSION);
