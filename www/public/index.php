@@ -19,7 +19,6 @@ $app->getRouter(BASE_PATH)
     ->match('/players', 'Players#showPlayers', 'players')
     // Access GET only
     ->get('/', 'Dashbord#showDashboad', 'dashboard')
-    ->get('/getVersion', 'Dashbord#getVersion', 'getVersion')
     ->get('/logout', 'User#logout', 'logout')
     ->get('/error/[i:code]', 'Error#show', 'error')
     // Access POST only

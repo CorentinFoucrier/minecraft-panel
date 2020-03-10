@@ -80,7 +80,7 @@ const onFileChange = () => {
 setInterval(() => {
     let conn = new Client();
     conn.on('ready', () => {
-        conn.exec("ps aux | grep java | grep " + process.env.SHELL_USER + " | grep -v grep | awk {'print $3,$4'}", (err, stream) => {
+        conn.exec("ps aux | grep java | grep " + process.env.SHELL_USER + " | grep -v grep | awk '{$6=int($6/1024)}{print $3,$6}'", (err, stream) => {
             if (err) throw err;
             stream.on('close', code => {
                 // console.log(code); // Exit code
@@ -97,7 +97,7 @@ setInterval(() => {
         username: process.env.SHELL_USER,
         password: process.env.SHELL_PWD
     });
-}, 1000);
+}, 2000);
 
 fs.watchFile(
     '/var/minecraft_server/logs/latest.log',

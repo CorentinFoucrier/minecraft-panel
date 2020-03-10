@@ -14,61 +14,47 @@ class DashbordController extends Controller
     public function showDashboad()
     {
         $this->userOnly();
-        $config = SERVER_PROPERTIES;
-        $maxPlayers = $config['max-players'];
-        $currentVersion = $this->getVersion();
+        $serverEntity = $this->server->selectEverything();
+
+        $maxPlayers = SERVER_PROPERTIES['max-players'];
         $token = bin2hex(random_bytes(8));
-        $_SESSION['token'] = $token;
         $socketUrl = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME'] . ":" . getenv('SOCKETIO_PORT');
-        try {
-            $ops = json_decode(file_get_contents(BASE_PATH . 'minecraft_server/ops.json'), true);
-        } catch (\Exception $e) {
-            (getenv("ENV_DEV") === "true") ? $this->getFlash()->addWarning('[Dev only]|"ops.json" n\'existe pas !') : $ops = [];
-        }
+        $versions = $this->getAvailableVersions();
 
-        $versions = json_decode(file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json"), true);
-        if (is_array($versions)) {
-            $vanilla = [
-                "release" => [],
-                "snapshot" => []
-            ];
-
-            for ($i = 0; $i < count($versions['versions']); $i++) {
-                $version = $versions['versions'][$i];
-                if ($version['type'] == "release") {
-                    array_push($vanilla['release'], $version['id']);
-                } elseif ($version['type'] == "snapshot") {
-                    array_push($vanilla['snapshot'], $version['id']);
-                }
-            }
-        }
-
-        $otherVersions = json_decode(file_get_contents("https://pastebin.com/raw/LVdci0Ck"), true);
+        $_SESSION['token'] = $token;
 
         return $this->render("dashboard", [
             'title' => "Tableau de bord",
+            'ramMax' => $serverEntity->getRamMax(),
+            'currentVersion' => $serverEntity->getVersion(),
             'maxPlayers' => $maxPlayers,
-            'currentVersion' => $currentVersion,
-            'vanilla' => $vanilla,
-            'otherVersions' => $otherVersions,
-            'ops' => $ops,
             'token' => $token,
-            'socketUrl' => $socketUrl
+            'socketUrl' => $socketUrl,
+            'vanilla' => $versions['vanilla'],
+            'otherVersions' => $versions['otherVersions']
         ]);
     }
 
-    /**
-     * Get active minecraft version
-     * Route: /getVersion
-     * @return string
-     */
-    public function getVersion(): string
+    private function getAvailableVersions(): array
     {
-        $req = $this->server->selectEverything()->getVersion();
-        $version = ucfirst(str_replace('_', ' ', $req));
-        if (!empty($_GET)) {
-            echo $version;
+        $versions = [
+            "vanilla" => [
+                "release" => [],
+                "snapshot" => []
+            ],
+            "otherVersions" => json_decode(file_get_contents("https://pastebin.com/raw/LVdci0Ck"), true)
+        ];
+        $versionManifest = json_decode(file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json"), true);
+        if (is_array($versionManifest)) {
+            for ($i = 0; $i < count($versionManifest['versions']); $i++) {
+                $version = $versionManifest['versions'][$i];
+                if ($version['type'] === "release") {
+                    array_push($versions['vanilla']['release'], $version['id']);
+                } elseif ($version['type'] === "snapshot") {
+                    array_push($versions['vanilla']['snapshot'], $version['id']);
+                }
+            }
         }
-        return $version;
+        return $versions;
     }
 }

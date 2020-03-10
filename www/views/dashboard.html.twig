@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header h6">
                     Current version:
-                    <span class="float-right" id="version">{{currentVersion}}</span>
+                    <span class="float-right" id="version">{{currentVersion|replace({'_': ' '})}}</span>
                 </div>
                 <div class="card-body">
                     <p class="card-text text-success">
@@ -43,7 +43,7 @@
                         <div class="col-sm-4">
                             <i class="fas fa-memory h2"></i><br/>
                             Utilisation RAM<br/>
-                            <span id="ram">N/A</span> %
+                            <span id="ram">N/A</span> / {{ramMax}} MB
                         </div>
                     </div>
                     <br/>
@@ -69,30 +69,17 @@
     </div>
     {# Console #}
     <div class="row m-4">
-        <div class="col-md-12">
-            <div class="card mb-3">
+        <div class="offset-md-1 col-md-10 mt-4">
+            <div class="card">
+                <h5 class="card-header">
+                    <b>Console &gt;_</b>
+                </h5>
                 <div class="row no-gutters">
-                    <div class="console-side col-md-2 d-md-flex flex-md-column justify-content-md-center d-none d-md-block">
-                        <h5 class="text-center mt-md-3">
-                            <b>Opérateurs</b>
-                        </h5>
-                        <ul>
-                            {% for op in ops %}
-                                <li>{{op.name}}</li>
-                            {% endfor %}
-                        </ul>
-                        <div class="mt-md-auto mb-md-3 mx-md-auto">
-                            <a href="#" class="btn btn-success btn-sm not-allowed wip">
-                                <i class="fas fa-plus"></i>
-                                Ajouter un opérateur
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-md-10 p-md-2">
+                    <div class="col-12 p-md-2">
                         <div class="card-body py-md-0">
                             <div class="row">
                                 {# Console renderer #}
-                                <div id="log" class="border pl-1 overflow" style="height:200px;"></div>
+                                <div id="log" class="border pl-1 overflow" style="height:250px;"></div>
                             </div>
 
                             <div class="row pt-2">
@@ -120,19 +107,6 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script>
-        {% for warnings in flash("warning") %}
-            toastr.options = {
-                "closeButton": true,
-                "positionClass": "toast-bottom-left",
-                "showDuration": "-1",
-                "hideDuration": "-1",
-                "timeOut": "-1",
-                "extendedTimeOut": "-1"
-            }
-            toastr.warning("{{ warnings }}");
-        {% endfor %}
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js" crossorigin></script>
     <script>
         const socket = io.connect('{{ socketUrl }}');
