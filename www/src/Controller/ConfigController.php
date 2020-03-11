@@ -34,14 +34,12 @@ class ConfigController extends Controller
             $form = new FormBuilderController('server.propreties');
             $config = SERVER_PROPERTIES; // Retrieve server.properties content
 
+            // Add checkboxes
             foreach ($config as $key => $value) {
                 $value = trim($value);
+                $res = ($value === "true" || $value === "false") ? (bool) $value : $value;
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key));
-                /**
-                 * If 'true' is matched, that's a boolean
-                 * add checkbox already checked if 'true' and empty if 'false'
-                 */
-                if ((preg_match('/(true|false)++/', $value)) === 1) {
+                if (is_bool($res)) {
                     if (!in_array($key, ["enable-rcon", "enable-query", "broadcast-rcon-to-ops"])) {
                         $form->addGroup('col-6');
                         $form->addCheckbox("$key", "$value", "$label");
@@ -49,10 +47,16 @@ class ConfigController extends Controller
                 }
             }
 
-            $form->addGroup('col-12');
+            $form->addGroup('col-12'); // Add group for separate checkboxes of fields
             foreach ($config as $key => $value) {
                 $value = trim($value);
-                $label = ucfirst(str_replace(['.', '-'], ' ', $key));
+                // cast $value because every $value is a string
+                if (is_numeric($value)) {
+                    $value = (int) $value;
+                } else if ($value === "true" || $value === "false") {
+                    $value = (bool) $value;
+                }
+                $label = ucfirst(str_replace(['.', '-'], ' ', $key)); // Make label "human readable"
                 // Add the name of fields that we don't displayed in the exclude array below
                 $exclude = [
                     "server-ip", "rcon.password",
@@ -61,12 +65,13 @@ class ConfigController extends Controller
                     "broadcast-rcon-to-ops"
                 ];
                 // If is a boolean add $key to the exclude array
-                if ((preg_match('/(true|false)++/', $value)) === 1) {
+                if (is_bool($value)) {
                     $exclude[] = $key;
                 }
                 if (!in_array($key, $exclude)) {
                     $form->addGroup("col-sm-6");
                 }
+
                 // Add select for possible default values that arn't in $config
                 switch ($key) {
                     case 'difficulty':
@@ -105,37 +110,31 @@ class ConfigController extends Controller
                         ]);
                         break;
                 }
-                // Treatment for string but not boolean and custom select fields above
-                if ((preg_match('/^(?!true$|false$)[a-zA-Z]++/', $value)) === 1) {
-                    if (!in_array($key, ["difficulty", "gamemode", "level-type"])) {
-                        $form->addField("text", "$key", "$label", [
-                            'attributes' => [
-                                'value' => $value,
-                                'placeholder' => 'Custom value'
-                            ]
-                        ]);
-                    }
-                }
-                // Treatment for integer $value
-                if (preg_match('/[0-9]/', $value)) {
-                    if (!in_array($key, ["rcon.port", "query.port"])) {
-                        $form->addField("number", "$key", "$label", [
-                            'attributes' => [
-                                'value' => $value
-                            ]
-                        ]);
-                    }
-                }
-                // Treatment for empty $value
-                if ($value === "") {
-                    if (!in_array($key, ["server-ip", "rcon.password"])) {
-                        $form->addField("text", "$key", "$label", [
-                            'attributes' => [
-                                'value' => $value,
-                                'placeholder' => 'Custom value'
-                            ]
-                        ]);
-                    }
+
+                if (
+                    is_string($value)
+                    && !empty($value)
+                    && !in_array($key, ["difficulty", "gamemode", "level-type"]) // Exclude fixed values in the switch below
+                ) { // Treatment for string not boolean, not integer
+                    $form->addField("text", "$key", "$label", [
+                        'attributes' => [
+                            'value' => $value,
+                            'placeholder' => 'Custom value'
+                        ]
+                    ]);
+                } else if (is_numeric($value) && !in_array($key, $exclude)) { // Treatment for integer $value
+                    $form->addField("number", "$key", "$label", [
+                        'attributes' => [
+                            'value' => $value
+                        ]
+                    ]);
+                } else if (is_string($value) && empty($value) && !in_array($key, $exclude)) { // Treatment for empty $value
+                    $form->addField("text", "$key", "$label", [
+                        'attributes' => [
+                            'value' => $value,
+                            'placeholder' => 'Custom value'
+                        ]
+                    ]);
                 }
             }
             $form->addSubmit("send", "Sauvegarder", "btn btn-success btn-sm");
