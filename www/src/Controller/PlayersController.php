@@ -38,7 +38,7 @@ class PlayersController extends Controller
                 $this->sendCommand($type, $name, false, $reason);
             }
             sleep(2);
-            $this->redirect($this->getUri('players') . "#$type");
+            $this->redirect('players', "#$type");
         }
 
         $_SESSION['token'] = bin2hex(random_bytes(8));

@@ -24,7 +24,7 @@ class ConfigController extends Controller
                 Démarrer le serveur pour générer le fichier.");
             }
             $this->getFlash()->addSuccess("Configuration mise à jour !");
-            $this->redirect($this->generateUrl('config'));
+            $this->redirect('config');
         }
 
         // If server.properties is not null generate and display config form

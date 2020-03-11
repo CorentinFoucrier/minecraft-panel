@@ -107,18 +107,26 @@ abstract class Controller
     }
 
     /**
-     * Redirect a client with an optionnal http code.
+     * Redirect client to a specific route name.
      *
      * @param string $url
-     * @param integer|null $httpResponseCode
+     * @param string $anchor set an HTML anchor "#myanchor" eg. http://local/home#contact
      * @return void
      */
-    protected function redirect(string $url, ?int $httpResponseCode = null)
+    protected function redirect(string $routeName, string $anchor = "")
     {
-        if ($httpResponseCode) {
-            http_response_code($httpResponseCode);
-        }
-        return header('Location: ' . $url);
+        return header('Location: ' . $this->getUri($routeName) . $anchor);
+    }
+
+    /**
+     * Redirect with an error code
+     *
+     * @param integer $code
+     * @return void
+     */
+    protected function error(int $code)
+    {
+        return header('Location: ' . $this->getUri('error', ['code' => $code]));
     }
 
     /**
@@ -129,7 +137,7 @@ abstract class Controller
     protected function userOnly(): void
     {
         if (!isset($_SESSION['username']) || empty($_SESSION['username'])) {
-            $this->redirect($this->getUri('login'));
+            $this->redirect('login');
             exit();
         }
     }
@@ -147,7 +155,7 @@ abstract class Controller
             if (!empty($_POST)) { // AJAX if $_POST
                 return FALSE;
             } else {
-                $this->redirect($this->getUri('login'));
+                $this->redirect('login');
             }
         }
     }
@@ -160,7 +168,7 @@ abstract class Controller
     protected function notForLoggedIn()
     {
         if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
-            $this->redirect($this->getUri('dashboard'));
+            $this->redirect('dashboard');
         }
     }
 
@@ -203,7 +211,7 @@ abstract class Controller
         $permEntity = $this->permissions->findById($currentUserId);
 
         if ($permEntity->$getPerm() === 0 && $redirect) {
-            $this->redirect($this->generateUrl('dashboard'));
+            $this->redirect('dashboard');
             exit();
         } elseif ($permEntity->$getPerm() == 1) {
             return TRUE;
@@ -226,5 +234,27 @@ abstract class Controller
          * @see https://theterminallife.com/sending-commands-into-a-screen-session/
          */
         $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
+    }
+
+    /**
+     * Send the command in sudo mode
+     *
+     * @param string $command
+     * @return boolean TRUE on success FALSE on failure
+     */
+    protected function sendSudoCommand(string $command): bool
+    {
+        $ssh = App::getInstance()->getSsh();
+        $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
+        $ssh->write("sudo $command\n");
+        $ssh->setTimeout(10);
+        $output = $ssh->read('/.*@.*[$|#]|.*[pP]assword.*/', $ssh::READ_REGEX);
+        if (preg_match('/.*[pP]assword.*/', $output)) {
+            $ssh->write(SHELL_PWD . PHP_EOL);
+            $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 }

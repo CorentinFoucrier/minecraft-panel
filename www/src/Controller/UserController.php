@@ -58,7 +58,7 @@ class UserController extends Controller
                             /* Logged! */
                             $_SESSION['username'] = $userEntity->getUsername();
                             unset($_SESSION['token']);
-                            $this->redirect($this->getUri("dashboard"), 200);
+                            $this->redirect('dashboard');
                             exit();
                         } else {
                             $this->changeFirstPassword($userEntity->getUsername());
@@ -87,7 +87,7 @@ class UserController extends Controller
         unset($_SESSION['username']);
         session_unset();
         session_destroy();
-        $this->redirect($this->getUri("login"), 200);
+        $this->redirect('login');
     }
 
     /**
@@ -111,7 +111,7 @@ class UserController extends Controller
                         /* Logged! */
                         $_SESSION['username'] = $username;
                         unset($_SESSION['token']);
-                        $this->redirect($this->getUri("dashboard"), 200);
+                        $this->redirect('dashboard');
                         exit();
                     }
                 } else {

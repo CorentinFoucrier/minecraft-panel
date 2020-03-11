@@ -14,8 +14,26 @@ class WorldsController extends Controller
         $this->userOnly();
         $this->hasPermission('worldsManagement');
 
-        /* Triggered if the client request a download */
-        if (!empty($_POST['worldName'])) {
+        $worlds = $this->getWorlds();
+        $token = bin2hex(random_bytes(8));
+        $_SESSION['token'] = $token;
+
+        $this->render('worlds', [
+            'title' => 'Gestion des mondes',
+            'worlds' => $worlds,
+            'token' => $token
+        ]);
+    }
+
+    /**
+     * Download the specified world name
+     * Route: /worlds/download
+     *
+     * @return void
+     */
+    public function downloadWorld(): void
+    {
+        if (!empty($_POST['worldName']) && $_POST['token'] === $_SESSION['token']) {
             $worldName = htmlspecialchars($_POST['worldName']);
             if (ZipController::make(BASE_PATH . 'minecraft_server/' . $worldName)) {
                 ignore_user_abort(true); // If the client disconnect the script will stop
@@ -31,37 +49,33 @@ class WorldsController extends Controller
             } else {
                 $this->getFlash()->addAlert("Erreur interne, le fichier n'a pas pu être compressé");
             }
+        } else {
+            $this->error(404);
         }
+    }
 
-        /* Triggered when the client upload a file */
+    /**
+     * Upload a Minecraft world
+     *
+     * @return void
+     */
+    public function uploadWorld(): void
+    {
         if (!empty($_FILES)) {
             $path = BASE_PATH . 'minecraft_server/';
             /* Upload the file */
-            $file = UploadController::upload(
-                $path,
-                'world',
-                ['zip'],
-                [
-                    'application/zip', 'application/x-zip-compressed',
-                    'multipart/x-zip', 'application/x-compressed'
-                ]
-            );
+            $file = UploadController::upload($path, 'world', ['zip'], [
+                'application/zip', 'application/x-zip-compressed',
+                'multipart/x-zip', 'application/x-compressed'
+            ]);
             /* if the file uploaded correctly unzip it */
             if (is_string($file)) {
                 if ($this->unZip($path, $file)) {
                     unlink($path . $file);
+                    $this->redirect('worlds');
                 }
             }
         }
-        $worlds = $this->getWorlds();
-        $token = bin2hex(random_bytes(8));
-        $_SESSION['token'] = $token;
-
-        $this->render('worlds', [
-            'title' => 'Gestion des mondes',
-            'worlds' => $worlds,
-            'token' => $token
-        ]);
     }
 
     /**
@@ -76,9 +90,11 @@ class WorldsController extends Controller
             $token = htmlspecialchars($_POST['token']);
             $worldName = htmlspecialchars($_POST['worldName']);
             if ($token === $_SESSION['token']) {
-                $dir = BASE_PATH . "minecraft_server/" . $worldName;
-                if ($this->rmDirectoryRecursivly($dir)) {
+                $su = SHELL_USER;
+                if ($this->sendSudoCommand("rm -rf /home/$su/minecraft_server/$worldName")) {
                     echo "deleted";
+                } else {
+                    echo "error";
                 }
             }
         }
@@ -114,9 +130,6 @@ class WorldsController extends Controller
      */
     private function unZip(string $path, string $fileName): bool
     {
-        $ssh = App::getInstance()->getSsh();
-        $su = SHELL_USER;
-        $baseName = "/home/$su/minecraft_server/" . str_replace(".zip", "", $fileName);
         $zip = new \ZipArchive;
         try {
             if ($zip->open($path . $fileName) === true) {
@@ -131,13 +144,9 @@ class WorldsController extends Controller
                         $zip->extractTo($path . str_replace('.zip', '', $fileName), array($zip->getNameIndex($i)));
                     }
                 }
-                $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
-                $ssh->write("sudo chmod -R 777 $baseName && sudo chown -R $su:$su $baseName\n");
-                $ssh->setTimeout(10);
-                $output = $ssh->read('/.*@.*[$|#]|.*[pP]assword.*/', $ssh::READ_REGEX);
-                if (preg_match('/.*[pP]assword.*/', $output)) {
-                    $ssh->write(SHELL_PWD . PHP_EOL);
-                    $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
+                $su = SHELL_USER;
+                $baseName = "/home/$su/minecraft_server/" . str_replace(".zip", "", $fileName);
+                if ($this->sendSudoCommand("chmod -R 777 $baseName && sudo chown -R $su:$su $baseName")) {
                     return $zip->close();
                 } else {
                     return false;

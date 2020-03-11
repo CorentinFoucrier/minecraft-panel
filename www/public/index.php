@@ -32,5 +32,7 @@ $app->getRouter(BASE_PATH)
     ->post('/coAdmin/delete/[i:id]/[*:token]', 'CoAdmin#deleteCoAdmin', 'coAdminDelete')
     ->post('/coAdmin/edit', 'CoAdmin#editPermissions', 'editPermissions')
     ->post('/worlds/delete', 'Worlds#deleteWorlds', 'worldsDelete')
+    ->post('/worlds/download', 'Worlds#downloadWorld', 'downloadWorld')
+    ->post('/worlds/upload', 'Worlds#uploadWorld', 'uploadWorld')
     ->post('/players/deleteFromList', 'Players#deleteFromList', 'deleteFromList')
     ->run();

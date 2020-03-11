@@ -18,7 +18,7 @@
     <section class="row m-4">
         <div class="col-md-6">
             <h4 class="title mb-3">Ajouter un monde !</h4>
-            <form enctype="multipart/form-data" action="" method="post">
+            <form enctype="multipart/form-data" action="{{ uri("uploadWorld") }}" method="post">
                 <div class="input-group">
                     <div class="custom-file" lang="fr">
                         <input type="file" name="world" class="custom-file-input">
@@ -50,8 +50,9 @@
                         <tr id="{{world}}">
                             <td>{{world|replace({'_': ' '})}}</td>
                             <td>
-                                <form action="" method="post">
+                                <form action="{{ uri("downloadWorld") }}" method="post">
                                     <input type="hidden" name="worldName" value="{{world}}">
+                                    <input id="token" type="hidden" name="token" value="{{token}}">
                                     <button id="download" class="btn btn-primary btn-sm float-right">
                                         <i class="fas fa-download"></i>
                                     </button>
@@ -60,6 +61,7 @@
                             <td>
                                 <button class="btn btn-danger btn-sm float-right delete" data-worldname="{{world}}">
                                     <i style="pointer-events: none;" class="far fa-trash-alt"></i>
+                                    <spinning-dots class="d-none" style="width:12px;stroke-width:1px;color:#FFF;" dots="5"></spinning-dots>
                                 </button>
                             </td>
                         </tr>
@@ -68,8 +70,6 @@
             </table>
         </div>
     </section>
-
-    <input id="token" type="hidden" value="{{token}}">
 {% endblock %}
 
 {% block javascripts %}
