@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-    <input type="hidden" id="token" value="{{token}}">
+    <input type="hidden" id="token" value="{{ csrf_token() }}">
 {% endblock %}
 
 {% block javascripts %}

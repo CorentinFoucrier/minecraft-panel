@@ -1,49 +1,54 @@
-const selectVersion = async gameVersion => {
+/**
+ * 
+ * @param {String} serverType Possible values: Vanilla || Spigot || Forge
+ */
+const selectVersion = async serverType => {
     event.preventDefault();
-    let version = $('#' + gameVersion).val();
-    let formatedVersion = $('#' + gameVersion).val().replace('_', ' ');
-    let displayVersion = $('#version');
-    let modal = $('#changeVersion');
-    let token = $('#token').val();
-    let status = await checkStatus();
+
+    const version = $('#' + serverType).val(); // Release_1.15.2 || Snapshot_19w46a
+    const [selectedVersionType, selectedVersionNumber] = version.split('_'); // Array('Release', '1.15.2')
+
+    const vType = $('#vType'); // Span element; Possible html values: Release || Snapshot || Spigot || Forge
+    const vNumber = $('#vNumber'); // Span element; Possible html values: 1.15 || 1.15.1 ...
+    const versionLogo = $('#versionLogo');
+    const spin = $('#spin');
+
+    const token = $('#token').val();
+    const status = await checkStatus();
+
+    $('#changeVersion').modal('hide'); // Hide the bootstrap modal
 
     if (status !== "started") {
         if (version !== "default") {
             toastr.info("Début du téléchargement", "Téléchargement...");
+            spin.removeClass('d-none');
+            versionLogo.addClass('d-none');
             $.post("./selectVersion", {
                 version: version,
-                gameVersion: gameVersion,
+                serverType: serverType,
                 token: token
             }, async (data) => {
-                if (data == "fromCache") {
-                    socket.emit('nodejs', formatedVersion);
-                    displayVersion.html(formatedVersion);
-                    modal.modal('hide');
-                    toastr.clear();
-                    setTimeout(() => {
-                        toastr.success("Votre version a bien été changée !", "Charger depuis le cache.");
-                    }, 1100);
-                } else if (data == "downloaded") {
-                    socket.emit('nodejs', formatedVersion);
-                    displayVersion.html(formatedVersion);
-                    modal.modal('hide');
-                    toastr.success("Votre version a bien été télécharger et changé !", "Téléchagement et changement !");
-                } else if (data == "not allowed") {
-                    toastr.clear();
-                    setTimeout(() => {
-                        toastr.error("Vous n'êtes pas autorisé à changer la version du serveur.", "Permission non accordée !");
-                    }, 1100);
-                } else {
-                    toastr.clear();
-                    setTimeout(() => {
-                        toastr.error("Une erreur est survenue", "Erreur!");
-                    }, 1100);
+                if (data.state === "fromCache" || data.state === "downloaded") {
+                    socket.emit('updateVersion', version);
+                    versionLogo.attr('src', versionLogo[0].src.replace(vType.html(), selectedVersionType));
+                    vType.html(selectedVersionType);
+                    vNumber.html(selectedVersionNumber);
+                    spin.addClass('d-none');
+                    versionLogo.removeClass('d-none');
+                    toastr.remove();
+                    toastr.success(data[data.state].message, data[data.state].title);
+                } else if (data.state === "forbidden") {
+                    toastr.remove();
+                    toastr.error(data.forbidden.message, data.forbidden.title);
+                } else if (data.state === "error") {
+                    toastr.remove();
+                    toastr.error(data.error.message, data.error.title);
                 }
-            }, "text");
+            }, "json");
         } else {
-            toastr.error("Veuillez choisir une verison.", "Aucune version selectionnée");
+            toastr.error("Error!");
         }
     } else {
-        toastr.error("Veuillez arrêter votre serveur avant de changer de version.", "Une erreur est survenue !");
+        toastr.error("Error!");
     }
 }

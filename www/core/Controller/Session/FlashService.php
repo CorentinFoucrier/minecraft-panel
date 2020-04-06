@@ -26,18 +26,15 @@ class FlashService
         $this->session->set("warning", $message);
     }
 
-    public function getMessages(string $key): array
+    public function getMessages(string $type): array
     {
-        $message =  $this->session->get($key, []);
-        $this->session->delete($key);
+        $message = $this->session->get($type, []);
+        $this->session->delete($type);
         return $message;
     }
 
-    public function hasMessages(string $key): bool
+    public function hasMessages(string $type): bool
     {
-        if ($this->session->get($key, false)) {
-            return true;
-        }
-        return false;
+        return ($this->session->get($type, false)) ? true : false;
     }
 }

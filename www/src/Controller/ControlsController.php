@@ -26,10 +26,8 @@ class ControlsController extends Controller
             if (!file_exists($eula)) {
                 $h = fopen($eula, "-w");
                 fclose($h); // create eula.txt if not exist
-                file_put_contents($eula, "eula=true");
-            } else {
-                file_put_contents($eula, "eula=true");
             }
+            file_put_contents($eula, "eula=true");
         }
 
         if (
@@ -42,32 +40,38 @@ class ControlsController extends Controller
                 preg_match_all('/(.+)=(.*)/m', $eulaTxt, $matches, PREG_SET_ORDER, 0);
                 // If eula.txt exist but set to false.
                 if (end($matches[0]) == "false") {
-                    echo "eula";
+                    $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
                     exit();
                 }
                 $req = $this->server->selectEverything();
                 if ($req->getStatus() === SERVER_STOPPED || $req->getStatus() === SERVER_ERROR) {
-                    echo ($this->server->update($req->getId(), ['status' => SERVER_LOADING])) ? "loading" : "error";
-                    $version = $req->getVersion();
-                    $ssh = App::getInstance()->getSsh();
-                    $ssh->write("screen -R minecraft_server\n");
-                    $ssh->write("cd /home/" . SHELL_USER . "/minecraft_server\n");
-                    $cn = getenv('CONTAINER_NAME');
-                    // When the java command is terminated the command following pipes is launched.
-                    $ssh->write(
-                        "java -Xms" . $req->getRamMin() . "M -Xmx" . $req->getRamMax() . "M -jar $version.jar -nogui || docker exec $cn php bin/ErrorsCheck\n"
-                    );
-                    // The default state is "in loading" an AJAX script will send a request to know if the server is up.
-                    $ssh->read();
-                    if ($this->server->selectEverything()->getStatus() === SERVER_STOPPED) {
-                        echo "error";
+                    if ($this->server->update($req->getId(), ['status' => SERVER_LOADING])) {
+                        $this->echoJsonData('loading')->addToast("Votre serveur vas démarrer", "Démmarage")->echo();
+                        $version = $req->getVersion();
+                        $ssh = App::getInstance()->getSsh();
+                        $ssh->write("screen -R minecraft_server\n");
+                        $ssh->write("cd /home/" . SHELL_USER . "/minecraft_server\n");
+                        $cn = getenv('CONTAINER_NAME');
+                        // When the java command is terminated the command following pipes is launched.
+                        $ssh->write(
+                            "java -Xms" . $req->getRamMin() . "M -Xmx" . $req->getRamMax() . "M -jar $version.jar -nogui || docker exec $cn php bin/ErrorsCheck\n"
+                        );
+                        // The default state is "loading" an AJAX script will send a request to know if the server is up.
+                        $ssh->read();
+                        sleep(1);
+                        $status = $this->server->selectEverything()->getStatus();
+                        if ($status === SERVER_STOPPED || $status === SERVER_ERROR) {
+                            $this->echoJsonData('error')->addToast("Une erreur est survenu")->echo();
+                        }
+                    } else {
+                        $this->echoJsonData('error')->addToast("Une erreur est survenu")->echo();
                     }
                 }
             } else {
-                echo "eula";
+                $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
             }
         } else {
-            echo "not allowed";
+            $this->echoJsonData('forbidden')->addToast("Eula non accepté !")->echo();
         }
     }
 
@@ -79,24 +83,30 @@ class ControlsController extends Controller
      */
     public function stop(): void
     {
-        if (
-            !empty($_POST['token'])
-            && $this->hasPermission('startAndStop', false)
-            && $_POST['token'] === $_SESSION['token']
-        ) {
-            $req = $this->server->selectEverything();
-            /* If is start then stop it */
-            if ($req->getStatus() === SERVER_STARTED) {
-                // Save server status in db
-                if ($this->server->update($req->getId(), ['status' => SERVER_STOPPED])) {
-                    $this->sendMinecraftCommand('stop');
-                    echo "stopped"; // Send confirmation to JavaScript client
-                } else {
-                    echo "error";
+        if (!empty($_POST) && $_POST['token'] === $_SESSION['token']) {
+            if ($this->hasPermission('startAndStop', false)) {
+                $req = $this->server->selectEverything();
+                /* If is start then stop it */
+                if ($req->getStatus() === SERVER_STARTED) {
+                    // Save server status in db
+                    if ($this->server->update($req->getId(), ['status' => SERVER_STOPPED])) {
+                        $this->sendMinecraftCommand('stop');
+                        $this->echoJsonData('stopped')
+                            ->addToast("Votre serveur à bien été arrêté !", "Arrêt")->echo();
+                    } else {
+                        $this->echoJsonData('error')
+                            ->addToast("Erreur serveur !", "Internal server error")->echo();
+                    }
                 }
+            } else {
+                $this->echoJsonData('forbidden')
+                    ->addToast('Vous n\'êtes pas autorisé à changer la version du serveur', 'Permission non accordée !')
+                    ->echo();
             }
         } else {
-            echo "not allowed";
+            $this->echoJsonData('error')
+                ->addToast('Une erreur est survenue !', 'Erreur interne')
+                ->echo();
         }
     }
 }

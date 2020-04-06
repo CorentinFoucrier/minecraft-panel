@@ -9,8 +9,9 @@ require_once BASE_PATH . 'www/vendor/autoload.php';
 $app = App\App::getInstance();
 $app::load();
 
-$app->getRouter(BASE_PATH)
+$app->getRouter()
     // Access POST or GET
+    // '/url', 'Controller#Methode', 'routeName'
     ->match('/getLog', 'Server#getLog', 'getLog')
     ->match('/config', 'Config#showForm', 'config')
     ->match('/login', 'User#login', 'login')

@@ -12,16 +12,18 @@
                 <h5>Vanilla</h5>
                 <div class="input-group">
                     <select class="custom-select" name="vanilla" id="vanilla">
-                        <option selected value="default">-- Choisir une version --</option>
+                        <option selected value="default" disabled="disabled">-- Choisir une version --</option>
                         {% for release in vanilla.release %}
-                            <option value="Release_{{release}}">Minecraft
-                                {{release}}
+                            <option value="Release_{{release}}">
+                                Release {{release}}
                             </option>
                         {% endfor %}
-                        <option value="default">_______Versions Snapshot_______</option>
+                        <option value="default" disabled="disabled">-------------------------------</option>
+                        <option value="default" disabled="disabled">Versions Snapshot</option>
+                        <option value="default" disabled="disabled">-------------------------------</option>
                         {% for snapshot in vanilla.snapshot %}
-                            <option value="Snapshot_{{snapshot}}">Snapshot
-                                {{snapshot}}
+                            <option value="Snapshot_{{snapshot}}">
+                                Snapshot {{snapshot}}
                             </option>
                         {% endfor %}
                     </select>
@@ -32,11 +34,11 @@
 
                 <h5 class="mt-3">Spigot</h5>
                 <div class="input-group">
-                    <select class="custom-select not-allowed" name="spigot" id="spigot">
-                        <option selected value="default">-- Choisir une version --</option>
-                        {% for version, link in otherVersions.spigot %}
-                            <option value="Spigot_{{version}}">Spigot
-                                {{version}}
+                    <select class="custom-select" name="spigot" id="spigot">
+                        <option selected value="default" disabled="disabled">-- Choisir une version --</option>
+                        {% for spigot in otherVersions.spigot %}
+                            <option value="Spigot_{{spigot.id}}">
+                                Spigot {{spigot.id}}
                             </option>
                         {% endfor %}
                     </select>
@@ -48,10 +50,10 @@
                 <h5 class="mt-3">Minecraft Forge</h5>
                 <div class="input-group">
                     <select class="custom-select not-allowed" name="forge" id="forge">
-                        <option selected value="default">-- Choisir une version --</option>
-                        {% for version, link in otherVersions.forge %}
-                            <option value="Forge_{{version}}">Forge
-                                {{version}}
+                        <option selected value="default" disabled="disabled">-- Choisir une version --</option>
+                        {% for forge in otherVersions.forge %}
+                            <option value="Forge_{{forge.id}}">
+                                Forge {{forge.id}}
                             </option>
                         {% endfor %}
                     </select>

@@ -20,27 +20,24 @@ $(document.body).keypress(e => {
 });
 
 // When document is ready retrieve the console with socket.io
-$(document).ready(() => {
-    const logs = $('#log');
-    socket.on('console', (datas) => {
-        let arr = datas.slice(1, -3).split("\\n");
-        $.each(datas.split(/[\r\n]+/), (_key, val) => {
-            const regex = /^[0-9]+$/gm;
-            if ((regex.exec(val)) == null) {
-                logs.append("<p class=\"m-0\">" + escapeHtml(val) + "</p>");
-                logs.scrollTop(logs[0].scrollHeight);
-            }
-        });
-        // Refresh the number of players are online.
-        $.post("./getOnlinePlayers", { token: token }, (data) => {
-            if (data) {
-                data = JSON.parse(data);
-                $('#playersOnline').html(data.online);
-            } else {
-                $('#playersOnline').html("...");
-            }
-        }, "text");
+const logs = $('#log');
+socket.on('console', (datas) => {
+    let arr = datas.slice(1, -3).split("\\n");
+    $.each(datas.split(/[\r\n]+/), (_key, val) => {
+        const regex = /^[0-9]+$/gm;
+        if ((regex.exec(val)) == null) {
+            logs.append("<p class=\"m-0\">" + escapeHtml(val) + "</p>");
+            logs.scrollTop(logs[0].scrollHeight);
+        }
     });
+    // Refresh the number of players are online.
+    $.post("./getOnlinePlayers", { token: token }, (data) => {
+        if (data.state) {
+            $('#playersOnline').html(data.online);
+        } else {
+            $('#playersOnline').html("...");
+        }
+    }, "text");
 });
 
 const escapeHtml = (text) => {

@@ -52,12 +52,12 @@
                         <tr id="{{coAdmin.id}}">
                             <td>{{coAdmin.username}}</td>
                             <td>
-                                <button class="btn btn-primary btn-sm float-right" onclick="editCoAdmin('{{coAdmin.id}}', '{{token}}');">
+                                <button class="btn btn-primary btn-sm float-right" onclick="editCoAdmin('{{coAdmin.id}}', '{{ csrf_token() }}');">
                                     <i class="far fa-edit"></i>
                                 </button>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-sm float-right" onclick="deleteCoAdmin('{{coAdmin.id}}', '{{token}}');">
+                                <button class="btn btn-danger btn-sm float-right" onclick="deleteCoAdmin('{{coAdmin.id}}', '{{ csrf_token() }}');">
                                     <i class="far fa-trash-alt"></i>
                                 </button>
                             </td>

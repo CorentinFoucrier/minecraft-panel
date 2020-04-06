@@ -29,8 +29,6 @@ class ConfigController extends Controller
 
         // If server.properties is not null generate and display config form
         if (!empty(SERVER_PROPERTIES)) {
-            $token = bin2hex(random_bytes(8));
-            $_SESSION['token'] = $token;
             $form = new FormBuilderController('server.propreties');
             $config = SERVER_PROPERTIES; // Retrieve server.properties content
 
@@ -138,7 +136,7 @@ class ConfigController extends Controller
                 }
             }
             $form->addSubmit("send", "Sauvegarder", "btn btn-success btn-sm");
-            $form->addToken($token);
+            $form->addToken($this->getCsrfTokenService()->getToken());
 
             return $this->render("config", [
                 'title' => "Configurations",

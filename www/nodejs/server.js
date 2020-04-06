@@ -33,11 +33,10 @@ io.on('connection', (socket) => {
             case "checkStatus":
                 socket.broadcast.emit('client', "checkStatus");
                 break;
-            case "getVersion":
-                socket.broadcast.emit('getVersion', data);
-                break;
         }
     });
+
+    socket.on('updateVersion', data => socket.broadcast.emit('updateVersion', data));
 
     // Delete client socketId when a client disconnect
     socket.on('disconnect', () => {

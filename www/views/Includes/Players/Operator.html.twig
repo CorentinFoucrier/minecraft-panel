@@ -2,7 +2,7 @@
     <div class="form-group">
         <div class="input-group">
             <input type="text" id="add_ops" name="add_ops" class="form-control" required="required" placeholder="Ajouter un joueur à la list">
-            <input type="hidden" name="token" value="{{token}}">
+            <input type="hidden" name="token" value="{{ csrf_token() }}">
             <div class="input-group-append">
                 <button class="btn btn-primary" type="submit">Ajouter</button>
             </div>

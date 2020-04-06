@@ -39,7 +39,7 @@
                                 </div>
                                 <input type="password" name="password" class="form-control input_pass" placeholder="Mot de passe">
                             </div>
-                            <input type="hidden" name="token" value="{{token}}">
+                            <input type="hidden" name="token" value="{{ csrf_token(route) }}">
                             <div class="d-flex justify-content-center mt-3 login_container">
                                 <button type="submit" name="login" value="login" class="btn login_btn btn-lg">Se connecter</button>
                             </div>

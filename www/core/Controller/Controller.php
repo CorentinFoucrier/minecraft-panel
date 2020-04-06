@@ -8,12 +8,21 @@ use Twig\Loader\FilesystemLoader;
 use Core\Extension\Twig\URIExtension;
 use Core\Extension\Twig\FlashExtension;
 use Core\Controller\Session\FlashService;
+use Core\Extension\Twig\CsrfTokenExtension;
+use Core\Controller\Helpers\CsrfTokenService;
 use Core\Extension\Twig\BeautifyStrExtension;
+use Core\Controller\Helpers\JsonDataService;
 
 abstract class Controller
 {
 
     private Environment $twig;
+
+    private CsrfTokenService $csrfToken;
+
+    protected string $views = BASE_PATH . "www/views/";
+
+    protected string $viewsExtention = ".html.twig";
 
     /**
      * Render the HTML view of a .twig file
@@ -25,9 +34,8 @@ abstract class Controller
      */
     protected function render(string $view, array $variables = []): void
     {
-        $variables['DEBUG_TIME'] = round(microtime(true) - START_DEBUG_TIME, 3);
         echo $this->getTwig()->render(
-            $view . '.html.twig',
+            $view . $this->viewsExtention,
             $variables
         );
     }
@@ -40,32 +48,22 @@ abstract class Controller
      */
     private function getTwig(): Environment
     {
+        //$_SESSION['token'] = bin2hex(random_bytes(8));
         if (!isset($this->twig)) {
-            $loader = new FilesystemLoader(BASE_PATH . 'www/views/');
+            $loader = new FilesystemLoader($this->views);
             $this->twig = new Environment($loader);
             //Global
-            $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
             $this->twig->addGlobal('route', $_SESSION['route']);
+            $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
             $this->twig->addGlobal('username', $_SESSION['username']);
+            $this->twig->addGlobal('DEBUG_TIME', round(microtime(true) - START_DEBUG_TIME, 3));
             //Extension
-            $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new URIExtension());
+            $this->twig->addExtension(new FlashExtension());
+            $this->twig->addExtension(new CsrfTokenExtension($this->getCsrfTokenService()));
             $this->twig->addExtension(new BeautifyStrExtension());
         }
         return $this->twig;
-    }
-
-    /**
-     * Generate the url of a route name eg. /foo/bar/1
-     * without the domain name
-     *
-     * @param string $routeName
-     * @param array $params Assoc array ['paramName'=>'value']
-     * @return string
-     */
-    protected function generateUrl(string $routeName, array $params = []): string
-    {
-        return App::getInstance()->getRouter()->url($routeName, $params);
     }
 
     /**
@@ -165,7 +163,7 @@ abstract class Controller
      *
      * @return void
      */
-    protected function notForLoggedIn()
+    protected function anonymousOnly()
     {
         if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
             $this->redirect('dashboard');
@@ -256,5 +254,18 @@ abstract class Controller
         } else {
             return FALSE;
         }
+    }
+
+    protected function echoJsonData(string $state): JsonDataService
+    {
+        return new JsonDataService($state);
+    }
+
+    protected function getCsrfTokenService(): CsrfTokenService
+    {
+        if (!isset($this->csrfToken)) {
+            $this->csrfToken = new CsrfTokenService();
+        }
+        return $this->csrfToken;
     }
 }

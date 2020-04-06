@@ -41,10 +41,8 @@ class PlayersController extends Controller
             $this->redirect('players', "#$type");
         }
 
-        $_SESSION['token'] = bin2hex(random_bytes(8));
         $this->render('players', [
             'title' => "Gestion des joueurs",
-            'token' => $_SESSION['token'],
             'tab' => $type,
             'ops' => $this->getJson('ops'),
             'bannedPlayers' => $this->getJson('banned-players'),

@@ -52,7 +52,7 @@
                             <td>
                                 <form action="{{ uri("downloadWorld") }}" method="post">
                                     <input type="hidden" name="worldName" value="{{world}}">
-                                    <input id="token" type="hidden" name="token" value="{{token}}">
+                                    <input type="hidden" id="token" name="token" value="{{ csrf_token() }}">
                                     <button id="download" class="btn btn-primary btn-sm float-right">
                                         <i class="fas fa-download"></i>
                                     </button>

@@ -23,6 +23,12 @@ class FlashExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * Returns an array of messages associated with the type
+     * and delete messages when this methode is called.
+     *
+     * @return array
+     */
     public function getFlash(string $type): array
     {
         return $this->flashService->getMessages($type);

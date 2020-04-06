@@ -1,107 +1,94 @@
-let cpu = $('#cpu');
-let ram = $('#ram');
-let token = $('#token').val();
-let psLog = new PerfectScrollbar('#log');
-// Buttons
-let stopBtn = $('#stopButton');
-let startBtn = $('#startButton');
-let restartBtn = $('#restartButton');
-let stopBtnLoading = $('#stopButtonLoading');
-let startBtnLoading = $('#startButtonLoading');
+const token = $('#token').val();
+const ctrlBtn = $('#ctrlBtn');
+const psLog = new PerfectScrollbar('#log');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const checkStatus = () => {
     return new Promise(resolve => {
         $.post("/checkStatus", { token: token }, async data => {
-            if (data == "loading") {
-                startBtnLoading.addClass('ld ld-ring ld-spin');
-                await sleep(1000);
-                checkStatus(); // Loop on itself till server start
-                resolve(data);
-            } else if (data === "started") {
-                stopBtn.removeAttr('disabled');
-                restartBtn.removeAttr('disabled');
-                startBtnLoading.removeClass();
-                startBtn.attr('disabled', 'disabled');
-                resolve(data);
-            } else if (data === "stopped") {
-                startBtnLoading.removeClass();
-                startBtn.removeAttr('disabled');
-                restartBtn.attr('disabled', 'disabled');
-                stopBtn.attr('disabled', 'disabled');
-                stopBtnLoading.removeClass();
-                resolve(data);
-            } else if (data === "error") {
-                toastr.error("Veuillez vérifier votre installation et relancer le serveur.", "Une erreur est survenue !");
-                startBtn.removeAttr('disabled');
-                startBtnLoading.removeClass();
-                resolve(data);
+            if (data.state) ctrlBtn.removeClass();
+            switch (data.state) {
+                case "loading":
+                    ctrlBtn.addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('Chargement...');
+                    await sleep(1000);
+                    checkStatus(); // Loop on itself till server start
+                    break;
+                case "started":
+                    ctrlBtn.addClass('btn btn-danger').removeAttr('disabled').attr('onclick', 'serverStop()').html('Stopper');
+                    break;
+                case "stopped":
+                    cpu.html('N/A');
+                    ram.html('N/A');
+                    cpuChart.data.datasets[0].data = []; // Reset chart data
+                    cpuChart.update();
+                    ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html('Démarrer');
+                    break;
+                default: // Error
+                    ctrlBtn.addClass('btn btn-primary').html('Démarrer');
+                    toastr.error(data.error.message, data.error.title);
+                    break;
             }
-        }, "text");
+            resolve(data.state);
+        }, "json");
     });
 }
 
 const serverStart = accept => {
     event.preventDefault();
-    if (accept == true) { $('#eula').modal('hide') }
-    socket.emit('nodejs', "start");
+    if (accept == true) {
+        $('#eula').modal('hide');
+    }
+    socket.emit('nodejs', "start"); // Send 'start' to every connected clients
+    ctrlBtn.removeClass().addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('Chargement...');
     $('#log').empty(); // dump div.#log
-    startBtn.attr('disabled', 'disabled');
-    toastr.success("Votre serveur va démarrer...", "Démmarage");
-    startBtnLoading.addClass('ld ld-ring ld-spin'); // add a loading effect on the start button
+
     $.post("/start", {
         token: token,
         accept: accept
     }, data => {
-        if (data == "loading") {
-            socket.emit('nodejs', "checkStatus");
-            checkStatus();
-        } else if (data === "not allowed") {
-            toastr.clear();
-            setTimeout(() => toastr.error("Vous ne pouvez pas démmarer le serveur.", "Permission non accordée !"), 1001);
-            checkStatus();
-        } else if (data === "eula") {
-            toastr.clear();
-            setTimeout(() => toastr.warning("EULA non accepté !"), 1001);
-            $('#eula').modal('show');
-            checkStatus();
-        } else {
-            toastr.error("Une erreur est survenue !", "Erreur");
-            checkStatus();
+        switch (data.state) {
+            case "loading":
+                toastr.info(data.loading.message, data.loading.title);
+                break;
+            case "forbidden":
+                toastr.remove();
+                toastr.error(data.forbidden.message, data.forbidden.title);
+                break;
+            case "eula":
+                toastr.remove();
+                toastr.warning(data.eula.message);
+                $('#eula').modal('show');
+                break;
+            case "error":
+                toastr.error(data.error.message, data.error.title);
+                break;
         }
-    }, "text");
+        checkStatus();
+        socket.emit('nodejs', "checkStatus");
+    }, "json");
 }
 
 const serverStop = () => {
     event.preventDefault();
     socket.emit('nodejs', 'stop');
-    stopBtn.attr('disabled', 'disabled');
-    restartBtn.attr('disabled', 'disabled');
-    stopBtnLoading.addClass('ld ld-ring ld-spin');
-    $.post("/stop", {
-        token: token
-    }, async data => {
-        if (data == "stopped") {
-            await sleep(5000);
-            cpu.html('N/A');
-            ram.html('N/A');
-            stopBtnLoading.removeClass();
-            toastr.success("Votre serveur à bien été arrêté !", "Arrêt");
-            socket.emit('nodejs', 'checkStatus');
-            checkStatus();
-        } else if (data === "not allowed") {
-            toastr.error("Vous ne pouvez pas arrêter le serveur.", "Permission non accordée !");
-            stopBtn.removeAttr('disabled');
-            stopBtnLoading.removeClass();
-            checkStatus();
-        } else if (data === "error") {
-            toastr.error("Veuillez réessayer.", "Une erreur est survenue !");
-            stopBtn.removeAttr('disabled');
-            stopBtnLoading.removeClass();
-            checkStatus();
+    $.post("/stop", { token: token }, async data => {
+        switch (data.state) {
+            case "stopped":
+                await sleep(5000);
+                toastr.success(data.stopped.message, data.stopped.title);
+                ctrlBtn.attr('disabled', 'disabled');
+                break;
+            case "forbidden":
+                toastr.error(data.forbidden.message, data.forbidden.title);
+                break;
+            case "error":
+                toastr.error(data.error.message, data.error.title);
+                break;
         }
-    }, "text");
+        checkStatus();
+        socket.emit('nodejs', 'checkStatus');
+    }, "json");
 }
 
 const sendCommand = () => {
@@ -110,45 +97,46 @@ const sendCommand = () => {
         command: command.val(),
         token: token
     }, data => {
-        if (data === "done") {
-            command.val('');
-        } else if (data === "not allowed") {
-            toastr.error("Vous ne pouvez pas envoyer de commandes.", "Permission non accordée !");
-        } else {
-            toastr.error("Votre commande n'a pas pu être envoyé.", "Une erreur est survenue !");
+        command.val('');
+        switch (data.status) {
+            case "forbidden":
+                toastr.error(data.forbidden.message, data.forbidden.title);
+                break;
+            case "stopped":
+                toastr.error(data.stopped.message, data.stopped.title);
+                break;
+            case "error":
+                toastr.error(data.error.message, data.error.title);
+                break;
         }
-    }, "text");
+    }, "json");
 }
 
 // Refresh the actual version:
 // recieved when another client change the version of the server.
-socket.on('getVersion', version => {
-    $('#version').html(version);
+socket.on('updateVersion', data => {
+    const [selectedVersionType, selectedVersionNumber] = data.split('_');
+    const versionLogo = $('#versionLogo');
+    const vType = $('#vType');
+    const vNumber = $('#vNumber');
+    versionLogo.attr('src', versionLogo[0].src.replace(vType.html(), selectedVersionType));
+    vType.html(selectedVersionType);
+    vNumber.html(selectedVersionNumber);
 });
 
 socket.on('client', data => {
     switch (data) {
         case "start":
             $('#log').empty();
-            startBtn.attr('disabled', 'disabled');
-            startBtnLoading.addClass('ld ld-ring ld-spin');
+            ctrlBtn.removeClass().addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('Chargement...');
             break;
         case "stop":
-            stopBtn.attr('disabled', 'disabled');
-            restartBtn.attr('disabled', 'disabled');
-            stopBtnLoading.addClass('ld ld-ring ld-spin');
+            ctrlBtn.attr('disabled', 'disabled');
             break;
         case "checkStatus":
             checkStatus();
             break;
     }
-});
-
-// Recieve monitoring datas from NodeJS server.
-socket.on('monitoring', data => {
-    const [cpu_usage, ram_usage] = data.split(' ');
-    cpu.html(cpu_usage);
-    ram.html(ram_usage);
 });
 
 // Check the minecraft server status when the document is ready.

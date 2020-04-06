@@ -21,8 +21,6 @@ class CoAdminController extends Controller
             $pwd = $this->addCoAdmin();
         }
         $coAdmins = $this->user->select(['role_id' => 2], true); // Every coAdmins
-        $token = bin2hex(random_bytes(8));
-        $_SESSION['token'] = $token;
         for ($i = 0; $i < count($coAdmins); $i++) {
             $permissionEntity = $this->permissions->select(['user_id' => $coAdmins[$i]->getId()]);
             $coAdminsPerms[$coAdmins[$i]->getUsername()] = GettersController::gettersToAssocArray($permissionEntity);
@@ -30,7 +28,6 @@ class CoAdminController extends Controller
 
         return $this->render('coAdmin', [
             'title' => 'Co-Administration',
-            'token' => $token,
             'coAdmins' => $coAdmins,
             'password' => $pwd,
             'coAdminsPerms' => $coAdminsPerms

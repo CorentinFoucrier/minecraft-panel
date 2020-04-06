@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\App;
 use Core\Controller\Controller;
 use Core\Controller\Helpers\ZipController;
 use Core\Controller\UploadController;
@@ -15,13 +14,10 @@ class WorldsController extends Controller
         $this->hasPermission('worldsManagement');
 
         $worlds = $this->getWorlds();
-        $token = bin2hex(random_bytes(8));
-        $_SESSION['token'] = $token;
 
         $this->render('worlds', [
             'title' => 'Gestion des mondes',
-            'worlds' => $worlds,
-            'token' => $token
+            'worlds' => $worlds
         ]);
     }
 

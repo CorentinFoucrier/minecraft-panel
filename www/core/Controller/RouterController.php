@@ -30,7 +30,7 @@ class RouterController
         return $this;
     }
 
-    public function url(string $name, array $params = []): string
+    public function getUrl(string $name, array $params = []): string
     {
         return $this->router->generate($name, $params);
     }
@@ -52,7 +52,7 @@ class RouterController
             }
         } else {
             // no route was matched
-            header("Location: " . $this->url('error', ["code" => 404]));
+            header("Location: " . $this->getUrl('error', ["code" => 404]));
             exit();
         }
     }

@@ -72,14 +72,6 @@ class App
         define("QUERY_PORT", SERVER_PROPERTIES['server-port']);
     }
 
-    public function getRouter($basePath = "/var/www"): RouterController
-    {
-        if (!isset($this->router)) {
-            $this->router = new RouterController($basePath . 'views');
-        }
-        return $this->router;
-    }
-
     /**
      * Used for instantiate any table passed by Core\Controller\loadModel($tableName) method
      *
@@ -88,8 +80,8 @@ class App
      */
     public function getTable(string $tableName): object
     {
-        $nameSpaceTable = "\\App\\Model\\Table\\${tableName}Table";
-        return new $nameSpaceTable($this->getDb(), $tableName);
+        $tableNameSpace = "\\App\\Model\\Table\\${tableName}Table";
+        return new $tableNameSpace($this->getDb(), $tableName);
     }
 
     private function getDb(): DatabaseController
@@ -103,6 +95,14 @@ class App
             );
         }
         return $this->db_instance;
+    }
+
+    public function getRouter(): RouterController
+    {
+        if (!isset($this->router)) {
+            $this->router = new RouterController();
+        }
+        return $this->router;
     }
 
     public function getSsh(): SSH2

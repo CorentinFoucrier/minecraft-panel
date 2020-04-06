@@ -20,18 +20,15 @@ class UserController extends Controller
      */
     public function login()
     {
-        $this->notForLoggedIn();
+        $this->anonymousOnly();
         $username = $this->loginVerify();
         if (!empty($_POST['changePwd'])) {
             $this->changeFirstPassword(htmlspecialchars($_POST['username']));
         }
 
-        $token = bin2hex(random_bytes(16));
-        $_SESSION['token'] = $token;
         return $this->render("login", [
             'title' => 'Panel | Connexion',
-            'username' => $username,
-            'token' => $token
+            'username' => $username
         ]);
     }
 
@@ -52,12 +49,12 @@ class UserController extends Controller
                 $userEntity->setRoleEntity($this->role->findById($userEntity->getRoleId()));
                 /* Check the password */
                 if (password_verify($password, $userEntity->getPassword())) {
-                    if ($_SESSION['token'] === $token) {
+                    $calc = hash_hmac('sha256', $_SESSION['route'], $_SESSION['token2']);
+                    if (hash_equals($calc, $token)) {
                         /*  Check if its the first connection */
                         if ($userEntity->getDefaultPassword() == 0) {
                             /* Logged! */
                             $_SESSION['username'] = $userEntity->getUsername();
-                            unset($_SESSION['token']);
                             $this->redirect('dashboard');
                             exit();
                         } else {
