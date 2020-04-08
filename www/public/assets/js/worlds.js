@@ -9,13 +9,18 @@ $('button.delete').on('click', e => {
         worldName: worldName,
         token: token
     }, data => {
-        if (data === 'deleted') {
-            $('#' + worldName).fadeOut(500, () => $(this).remove());
-            toastr.info("Monde supprimé avec succès.");
-        } else {
-            e.target.firstElementChild.classList.remove('d-none');
-            e.target.lastElementChild.classList.add('d-none');
-            toastr.error("Une erreur est survenue !");
+        if (data) {
+            switch (data.state) {
+                case 'success':
+                    $('#' + worldName).fadeOut(500, () => $(this).remove());
+                    toastr.info(data.success.message, data.success.title);
+                    break;
+                case 'error':
+                    e.target.firstElementChild.classList.remove('d-none');
+                    e.target.lastElementChild.classList.add('d-none');
+                    toastr.error(data.error.message, data.error.title);
+                    break;
+            }
         }
-    });
+    }, "json");
 });

@@ -9,18 +9,25 @@
             </div>
             <div class="modal-body">
 
-                <h5>Vanilla</h5>
+                <h5>Vanilla Release</h5>
                 <div class="input-group">
-                    <select class="custom-select" name="vanilla" id="vanilla">
+                    <select class="custom-select" name="release" id="release">
                         <option selected value="default" disabled="disabled">-- Choisir une version --</option>
                         {% for release in vanilla.release %}
                             <option value="Release_{{release}}">
                                 Release {{release}}
                             </option>
                         {% endfor %}
-                        <option value="default" disabled="disabled">-------------------------------</option>
-                        <option value="default" disabled="disabled">Versions Snapshot</option>
-                        <option value="default" disabled="disabled">-------------------------------</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="button" onclick="selectVersion('release');">Choisir</button>
+                    </div>
+                </div>
+
+                <h5 class="mt-2">Snapshot</h5>
+                <div class="input-group">
+                    <select class="custom-select" name="snapshot" id="snapshot">
+                        <option selected value="default" disabled="disabled">-- Choisir une version --</option>
                         {% for snapshot in vanilla.snapshot %}
                             <option value="Snapshot_{{snapshot}}">
                                 Snapshot {{snapshot}}
@@ -28,11 +35,11 @@
                         {% endfor %}
                     </select>
                     <div class="input-group-append">
-                        <button class="btn btn-success" type="button" onclick="selectVersion('vanilla');">Choisir</button>
+                        <button class="btn btn-success" type="button" onclick="selectVersion('snapshot');">Choisir</button>
                     </div>
                 </div>
 
-                <h5 class="mt-3">Spigot</h5>
+                <h5 class="mt-4">Spigot</h5>
                 <div class="input-group">
                     <select class="custom-select" name="spigot" id="spigot">
                         <option selected value="default" disabled="disabled">-- Choisir une version --</option>
@@ -47,7 +54,7 @@
                     </div>
                 </div>
 
-                <h5 class="mt-3">Minecraft Forge</h5>
+                <h5 class="mt-2">Minecraft Forge</h5>
                 <div class="input-group">
                     <select class="custom-select not-allowed" name="forge" id="forge">
                         <option selected value="default" disabled="disabled">-- Choisir une version --</option>

@@ -6,9 +6,9 @@ use phpseclib\Net\SSH2;
 use Core\Controller\RouterController;
 use Core\Controller\Session\PhpSession;
 use Core\Controller\Session\FlashService;
+use Core\Controller\Services\PropertiesService;
 use Core\Controller\Database\DatabaseController;
 use Core\Controller\Database\DatabaseMysqlController;
-use Core\Controller\Helpers\ServerPropertiesController;
 
 class App
 {
@@ -53,7 +53,8 @@ class App
 
         self::defineConstants();
 
-        if (session_status() != PHP_SESSION_ACTIVE) {
+        // Session arn't compatible with CLI
+        if (session_status() !== PHP_SESSION_ACTIVE && PHP_SAPI !== "cli") {
             session_start();
         }
     }
@@ -67,7 +68,7 @@ class App
         define("PREFIX", getenv('PREFIX'));
         define("SHELL_USER", getenv("SHELL_USER"));
         define("SHELL_PWD", getenv("SHELL_PWD"));
-        define("SERVER_PROPERTIES", ServerPropertiesController::getContent());
+        define("SERVER_PROPERTIES", PropertiesService::get());
         define("ENABLE_QUERY", "true");
         define("QUERY_PORT", SERVER_PROPERTIES['server-port']);
     }

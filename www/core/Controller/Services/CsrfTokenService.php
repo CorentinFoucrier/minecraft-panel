@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Controller\Helpers;
+namespace Core\Controller\Services;
 
 class CsrfTokenService
 {

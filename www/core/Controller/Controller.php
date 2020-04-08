@@ -9,9 +9,9 @@ use Core\Extension\Twig\URIExtension;
 use Core\Extension\Twig\FlashExtension;
 use Core\Controller\Session\FlashService;
 use Core\Extension\Twig\CsrfTokenExtension;
-use Core\Controller\Helpers\CsrfTokenService;
+use Core\Controller\Services\JsonDataService;
 use Core\Extension\Twig\BeautifyStrExtension;
-use Core\Controller\Helpers\JsonDataService;
+use Core\Controller\Services\CsrfTokenService;
 
 abstract class Controller
 {
@@ -48,7 +48,6 @@ abstract class Controller
      */
     private function getTwig(): Environment
     {
-        //$_SESSION['token'] = bin2hex(random_bytes(8));
         if (!isset($this->twig)) {
             $loader = new FilesystemLoader($this->views);
             $this->twig = new Environment($loader);
@@ -183,10 +182,11 @@ abstract class Controller
             $objects = scandir($dirPath);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
-                    if (is_dir($dirPath . "/" . $object) && !is_link($dirPath . "/" . $object))
+                    if (is_dir($dirPath . "/" . $object) && !is_link($dirPath . "/" . $object)) {
                         $this->rmDirectoryRecursivly($dirPath . "/" . $object);
-                    else
+                    } else {
                         unlink($dirPath . "/" . $object);
+                    }
                 }
             }
             return rmdir($dirPath);
@@ -267,5 +267,10 @@ abstract class Controller
             $this->csrfToken = new CsrfTokenService();
         }
         return $this->csrfToken;
+    }
+
+    protected function upload(string $path, string $attrName, array $exentions, array $mimeTypes): ?string
+    {
+        return (new UploadController())->upload($path, $attrName, $exentions, $mimeTypes);
     }
 }

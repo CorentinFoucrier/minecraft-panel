@@ -2,7 +2,7 @@
 
 namespace Core\Controller;
 
-class UploadController
+class UploadController extends Controller
 {
     /**
      * Upload a file
@@ -13,7 +13,7 @@ class UploadController
      * @param string $mimeTypes The MIME types
      * @return null|string
      */
-    public static function upload(
+    public function upload(
         string $path,
         string $attrName,
         array $exentions,
@@ -34,7 +34,7 @@ class UploadController
                         // If there are no errors, then testing the upload
                         if (move_uploaded_file($file['tmp_name'], $path . $fileName)) {
                             // Success
-                            chmod($path . $fileName, 0777);
+                            //chmod($path . $fileName, 0777);
                             return $fileName;
                         } else {
                             $this->getFlash()->addAlert('SQL Error!');

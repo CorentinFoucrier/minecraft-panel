@@ -4,7 +4,7 @@ namespace Core\Extension\Twig;
 
 use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
-use Core\Controller\Helpers\CsrfTokenService;
+use Core\Controller\Services\CsrfTokenService;
 
 class CsrfTokenExtension extends AbstractExtension
 {

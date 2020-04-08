@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Controller\Helpers;
+namespace Core\Controller\Services;
 
 /**
  * This class can be used to obtain a JSON representation  

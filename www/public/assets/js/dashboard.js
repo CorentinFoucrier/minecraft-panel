@@ -24,8 +24,8 @@ const checkStatus = () => {
                     cpuChart.update();
                     ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html('Démarrer');
                     break;
-                default: // Error
-                    ctrlBtn.addClass('btn btn-primary').html('Démarrer');
+                case "error":
+                    ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html('Démarrer');
                     toastr.error(data.error.message, data.error.title);
                     break;
             }

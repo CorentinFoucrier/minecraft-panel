@@ -4,8 +4,15 @@ services:
   mc-panel.app:
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
-    build: ./docker
+    build:
+      context: ./docker
+      args:
+        SHELL_USER_ID: ${SHELL_USER_ID}
+        SHELL_GROUP_ID: ${SHELL_GROUP_ID}
     image: korey03/mc-panel
+    #user: ${SHELL_USER_ID}:${SHELL_GROUP_ID}
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
     volumes:
       - ${PWD}/www:/var/www
       - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use Core\Controller\Controller;
-use Core\Controller\Helpers\GettersController;
+use Core\Controller\Services\GettersService;
 
 class CoAdminController extends Controller
 {
@@ -23,7 +23,7 @@ class CoAdminController extends Controller
         $coAdmins = $this->user->select(['role_id' => 2], true); // Every coAdmins
         for ($i = 0; $i < count($coAdmins); $i++) {
             $permissionEntity = $this->permissions->select(['user_id' => $coAdmins[$i]->getId()]);
-            $coAdminsPerms[$coAdmins[$i]->getUsername()] = GettersController::gettersToAssocArray($permissionEntity);
+            $coAdminsPerms[$coAdmins[$i]->getUsername()] = GettersService::gettersToAssocArray($permissionEntity);
         }
 
         return $this->render('coAdmin', [

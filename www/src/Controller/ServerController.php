@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\App;
 use xPaw\MinecraftPing;
 use Core\Controller\Controller;
 use xPaw\MinecraftPingException;
@@ -97,18 +98,17 @@ class ServerController extends Controller
      *
      * @return void
      */
-    public function selectVersion()
+    public function selectVersion(?string $version = null)
     {
-        $version = htmlspecialchars($_POST['version']); // Version eg. Release_1.14.4
-        $serverType = htmlspecialchars($_POST['serverType']); // Game Version eg. "vanilla"
-        $versionNumber = explode('_', $version)[1]; // From "Release_1.14.4" to ["0" => "Release", "1" => "1.14.4"]
+        if (empty($version) && $_POST['token'] === $_SESSION['token']) {
+            $version = htmlspecialchars($_POST['version']); // Version eg. Release_1.14.4
+        }
+
+        [$versionType, $versionNumber] = explode('_', $version); // From "Release_1.14.4" to ["0" => "Release", "1" => "1.14.4"]
         $status = $this->server->selectBy(['status'], ['id' => 1])->getStatus();
 
-        if (!empty($_POST) && $status !== SERVER_STARTED) {
-            if (
-                $this->hasPermission('changeVersion', false)
-                && $_POST['token'] === $_SESSION['token']
-            ) {
+        if ($status === SERVER_STOPPED || $status === SERVER_ERROR) {
+            if ($this->hasPermission('changeVersion', false)) {
                 // Check if the specified version exist on the server, download it otherwise.
                 if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
                     $res = ($this->server->update(1, ['version' => $version])) ? "fromCache" : "error";
@@ -121,7 +121,7 @@ class ServerController extends Controller
                     $json->echo();
                     exit(0);
                 }
-                if ($serverType === "vanilla") {
+                if ($versionType === "Release" || $versionType === "Snapshot") {
                     $json = file_get_contents("https://launchermeta.mojang.com/mc/game/version_manifest.json");
                     $mojangVersions = json_decode($json);
                     if ($mojangVersions) {
@@ -141,7 +141,7 @@ class ServerController extends Controller
                     } else {
                         $this->echoJsonData('error')->echo();
                     }
-                } elseif ($serverType === "spigot" || $serverType === "forge") {
+                } elseif ($versionType === "Spigot" || $versionType === "Forge") {
                     $versions = json_decode(file_get_contents('https://pastebin.com/raw/LVdci0Ck'));
                     for ($i = 0; $i < count($versions->$serverType); $i++) {
                         if ($versions->$serverType[$i]->id === $versionNumber) {
@@ -170,8 +170,7 @@ class ServerController extends Controller
      */
     public function getOnlinePlayers()
     {
-        $tk = htmlspecialchars($_POST['token']);
-        $ajax = (!empty($_POST) && $tk === $_SESSION['token']) ? true : false;
+        $ajax = (!empty($_POST) && $_POST['token'] === $_SESSION['token']) ? true : false;
         $req = $this->server->selectEverything();
         if ($req->getStatus() != 0) {
             try {
@@ -197,6 +196,106 @@ class ServerController extends Controller
         }
     }
 
+    /**
+     * Execute ssh command for starting
+     * the server.jar with AJAX POST
+     *
+     * @return void
+     */
+    public function start(): void
+    {
+        $eula = BASE_PATH . "minecraft_server/eula.txt";
+
+        if ($_POST['accept'] === "true") {
+            if (!file_exists($eula)) {
+                $h = fopen($eula, "-w");
+                fclose($h); // create eula.txt if not exist
+            }
+            file_put_contents($eula, "eula=true");
+        }
+
+        if (
+            !empty($_POST['token'])
+            && $this->hasPermission('startAndStop', false)
+            && $_POST['token'] === $_SESSION['token']
+        ) {
+            if (file_exists($eula)) {
+                $eulaTxt = file_get_contents($eula);
+                preg_match_all('/(.+)=(.*)/m', $eulaTxt, $matches, PREG_SET_ORDER, 0);
+                // If eula.txt exist but set to false.
+                if (end($matches[0]) == "false") {
+                    $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
+                    exit();
+                }
+                $req = $this->server->selectEverything();
+                if ($req->getStatus() === SERVER_STOPPED || $req->getStatus() === SERVER_ERROR) {
+                    $version = $req->getVersion();
+                    if (file_exists(BASE_PATH . "/minecraft_server/{$version}.jar")) {
+                        if ($this->server->update($req->getId(), ['status' => SERVER_LOADING])) {
+                            $ssh = App::getInstance()->getSsh();
+                            $ssh->write("screen -R minecraft_server\n");
+                            $ssh->write("cd /home/" . SHELL_USER . "/minecraft_server\n");
+                            $cn = getenv('CONTAINER_NAME');
+                            // When the java command is terminated the command following pipes is launched.
+                            $ssh->write(
+                                "java -Xms" . $req->getRamMin() . "M -Xmx" . $req->getRamMax() . "M -jar $version.jar -nogui || docker exec $cn php bin/ErrorsCheck\n"
+                            );
+                            $ssh->read();
+                            sleep(1);
+                            $status = $this->server->selectEverything()->getStatus();
+                            // The default state is "loading" an other AJAX script will send a request to know if the server is up.
+                            if ($status === SERVER_LOADING || $status === SERVER_STARTED) {
+                                $this->echoJsonData('loading')->addToast("Votre serveur vas démarrer", "Démmarage")->echo();
+                            } // Else isn't needed if an error occurs checkStatus() will send the error message
+                        } else {
+                            $this->echoJsonData('error')->addToast("Une erreur est survenu")->echo();
+                        }
+                    } else {
+                        $this->echoJsonData('error')->addToast("La version selectionné n'est pas présente sur le serveur.", "Une erreur est survenu")->echo();
+                    }
+                }
+            } else {
+                $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
+            }
+        } else {
+            $this->echoJsonData('forbidden')->addToast("Eula non accepté !")->echo();
+        }
+    }
+
+    /**
+     * Execute ssh command for stopping
+     * the server.jar with AJAX POST
+     *
+     * @return void
+     */
+    public function stop(): void
+    {
+        if (!empty($_POST) && $_POST['token'] === $_SESSION['token']) {
+            if ($this->hasPermission('startAndStop', false)) {
+                $req = $this->server->selectEverything();
+                /* If is start then stop it */
+                if ($req->getStatus() === SERVER_STARTED) {
+                    // Save server status in db
+                    if ($this->server->update($req->getId(), ['status' => SERVER_STOPPED])) {
+                        $this->sendMinecraftCommand('stop');
+                        $this->echoJsonData('stopped')
+                            ->addToast("Votre serveur à bien été arrêté !", "Arrêt")->echo();
+                    } else {
+                        $this->echoJsonData('error')
+                            ->addToast("Erreur serveur !", "Internal server error")->echo();
+                    }
+                }
+            } else {
+                $this->echoJsonData('forbidden')
+                    ->addToast('Vous n\'êtes pas autorisé à changer la version du serveur', 'Permission non accordée !')
+                    ->echo();
+            }
+        } else {
+            $this->echoJsonData('error')
+                ->addToast('Une erreur est survenue !', 'Erreur interne')
+                ->echo();
+        }
+    }
 
     /**
      * Initiates the download of the Minecraft server.jar|spigot.jar|forge.jar
@@ -209,21 +308,13 @@ class ServerController extends Controller
     {
         $jarPath = BASE_PATH . "minecraft_server/$version.jar";
         if (file_put_contents($jarPath, fopen($link, 'r'))) {
-            $su = SHELL_USER;
-            if ($this->sendSudoCommand("-- sh -c 'chmod -R 777 minecraft_server/$version.jar && chown -R $su:$su minecraft_server/$version.jar'")) {
-                if ($this->server->update(1, ['version' => $version])) {
-                    $this->echoJsonData("downloaded")
-                        ->addToast('Votre version a bien été téléchargé et changée', 'Téléchargé !')
-                        ->echo();
-                } else {
-                    $this->echoJsonData("error")
-                        ->addToast('Erreur base de donnée.', 'Une erreur est survenue !')
-                        ->echo();
-                }
+            if ($this->server->update(1, ['version' => $version])) {
+                $this->echoJsonData("downloaded")
+                    ->addToast('Votre version a bien été téléchargé et changée', 'Téléchargé !')
+                    ->echo();
             } else {
-                unlink($jarPath);
                 $this->echoJsonData("error")
-                    ->addToast('SSH chmod/chown error!', 'Erreur interne !')
+                    ->addToast('Erreur base de donnée.', 'Une erreur est survenue !')
                     ->echo();
             }
         } else {

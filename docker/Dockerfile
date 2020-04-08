@@ -27,4 +27,12 @@ RUN echo "file_uploads = On" > /usr/local/etc/php/conf.d/upload.ini  && \
     echo "post_max_size = 10240M"  > /usr/local/etc/php/conf.d/upload.ini  && \
     echo "max_execution_time = 600"  > /usr/local/etc/php/conf.d/upload.ini
 
+ARG SHELL_USER_ID
+ARG SHELL_GROUP_ID
+
+RUN groupadd -f -g $SHELL_GROUP_ID user
+RUN useradd -u $SHELL_USER_ID -g $SHELL_GROUP_ID user
+
+USER user
+
 WORKDIR /var/www

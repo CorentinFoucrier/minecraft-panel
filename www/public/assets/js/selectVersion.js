@@ -1,11 +1,7 @@
-/**
- * 
- * @param {String} serverType Possible values: Vanilla || Spigot || Forge
- */
-const selectVersion = async serverType => {
+const selectVersion = async (type) => {
     event.preventDefault();
 
-    const version = $('#' + serverType).val(); // Release_1.15.2 || Snapshot_19w46a
+    const version = $('#' + type).val(); // Release_1.15.2 || Snapshot_19w46a
     const [selectedVersionType, selectedVersionNumber] = version.split('_'); // Array('Release', '1.15.2')
 
     const vType = $('#vType'); // Span element; Possible html values: Release || Snapshot || Spigot || Forge
@@ -25,7 +21,6 @@ const selectVersion = async serverType => {
             versionLogo.addClass('d-none');
             $.post("./selectVersion", {
                 version: version,
-                serverType: serverType,
                 token: token
             }, async (data) => {
                 if (data.state === "fromCache" || data.state === "downloaded") {

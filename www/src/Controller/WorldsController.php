@@ -3,8 +3,7 @@
 namespace App\Controller;
 
 use Core\Controller\Controller;
-use Core\Controller\Helpers\ZipController;
-use Core\Controller\UploadController;
+use Core\Controller\Services\ZipService;
 
 class WorldsController extends Controller
 {
@@ -31,7 +30,7 @@ class WorldsController extends Controller
     {
         if (!empty($_POST['worldName']) && $_POST['token'] === $_SESSION['token']) {
             $worldName = htmlspecialchars($_POST['worldName']);
-            if (ZipController::make(BASE_PATH . 'minecraft_server/' . $worldName)) {
+            if (ZipService::make(BASE_PATH . 'minecraft_server/' . $worldName)) {
                 ignore_user_abort(true); // If the client disconnect the script will stop
                 $fileName = BASE_PATH . 'minecraft_server/' . $worldName . '.zip';
                 header('Content-type: application/zip');
@@ -59,18 +58,16 @@ class WorldsController extends Controller
     {
         if (!empty($_FILES)) {
             $path = BASE_PATH . 'minecraft_server/';
-            /* Upload the file */
-            $file = UploadController::upload($path, 'world', ['zip'], [
+            $file = $this->upload($path, 'world', ['zip'], [
                 'application/zip', 'application/x-zip-compressed',
                 'multipart/x-zip', 'application/x-compressed'
             ]);
-            /* if the file uploaded correctly unzip it */
             if (is_string($file)) {
                 if ($this->unZip($path, $file)) {
                     unlink($path . $file);
-                    $this->redirect('worlds');
                 }
             }
+            $this->redirect('worlds');
         }
     }
 
@@ -86,11 +83,10 @@ class WorldsController extends Controller
             $token = htmlspecialchars($_POST['token']);
             $worldName = htmlspecialchars($_POST['worldName']);
             if ($token === $_SESSION['token']) {
-                $su = SHELL_USER;
-                if ($this->sendSudoCommand("rm -rf /home/$su/minecraft_server/$worldName")) {
-                    echo "deleted";
+                if ($this->rmDirectoryRecursivly(BASE_PATH . "minecraft_server/$worldName")) {
+                    $this->echoJsonData('success')->addToast("Monde supprimé !")->echo();
                 } else {
-                    echo "error";
+                    $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
                 }
             }
         }
@@ -140,13 +136,7 @@ class WorldsController extends Controller
                         $zip->extractTo($path . str_replace('.zip', '', $fileName), array($zip->getNameIndex($i)));
                     }
                 }
-                $su = SHELL_USER;
-                $baseName = "/home/$su/minecraft_server/" . str_replace(".zip", "", $fileName);
-                if ($this->sendSudoCommand("chmod -R 777 $baseName && sudo chown -R $su:$su $baseName")) {
-                    return $zip->close();
-                } else {
-                    return false;
-                }
+                return $zip->close();
             } else {
                 return false;
             }

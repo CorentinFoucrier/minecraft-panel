@@ -10,10 +10,9 @@ $app = App\App::getInstance();
 $app::load();
 
 $app->getRouter()
-    // Access POST or GET
     // '/url', 'Controller#Methode', 'routeName'
+    // Access POST or GET
     ->match('/getLog', 'Server#getLog', 'getLog')
-    ->match('/config', 'Config#showForm', 'config')
     ->match('/login', 'User#login', 'login')
     ->match('/co-administrators', 'CoAdmin#showCoAdmin', 'coAdmin')
     ->match('/worlds', 'Worlds#showWorlds', 'worlds')
@@ -22,10 +21,11 @@ $app->getRouter()
     ->get('/', 'Dashbord#showDashboad', 'dashboard')
     ->get('/logout', 'User#logout', 'logout')
     ->get('/error/[i:code]', 'Error#show', 'error')
+    ->get('/config', 'Config#showForm', 'config')
     // Access POST only
-    ->post('/start', 'Controls#start', 'server_start')
-    ->post('/restart', 'Controls#restart', 'server_restart')
-    ->post('/stop', 'Controls#stop', 'server_stop')
+    ->post('/config/send', 'Config#send', 'send_config')
+    ->post('/start', 'Server#start', 'server_start')
+    ->post('/stop', 'Server#stop', 'server_stop')
     ->post('/checkStatus', 'Server#checkStatus', 'check_status')
     ->post('/getOnlinePlayers', 'Server#getOnlinePlayers', 'getOnlinePlayers')
     ->post('/sendCommand', 'Server#sendCommand', 'command_send')

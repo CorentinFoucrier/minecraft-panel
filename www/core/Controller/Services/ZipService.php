@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\Controller\Helpers;
+namespace Core\Controller\Services;
 
-class ZipController
+class ZipService
 {
     public static function make($path): bool
     {

@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Core\Controller\Controller;
 use Core\Controller\FormBuilderController;
-use Core\Controller\Helpers\ServerPropertiesController;
+use Core\Controller\Services\PropertiesService;
 
 class ConfigController extends Controller
 {
@@ -13,19 +13,6 @@ class ConfigController extends Controller
     {
         $this->userOnly();
         $this->hasPermission('config');
-        // When $_POST ->writeServerProperties
-        if (htmlspecialchars($_POST['token']) === $_SESSION['token'] && !empty(SERVER_PROPERTIES)) {
-            $post = [];
-            foreach ($_POST as $key => $value) {
-                $post[htmlspecialchars($key)] = htmlspecialchars($value);
-            }
-            if (!$this->writeServerProperties($post)) {
-                $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
-                Démarrer le serveur pour générer le fichier.");
-            }
-            $this->getFlash()->addSuccess("Configuration mise à jour !");
-            $this->redirect('config');
-        }
 
         // If server.properties is not null generate and display config form
         if (!empty(SERVER_PROPERTIES)) {
@@ -153,42 +140,19 @@ class ConfigController extends Controller
         }
     }
 
-    private function writeServerProperties(array $post): bool
+    public function send(): void
     {
-        $config = SERVER_PROPERTIES;
-        // this foreach will integrate user constants values
-        foreach ($config as $key => $value) {
-            // Change the actual $key to constant eg. my-key => MY_KEY
-            $constStr = strtoupper(str_replace(['.', '-'], '_', $key));
-            if (defined($constStr)) {
-                // If is defined, put the value of the constant in $const
-                $const = constant($constStr);
+        if ($_POST['token'] === $_SESSION['token'] && !empty(SERVER_PROPERTIES)) {
+            $post = [];
+            foreach ($_POST as $key => $value) {
+                $post[htmlspecialchars($key)] = htmlspecialchars($value);
             }
-
-            $constArray = get_defined_constants(true); //Get categorized array of defined constants
-
-            if (array_key_exists($constStr, $constArray['user'])) {
-                // If the constant is in user defined constant array replace default $value to $const
-                $config[$key] = $const;
-            } else {
-                $config[$key] = $value;
+            if (!PropertiesService::write($post)) {
+                $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
+                Démarrer le serveur pour générer le fichier.");
             }
-        }
-
-        // Convert $config array to original properties file with user entries
-        $serverProperties = "# I'm an auto generated file ;)\n";
-        foreach ($config as $key => $value) {
-            if (key_exists($key, $post)) {
-                $serverProperties .= "$key=$post[$key]\n";
-            } else {
-                $serverProperties .= "$key=$value\n";
-            }
-        }
-
-        if (is_int(file_put_contents(ServerPropertiesController::$filePath, $serverProperties))) {
-            return true;
-        } else {
-            return false;
+            $this->getFlash()->addSuccess("Configuration mise à jour !");
+            $this->redirect('config');
         }
     }
 }

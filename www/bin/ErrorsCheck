@@ -16,10 +16,9 @@ if (PHP_SAPI !== "cli") {
 }
 
 $basePath = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
-require_once $basePath . 'www/vendor/autoload.php';
+define('BASE_PATH', $basePath, true);
 
-$app = \App\App::getInstance();
-$app::load();
+require_once BASE_PATH . 'www/vendor/autoload.php';
 
 class ErrorsCheck extends \Core\Controller\Controller
 {
@@ -30,12 +29,15 @@ class ErrorsCheck extends \Core\Controller\Controller
         // If server is stopped or in loading mode there is an error
         // otherwise it's been stopped by user
         if (
-            $serverEntity->getStatus() === SERVER_STOPPED ||
-            $serverEntity->getStatus() === SERVER_LOADING
+            $serverEntity->getStatus() === 0 ||
+            $serverEntity->getStatus() === 1
         ) {
             $this->server->update($serverEntity->getId(), ['status' => 3]);
         }
     }
 }
+
+$app = \App\App::getInstance();
+$app::load();
 
 (new ErrorsCheck)->run();
