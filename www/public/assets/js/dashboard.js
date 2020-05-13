@@ -6,7 +6,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const checkStatus = () => {
     return new Promise(resolve => {
-        $.post("/checkStatus", { token: token }, async data => {
+        $.post("/check_status", { token: token }, async data => {
             if (data.state) ctrlBtn.removeClass();
             switch (data.state) {
                 case "loading":
@@ -93,7 +93,7 @@ const serverStop = () => {
 
 const sendCommand = () => {
     event.preventDefault();
-    $.post("/sendCommand", {
+    $.post("/send_command", {
         command: command.val(),
         token: token
     }, data => {

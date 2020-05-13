@@ -31,7 +31,7 @@ socket.on('console', (datas) => {
         }
     });
     // Refresh the number of players are online.
-    $.post("./getOnlinePlayers", { token: token }, (data) => {
+    $.post("./get_online_players", { token: token }, (data) => {
         if (data.state) {
             $('#playersOnline').html(data.online);
         } else {

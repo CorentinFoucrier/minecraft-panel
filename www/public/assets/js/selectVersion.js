@@ -19,7 +19,7 @@ const selectVersion = async (type) => {
             toastr.info("Début du téléchargement", "Téléchargement...");
             spin.removeClass('d-none');
             versionLogo.addClass('d-none');
-            $.post("./selectVersion", {
+            $.post("./select_version", {
                 version: version,
                 token: token
             }, async (data) => {

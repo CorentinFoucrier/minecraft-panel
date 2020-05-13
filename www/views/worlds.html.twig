@@ -21,7 +21,7 @@
     <section class="row m-4">
         <div class="col-md-6">
             <h4 class="title mb-3">Ajouter un monde !</h4>
-            <form enctype="multipart/form-data" action="{{ uri("uploadWorld") }}" method="post">
+            <form enctype="multipart/form-data" action="{{ uri("upload_world") }}" method="post">
                 <div class="input-group">
                     <div class="custom-file" lang="fr">
                         <input type="file" name="world" class="custom-file-input">
@@ -53,7 +53,7 @@
                         <tr id="{{world}}">
                             <td>{{world|replace({'_': ' '})}}</td>
                             <td>
-                                <form action="{{ uri("downloadWorld") }}" method="post">
+                                <form action="{{ uri("download_world") }}" method="post">
                                     <input type="hidden" name="worldName" value="{{world}}">
                                     <input type="hidden" id="token" name="token" value="{{ csrf_token() }}">
                                     <button id="download" class="btn btn-primary btn-sm float-right">

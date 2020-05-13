@@ -13,7 +13,7 @@ $app->getRouter()
     // '/url', 'Controller#Methode', 'route_name'
 
     // Access POST or GET
-    ->match('/getLog', 'Server#getLog', 'getLog')
+    ->match('/getLog', 'Server#getLog', 'get_log')
     ->match('/worlds', 'Worlds#showWorlds', 'worlds')
     ->match('/players', 'Players#showPlayers', 'players')
 
@@ -35,10 +35,10 @@ $app->getRouter()
     // Server
     ->post('/start', 'Server#start', 'server_start')
     ->post('/stop', 'Server#stop', 'server_stop')
-    ->post('/checkStatus', 'Server#checkStatus', 'check_status')
-    ->post('/getOnlinePlayers', 'Server#getOnlinePlayers', 'getOnlinePlayers')
-    ->post('/sendCommand', 'Server#sendCommand', 'command_send')
-    ->post('/selectVersion', 'Server#selectVersion', 'select_version')
+    ->post('/check_status', 'Server#checkStatus', 'check_status')
+    ->post('/get_online_players', 'Server#getOnlinePlayers', 'get_online_players')
+    ->post('/send_command', 'Server#sendCommand', 'send_command')
+    ->post('/select_version', 'Server#selectVersion', 'select_version')
     // Settings
     ->post('/settings/edit_user_role', 'Settings#editUserRole', 'edit_user_role')
     ->post('/settings/add_new_user', 'Settings#addNewUser', 'add_new_user')
@@ -49,9 +49,9 @@ $app->getRouter()
     ->post('/settings/edit_role_permission', 'Settings#editRolePermission', 'edit_role_permission')
     ->post('/settings/delete_role', 'Settings#deleteRole', 'delete_role')
     // Worlds
-    ->post('/worlds/delete', 'Worlds#deleteWorlds', 'worldsDelete')
-    ->post('/worlds/download', 'Worlds#downloadWorld', 'downloadWorld')
-    ->post('/worlds/upload', 'Worlds#uploadWorld', 'uploadWorld')
+    ->post('/worlds/delete', 'Worlds#deleteWorlds', 'delete_worlds')
+    ->post('/worlds/download', 'Worlds#downloadWorld', 'download_world')
+    ->post('/worlds/upload', 'Worlds#uploadWorld', 'upload_world')
     // Players
-    ->post('/players/deleteFromList', 'Players#deleteFromList', 'deleteFromList')
+    ->post('/players/delete_from_list', 'Players#deleteFromList', 'delete_from_list')
     ->run();

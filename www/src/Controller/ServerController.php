@@ -56,7 +56,9 @@ class ServerController extends Controller
     }
 
     /**
-     * AJAX: Send a Minecraft command to Minecraft server console
+     * Methode: POST
+     * Route: /send_command
+     * Send a Minecraft command to Minecraft server console
      *
      * @return void
      */
@@ -93,7 +95,7 @@ class ServerController extends Controller
     /**
      * AJAX: To select a version from an already downloaded one
      * or download the new requested by user
-     * Route: /selectVersion
+     * Route: /select_version
      * POST datas: version, serverType, token
      *
      * @return void

@@ -10,7 +10,7 @@ $('button.delete').click(e => {
     const username = e.target.dataset.username;
     const token = $('#token').val();
 
-    $.post("/players/deleteFromList", {
+    $.post("/players/delete_from_list", {
         listName: listName,
         username: username,
         token: token

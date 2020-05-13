@@ -120,7 +120,7 @@ class PlayersController extends Controller
 
     /**
      * From AJAX delete a player of one of JSON lists
-     * Route: /players/deleteFromList
+     * Route: /players/delete_from_list
      *
      * @return void
      */
