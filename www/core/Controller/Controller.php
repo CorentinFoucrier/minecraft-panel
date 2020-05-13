@@ -5,12 +5,12 @@ namespace Core\Controller;
 use App\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use Core\Extension\Twig\URIExtension;
-use Core\Extension\Twig\FlashExtension;
+use Core\Twig\Filter\HumanizeFilter;
+use Core\Twig\Extension\URIExtension;
+use Core\Twig\Extension\FlashExtension;
 use Core\Controller\Session\FlashService;
-use Core\Extension\Twig\CsrfTokenExtension;
+use Core\Twig\Extension\CsrfTokenExtension;
 use Core\Controller\Services\JsonDataService;
-use Core\Extension\Twig\BeautifyStrExtension;
 use Core\Controller\Services\CsrfTokenService;
 
 abstract class Controller
@@ -54,13 +54,14 @@ abstract class Controller
             //Global
             $this->twig->addGlobal('route', $_SESSION['route']);
             $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
-            $this->twig->addGlobal('username', $_SESSION['username']);
+            $this->twig->addGlobal('currentUser', $_SESSION['username']);
             $this->twig->addGlobal('DEBUG_TIME', round(microtime(true) - START_DEBUG_TIME, 3));
             //Extension
             $this->twig->addExtension(new URIExtension());
             $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new CsrfTokenExtension($this->getCsrfTokenService()));
-            $this->twig->addExtension(new BeautifyStrExtension());
+            //Filter
+            $this->twig->addExtension(new HumanizeFilter());
         }
         return $this->twig;
     }
@@ -107,12 +108,12 @@ abstract class Controller
      * Redirect client to a specific route name.
      *
      * @param string $url
-     * @param string $anchor set an HTML anchor "#myanchor" eg. http://local/home#contact
+     * @param string $getParameter set get parameter eg. http://local/home?page=2 or an anchor eg. http://local/home#contact
      * @return void
      */
-    protected function redirect(string $routeName, string $anchor = "")
+    protected function redirect(string $routeName, string $getParameter = "")
     {
-        return header('Location: ' . $this->getUri($routeName) . $anchor);
+        return header('Location: ' . $this->getUri($routeName) . $getParameter);
     }
 
     /**
@@ -194,33 +195,81 @@ abstract class Controller
     }
 
     /**
-     * Check if the connected user has the permission passed in params or not.
+     * Check if the connected user has the given permission.
      *
-     * @param string $perm permission name in camelCase
-     * @param bool $redirect turn to false to get a boolean return of permission
-     * @return bool
+     * @param string $permissionName Permission name in snake_case
+     * @param bool $redirect Turn to false to get a boolean return of permission
+     * @return void|bool
      */
-    protected function hasPermission(string $perm, bool $redirect = true): bool
+    protected function hasPermission(string $permissionName, bool $redirect = true)
     {
-        $this->loadModel('user', 'permissions');
-        $username = $_SESSION['username'];
-        $getPerm = "get" . ucfirst($perm);
-        $currentUserId = $this->user->selectBy(['id'], ['username' => $username])->getId();
-        $permEntity = $this->permissions->findById($currentUserId);
-
-        if ($permEntity->$getPerm() === 0 && $redirect) {
-            $this->redirect('dashboard');
-            exit();
-        } elseif ($permEntity->$getPerm() == 1) {
-            return TRUE;
+        $this->loadModel('user');
+        $tables = ["user_role", "role_permission", "permission"];
+        $on = [
+            "id" => "user_id",
+            "role_id" => "role_id",
+            "permission_id" => "id"
+        ];
+        $where = [
+            "username" => $_SESSION['username'],
+            "name" => $permissionName
+        ];
+        $perm = ($this->user->join($tables, $on, $where)) ? true : false;
+        if ($redirect && $perm === false) {
+            $this->error(403);
         } else {
-            return FALSE;
+            return $perm;
         }
+    }
+
+    /**
+     * Get the role entity of every users
+     *
+     * @return array|false
+     */
+    protected function getUsersRole()
+    {
+        $tables = ["user_role", "role"];
+        $on = [
+            "id" => "user_id",
+            "role_id" => "id"
+        ];
+
+        return $this->user->join($tables, $on, null, true);
+    }
+
+    /**
+     * Get the role entity of specific user
+     *
+     * @return string|false
+     */
+    protected function getUserRole(string $username)
+    {
+        $tables = ["user_role", "user"];
+        $on = [
+            "id" => "role_id",
+            "user_id" => "id"
+        ];
+        $where = ["username" => $username];
+
+        return $this->role->join($tables, $on, $where);
+    }
+
+    /**
+     * Get role entity of current logged user
+     *
+     * @return mixed|false
+     */
+    protected function currentRole(string $roleGetter)
+    {
+        $getter = "get" . ucfirst(strtolower($roleGetter));
+        return $this->getUserRole($_SESSION['username'])->$getter();
     }
 
     /**
      * Send the command to the Minecraft Console via SSH protocol
      *
+     * @see https://theterminallife.com/sending-commands-into-a-screen-session/
      * @param string $command The Minecraft command to send
      * @return void
      */
@@ -228,9 +277,6 @@ abstract class Controller
     {
         $command = str_replace(['\'', '"'], ['\\u0027', '\\u0022'], $command); // Replace quotes by thier respective unicodes.
         $ssh = App::getInstance()->getSsh();
-        /**
-         * @see https://theterminallife.com/sending-commands-into-a-screen-session/
-         */
         $ssh->exec("screen -S minecraft_server -X stuff '${command}'$(echo -ne '\\015')");
     }
 

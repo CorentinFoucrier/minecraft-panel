@@ -1,0 +1,76 @@
+<form class="form-inline px-md-0">
+    <div class="form-group mb-3">
+        <div class="input-group mr-md-2">
+            <input id="addNewUser_username" type="text" class="form-control" placeholder="Ajouter un utilisateur">
+        </div>
+        <div class="input-group mr-md-2">
+            <select id="addNewUser_role" class="custom-select">
+                <option selected value="default">Rôles...</option>
+                {% for role in roles %}
+                    {% if role.rank > currentRank %}
+                        <option value="{{ role.rank }}">{{ role.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-group">
+            <button class="btn btn-primary" type="button" onclick="addNewUser();">Ajouter</button>
+        </div>
+    </div>
+</form>
+
+<table id="users_table" class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Rank</th>
+            <th>Utilisateur</th>
+            <th>Rôle</th>
+            <th>Modifier rôle</th>
+            <th>Supprimer</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>0</td>
+            <td>admin</td>
+            <td>owner</td>
+            <td>
+                <button class="btn btn-primary btn-sm float-right" disabled="disabled">
+                    <i style="pointer-events: none;" class="far fa-edit"></i>
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-sm float-right" disabled="disabled">
+                    <i style="pointer-events: none;" class="far fa-trash-alt"></i>
+                </button>
+            </td>
+        </tr>
+    {% for user in users %}
+        <tr id="{{ user.username }}">
+            <td>{{ user.rank }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.name }}</td>
+            <td>
+                <button
+                    class="btn btn-primary btn-sm float-right"
+                    data-toggle="modal" data-target="#editUserRole"
+                    onclick="g_username = $('#{{ user.username }}')" {# Set global variable in setting.js with user.username value #}
+                    {% if user.rank <= currentRank %}disabled="disabled"{% endif %}
+                >
+                    <i style="pointer-events: none;" class="far fa-edit"></i>
+                </button>
+            </td>
+            <td>
+                <button
+                    class="btn btn-danger btn-sm float-right"
+                    onclick="deleteUser('{{ user.username }}');"
+                    {% if user.rank <= currentRank %}disabled="disabled"{% endif %}
+                >
+                    <i style="pointer-events: none;" class="far fa-trash-alt"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

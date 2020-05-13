@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Extension\Twig;
+namespace Core\Twig\Extension;
 
 use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;

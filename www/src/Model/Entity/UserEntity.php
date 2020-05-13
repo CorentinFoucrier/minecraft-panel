@@ -3,7 +3,6 @@
 namespace App\Model\Entity;
 
 use Core\Model\Entity;
-use App\Model\Entity\RoleEntity;
 
 class UserEntity extends Entity
 {
@@ -14,127 +13,62 @@ class UserEntity extends Entity
 
     private string $password;
 
-    private int $role_id;
-
     private int $default_password;
 
-    private RoleEntity $RoleEntity;
+    private string $lang;
 
-    /**
-     * Get the value of id
-     *
-     * @return null|int
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
-    /**
-     * Set the value of id
-     *
-     * @return self
-     */
+
     public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
     }
-    /**
-     * Get the value of username
-     *
-     * @return null|string
-     */
+
     public function getUsername(): ?string
     {
         return $this->username;
     }
-    /**
-     * Set the value of username
-     *
-     * @return self
-     */
+
     public function setUsername(string $username): self
     {
         $this->username = $username;
         return $this;
     }
-    /**
-     * Get the value of password
-     *
-     * @return null|string
-     */
+
     public function getPassword(): ?string
     {
         return $this->password;
     }
-    /**
-     * Set the value of password
-     *
-     * @return self
-     */
+
     public function setPassword(string $password): self
     {
         $this->password = $password;
         return $this;
     }
 
-    /**
-     * Get the value of roleId
-     *
-     * @return int
-     */
-    public function getRoleId(): int
-    {
-        return $this->role_id;
-    }
-    /**
-     * Set the value of roleId
-     *
-     * @return  self
-     */
-    public function setRoleId($role_id): self
-    {
-        $this->role_id = $role_id;
-        return $this;
-    }
-
-    /**
-     * Get the value of defaultPassword
-     *
-     * @return int
-     */
     public function getDefaultPassword(): int
     {
         return $this->default_password;
     }
-    /**
-     * Set the value of defaultPassword
-     *
-     * @return  self
-     */
+
     public function setDefaultPassword($default_password): self
     {
         $this->default_password = $default_password;
         return $this;
     }
 
-    /**
-     * Get the value of RoleEntity
-     *
-     * @return RoleEntity
-     */
-    public function getRoleEntity(): RoleEntity
+    public function getLang(): ?string
     {
-        return $this->RoleEntity;
+        return $this->lang;
     }
-    /**
-     * Set the value of RoleEntity
-     *
-     * @return  self
-     */
-    public function setRoleEntity(RoleEntity $RoleEntity): self
+
+    public function setLang(string $lang): self
     {
-        $this->RoleEntity = $RoleEntity;
+        $this->lang = $lang;
         return $this;
     }
 }

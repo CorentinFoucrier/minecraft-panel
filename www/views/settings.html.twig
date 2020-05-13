@@ -1,0 +1,55 @@
+{% extends "layout/base.html.twig" %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/rowreorder/1.2.6/css/rowReorder.bootstrap4.min.css">
+{% endblock %}
+
+{% block content %}
+    {% for errors in flash("alert") %}
+        <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
+            {{errors}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+
+    <div class="row m-md-4">
+        <div class="col-md-6">
+            <ul class="nav nav-tabs" id="SettingsTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="users_tab" data-toggle="tab" href="#users" role="tab">Utilisateurs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="roleandpermission_tab" data-toggle="tab" href="#roleandpermission" role="tab">Rôles & droits</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="tabContent">
+                <div class="tab-pane fade show active mt-md-3" id="users" role="tabpanel">
+                    {% include "Includes/Settings/users.html.twig" %}
+                </div>
+                <div class="tab-pane fade mt-md-3" id="roleandpermission" role="tabpanel">
+                    {% include "Includes/Settings/roleAndPermission.html.twig" %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="token" value="{{ csrf_token() }}">
+    {% include "Includes/Modals/passwordModal.html.twig" %}
+    {% include "Includes/Modals/editUserRole.html.twig" %}
+    {% include "Includes/Modals/editRolePermissions.html.twig" %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/rowreorder/1.2.6/js/dataTables.rowReorder.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/absolute.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+    <script>
+        const currentRank = "";
+        new ClipboardJS('#pass_copy');
+    </script>
+    <script src="{{ uri("base") }}assets/js/settings.js"></script>
+{% endblock %}

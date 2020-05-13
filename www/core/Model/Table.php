@@ -8,9 +8,9 @@ use Core\Controller\URLController;
 abstract class Table
 {
 
-    protected DatabaseController $db;
+    public DatabaseController $db;
 
-    protected string $table;
+    public string $table;
 
     /**
      * This constructor is called by App\App\getTable() method
@@ -21,8 +21,10 @@ abstract class Table
     {
         $this->db = $db;
         if (!isset($this->table)) {
-            // Build a string with user defined prefix eg. mcp_server
-            $this->table = PREFIX . strtolower($tableName);
+            // Add underscores before capital letters
+            $table_name = preg_replace('/\B([A-Z])/', '_$1', $tableName);
+            // add user prefix + lowercase
+            $this->table = PREFIX . strtolower($table_name);
         } else if (getenv("ENV_DEV") === "true") {
             throw new \Exception("\$this->table must not be initialized '" . $this->table . "' given.");
         } else {
@@ -34,7 +36,6 @@ abstract class Table
     /**
      * @see Core\Controller\PaginatedQueryController::getNbPages
      * @param boolean $fetchAll
-     * @return void
      */
     public function count(bool $fetchAll = false)
     {
@@ -44,7 +45,6 @@ abstract class Table
     /**
      * @see Core\Controller\PaginatedQueryController::getNbPages
      * @param integer $id
-     * @return void
      */
     public function countById(int $id)
     {
@@ -54,18 +54,27 @@ abstract class Table
     /**
      * Return the last inserted id in a table
      *
-     * @return void
+     * @return int
      */
-    public function lastId(bool $fetchAll = false)
+    public function lastId(): int
     {
-        return $this->query("SELECT MAX(id) AS id FROM {$this->table}", null, $fetchAll);
+        return $this->query("SELECT MAX(id) AS id FROM {$this->table}")->getId();
+    }
+
+    /**
+     * Return the last inserted id in a table
+     *
+     */
+    public function last(string $column)
+    {
+        $getColumn = 'get' . ucfirst($column);
+        return $this->query("SELECT MAX($column) AS $column FROM {$this->table}")->$getColumn();
     }
 
     /**
      * Find by id
      *
      * @param int $id
-     * @return void
      */
     public function findById(int $id, bool $fetchAll = false)
     {
@@ -77,7 +86,6 @@ abstract class Table
      *
      * @param array $column SQL column name
      * @param boolean $fetchAll Set to true if you need fetchAll
-     * @return void
      */
     public function findBy(array $column, bool $fetchAll = false)
     {
@@ -89,7 +97,6 @@ abstract class Table
      *
      * @param array $fields
      * @param boolean $fetchAll Set to true if you need fetchAll
-     * @return void
      */
     public function select(array $fields, bool $fetchAll = false)
     {
@@ -110,7 +117,6 @@ abstract class Table
      * @param string $columns
      * @param array $where
      * @param boolean $fetchAll Set to true if you need fetchAll
-     * @return void
      */
     public function selectBy(array $columns, array $where, bool $fetchAll = false)
     {
@@ -130,7 +136,6 @@ abstract class Table
      *
      * @param integer $id
      * @param array $fields
-     * @return bool
      */
     public function update(int $id, array $fields)
     {
@@ -151,14 +156,13 @@ abstract class Table
      *
      * @param integer $id
      * @param array $fields
-     * @return bool
      */
     public function updateBy(array $where, array $fields)
     {
         $sql_parts = [];
         $attributes = [];
         foreach ($fields as $k => $v) {
-            $sql_parts[] = "$k = ?";
+            $sql_parts[] = "`$k` = ?";
             $attributes[] = $v;
         }
         foreach ($where as $k => $v) {
@@ -176,7 +180,6 @@ abstract class Table
      *
      * @param array $fields The SET field
      * @param array $columns The WHERE field
-     * @return bool
      */
     public function updateAnd(array $fields, array $columns)
     {
@@ -201,8 +204,7 @@ abstract class Table
      * "INSERT INTO {$this->table} SET $sql_part"
      *
      * @param array $fields
-     * @param boolean $entityClass
-     * @return boolean
+     * @param bool $entityClass
      */
     public function create(array $fields, $entityClass = false)
     {
@@ -231,7 +233,6 @@ abstract class Table
      * DELETE FROM Table WHERE $id
      *
      * @param integer $id SQL id
-     * @return void
      */
     public function deleteById(int $id)
     {
@@ -239,14 +240,70 @@ abstract class Table
     }
 
     /**
+     * DELETE FROM Table WHERE $id
+     *
+     * @param integer $id SQL id
+     */
+    public function deleteAnd(array $fields)
+    {
+        $where_parts = [];
+        $attributes = [];
+        foreach ($fields as $k => $v) {
+            $where_parts[] = "$k = ?";
+            $attributes[] = $v;
+        }
+        $where_part = join(" AND ", $where_parts);
+        return $this->query("DELETE FROM {$this->table} WHERE $where_part", $attributes);
+    }
+
+    /**
      * SELECT * FROM Table
      *
      * @param boolean $fetchAll Set to true if you need fetchAll
-     * @return void
      */
     public function selectEverything(bool $fetchAll = false)
     {
         return $this->query("SELECT * FROM {$this->table}", null, $fetchAll);
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param array $tables
+     * @param array $on
+     * @param array|null $where
+     * @param boolean $fetchAll
+     */
+    public function join(array $tables, array $on, ?array $where = null, bool $fetchAll = false)
+    {
+        $prefix = PREFIX;
+        if (count($tables) === count($on)) {
+            $on_keys = array_keys($on);
+            $on_values = array_values($on);
+            for ($i = 0; $i < count($tables); $i++) {
+                $currentTable = $prefix . $tables[$i];
+                $previousTable = $prefix . $tables[$i - 1];
+                if ($i === 0) {
+                    $sql_parts[] = "$currentTable ON {$this->table}.$on_keys[$i] = $currentTable.$on_values[$i]";
+                } else {
+                    $sql_parts[] = "$currentTable ON $previousTable.$on_keys[$i] = $currentTable.$on_values[$i]";
+                }
+            }
+            $sql_part = join(" JOIN ", $sql_parts);
+            if (!empty($where)) {
+                foreach ($where as $k => $v) {
+                    $where_parts[] = "$k = ?";
+                    $attributes[] = $v;
+                }
+                $where_part = "WHERE " . join(" AND ", $where_parts);
+            }
+            return $this->query("SELECT * FROM {$this->table} JOIN $sql_part $where_part", $attributes, $fetchAll);
+        } else {
+            throw new \Exception(
+                "Number of table(s) given doesn't match with the number of 'on' condition(s)." .
+                    "You have " . count($tables) . " table(s) and " . count($on) . " 'on' condition(s)"
+            );
+        }
     }
 
     /**
@@ -256,7 +313,7 @@ abstract class Table
      * @param array|null $attributes
      * @param boolean $fetchAll Determines the result that you want fetch(false) or fetchAll(true) default: fetch.
      * @param string|null $class_name If you want to use a different class name of the class where you are.
-     * @return void
+     * @return \PDOStatement|Core\Model\Entity|bool|array
      */
     public function query(string $statement, ?array $attributes = null, bool $fetchAll = false, ?string $class_name = null)
     {

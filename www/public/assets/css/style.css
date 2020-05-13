@@ -37,7 +37,7 @@ select {
 }
 
 .noresize {
-  /* no resize for <textarea>*/
+  /* no resize for <textarea> */
   resize: none;
 }
 
@@ -51,8 +51,13 @@ select {
 
 /* TOASTR JS OVERRIDE */
 #toast-container > div {
-  opacity: 1;
-  box-shadow: none;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+/* DATATABLE OVERRIDE */
+table.dataTable td.reorder {
+  text-align: unset !important;
 }
 
 /* NAVBAR-TOP */
@@ -104,25 +109,7 @@ nav div {
   position: relative;
 }
 
-/* DASHBOARD */
-
-.console-side {
-  border-right: 1px solid #1e1e1e;
-  background-color: #1e1e1e;
-  border-radius: 4px 0 0 4px;
-}
-
-.console-side ul {
-  list-style: inside;
-}
-
-.console-input {
-  border-top: 1px solid #d8d8d8;
-}
-
 /* TABLES */
 table {
   width: auto !important;
 }
-
-/* BOOTSTRAP OVERRIDE */

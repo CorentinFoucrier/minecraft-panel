@@ -2,7 +2,7 @@
     <div class="row p-md-2 mb-4 d-md-flex flex-md-column">
         <p class="m-0 pl-3">
             <span class="text-primary">■</span>
-            {{ username }}</p>
+            {{ currentUser }}</p>
         <a href="{{ uri("logout") }}" class="m-0 pl-3 text-muted">&gt; Déconnexion</a>
     </div>
     <a href="{{ uri("dashboard") }}" class="text-reset text-decoration-none">
@@ -47,10 +47,10 @@
             <span class="pl-md-4">Transfert de fichiers</span>
         </div>
     </a>
-    <a href="{{ uri("coAdmin") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "coadmin" %}bg-secondary{% endif %}">
+    <a href="{{ uri("settings") }}" class="text-reset text-decoration-none">
+        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "settings" %}bg-secondary{% endif %}">
             <i class="fas fa-users-cog pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-4">Co-Administration</span>
+            <span class="pl-md-4">Options</span>
         </div>
     </a>
 </nav>

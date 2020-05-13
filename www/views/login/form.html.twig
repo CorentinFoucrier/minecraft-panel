@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap">
+    <link rel="stylesheet" href="{{ uri("base") }}assets/css/login/form.css">
+</head>
+<body>
+    <div class="box">
+        {% if changePassword is same as(true) %}
+            <h2>Choose a password for {{ currentUser }}</h2>
+        {% else %}
+            <h2>SIGN IN</h2>
+        {% endif %}
+
+        <form action="{{ (changePassword is same as(true)) ? 'change_default_password' : 'login_check' }}" method="POST">
+
+            {% for errors in flash("alert") %}
+                <legend class="error-message">{{ errors }}</legend>
+            {% endfor %}
+
+            {% if changePassword is same as(false) %}
+                <div class="inputBox">
+                    <input type="text" name="username" required="required">
+                    <label>Username</label>
+                </div>
+                <div class="inputBox">
+                    <input type="password" name="password" required="required">
+                    <label>Password</label>
+                </div>
+            {% endif %}
+
+            {% if changePassword is same as(true) %}
+                <div class="inputBox">
+                    <input type="password" name="new_password" required="required">
+                    <label>Choose a password</label>
+                </div>
+                <div class="inputBox">
+                    <input type="password" name="password_verify" required="required">
+                    <label>Retype your password</label>
+                </div>
+            {% endif %}
+
+            <input type="hidden" name="token" value="{{ csrf_token(route) }}">
+            <input type="submit" value="{{ (changePassword is same as(true)) ? 'Submit' : 'Sign in'}}">
+        </form>
+    </div>
+</body>
+</html>

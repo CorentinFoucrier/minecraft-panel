@@ -23,21 +23,21 @@ const selectVersion = async (type) => {
                 version: version,
                 token: token
             }, async (data) => {
-                if (data.state === "fromCache" || data.state === "downloaded") {
-                    socket.emit('updateVersion', version);
-                    versionLogo.attr('src', versionLogo[0].src.replace(vType.html(), selectedVersionType));
-                    vType.html(selectedVersionType);
-                    vNumber.html(selectedVersionNumber);
+                if (data) {
+                    toastr.remove();
+                    if (data.state === "fromCache" || data.state === "downloaded") {
+                        socket.emit('updateVersion', version);
+                        versionLogo.attr('src', versionLogo[0].src.replace(vType.html(), selectedVersionType));
+                        vType.html(selectedVersionType);
+                        vNumber.html(selectedVersionNumber);
+                        toastr.success(data[data.state].message, data[data.state].title);
+                    } else if (data.state === "forbidden") {
+                        toastr.error(data.forbidden.message, data.forbidden.title);
+                    } else if (data.state === "error") {
+                        toastr.error(data.error.message, data.error.title);
+                    }
                     spin.addClass('d-none');
                     versionLogo.removeClass('d-none');
-                    toastr.remove();
-                    toastr.success(data[data.state].message, data[data.state].title);
-                } else if (data.state === "forbidden") {
-                    toastr.remove();
-                    toastr.error(data.forbidden.message, data.forbidden.title);
-                } else if (data.state === "error") {
-                    toastr.remove();
-                    toastr.error(data.error.message, data.error.title);
                 }
             }, "json");
         } else {

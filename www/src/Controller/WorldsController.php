@@ -10,7 +10,7 @@ class WorldsController extends Controller
     public function showWorlds()
     {
         $this->userOnly();
-        $this->hasPermission('worldsManagement');
+        $this->hasPermission('worlds');
 
         $worlds = $this->getWorlds();
 

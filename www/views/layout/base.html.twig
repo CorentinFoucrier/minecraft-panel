@@ -5,15 +5,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         {% if ENV_DEV == "true" %}
-            <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.css">
+            <link rel="stylesheet" href="{{ uri("base") }}assets/css/mcpanel.css">
         {% else %}
-            <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/mcpanel.min.css">
+            <link rel="stylesheet" href="{{ uri("base") }}assets/css/mcpanel.min.css">
         {% endif %}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/loadingio/loading.css@v2.0.0/dist/loading.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.min.css">
-        <link rel="stylesheet" href="{{ uri("dashboard") }}assets/css/style.css">
+        <link rel="stylesheet" href="{{ uri("base") }}assets/css/style.css">
         {% block stylesheet %}{% endblock %}
         <title>{{title}}</title>
     </head>
@@ -32,8 +31,8 @@
                         </div>
                         <div class="m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
                             <div>
-                                <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/fr.svg" alt="Drapeau Français"></a>
-                                <a href=""><img class="flag wip" src="{{ uri("dashboard") }}assets/img/flags/gb.svg" alt="United Kingdom Flag"></a>
+                                <a href=""><img class="flag wip" src="{{ uri("base") }}assets/img/flags/fr.svg" alt="Drapeau Français"></a>
+                                <a href=""><img class="flag wip" src="{{ uri("base") }}assets/img/flags/gb.svg" alt="United Kingdom Flag"></a>
                             </div>
                         </div>
                     </div>
@@ -43,18 +42,19 @@
                 </div>
             </div>
         </div>
-        <script type="module" src="//unpkg.com/@grafikart/spinning-dots-element" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js" crossorigin="anonymous"></script>
-        <script src="{{ uri("dashboard") }}assets/js/toastr_options.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js"></script>
+        <script type="module" src="//unpkg.com/@grafikart/spinning-dots-element"></script>
+        <script src="{{ uri("base") }}assets/js/toastr_options.js"></script>
         <script>
             $('.wip').click(e => {
                 e.preventDefault();
-                toastr.info("cette fonctionnalité n'est pas encore disponible.", "En developpement...");
+                toastr.info("Soon™", "W.I.P");
             });
+            const baseUri = "{{ uri("base") }}";
             const psContent = new PerfectScrollbar('#content');
             const psSidebar = new PerfectScrollbar('#sidebar');
         </script>

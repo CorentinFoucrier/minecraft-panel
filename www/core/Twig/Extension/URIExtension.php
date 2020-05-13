@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Extension\Twig;
+namespace Core\Twig\Extension;
 
 use Twig\Extension\AbstractExtension;
 use Core\Controller\URLController;

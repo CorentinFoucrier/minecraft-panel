@@ -62,7 +62,7 @@ class ServerController extends Controller
      */
     public function sendCommand(): void
     {
-        if (!empty($_POST['command']) && $this->hasPermission('sendCommand', false)) {
+        if (!empty($_POST['command']) && $this->hasPermission('send_command', false)) {
             if ($_POST['token'] === $_SESSION['token']) {
                 $status = $this->server->selectEverything()->getStatus();
                 if ($status === SERVER_STARTED) {
@@ -108,7 +108,7 @@ class ServerController extends Controller
         $status = $this->server->selectBy(['status'], ['id' => 1])->getStatus();
 
         if ($status === SERVER_STOPPED || $status === SERVER_ERROR) {
-            if ($this->hasPermission('changeVersion', false)) {
+            if ($this->hasPermission('change_version', false)) {
                 // Check if the specified version exist on the server, download it otherwise.
                 if (file_exists(BASE_PATH . "minecraft_server/{$version}.jar")) {
                     $res = ($this->server->update(1, ['version' => $version])) ? "fromCache" : "error";
@@ -216,7 +216,7 @@ class ServerController extends Controller
 
         if (
             !empty($_POST['token'])
-            && $this->hasPermission('startAndStop', false)
+            && $this->hasPermission('start_and_stop', false)
             && $_POST['token'] === $_SESSION['token']
         ) {
             if (file_exists($eula)) {
@@ -258,7 +258,7 @@ class ServerController extends Controller
                 $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
             }
         } else {
-            $this->echoJsonData('forbidden')->addToast("Eula non accepté !")->echo();
+            $this->echoJsonData('forbidden')->addToast("Vous n'avez pas la permission de demmarer le server !")->echo();
         }
     }
 
@@ -271,7 +271,7 @@ class ServerController extends Controller
     public function stop(): void
     {
         if (!empty($_POST) && $_POST['token'] === $_SESSION['token']) {
-            if ($this->hasPermission('startAndStop', false)) {
+            if ($this->hasPermission('start_and_stop', false)) {
                 $req = $this->server->selectEverything();
                 /* If is start then stop it */
                 if ($req->getStatus() === SERVER_STARTED) {

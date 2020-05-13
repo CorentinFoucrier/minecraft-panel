@@ -2,6 +2,7 @@
 .vscode
 .env
 www/public/adminer.php
+www/public/adminer.css
 www/public/debug.php
 
 # Folders

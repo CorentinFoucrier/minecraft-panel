@@ -20,7 +20,7 @@ class PlayersController extends Controller
     public function showPlayers()
     {
         $this->userOnly();
-        $this->hasPermission('playersManagement');
+        $this->hasPermission('players');
         // If $_POST and a valid token ->addToList
         if (
             !empty($_POST)

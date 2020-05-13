@@ -1,0 +1,30 @@
+<div class="modal" id="editRolePermissions" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modification des droits</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row position-relative">
+                    <div class="col-4 offset-4 position-absolute" style="top:50%;margin-top:-50px;">
+                        <spinning-dots id="spin" style="width:100px;stroke-width:5px;color:#FFF;" dots="16"></spinning-dots>
+                    </div>
+                    {% for perm in perms %}
+                        <div class="form-group col-6">
+                            <div class="custom-control custom-switch">
+                                <input id="perm_{{ perm.id }}" class="custom-control-input permission" name="{{ perm.name }}" type="checkbox">
+                                <label for="perm_{{ perm.id }}" class="custom-control-label">{{ perm.name|humanize }}</label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">Terminer</button>
+            </div>
+        </div>
+    </div>
+</div>

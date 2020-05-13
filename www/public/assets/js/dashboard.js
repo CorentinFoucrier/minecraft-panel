@@ -98,7 +98,7 @@ const sendCommand = () => {
         token: token
     }, data => {
         command.val('');
-        switch (data.status) {
+        switch (data.state) {
             case "forbidden":
                 toastr.error(data.forbidden.message, data.forbidden.title);
                 break;

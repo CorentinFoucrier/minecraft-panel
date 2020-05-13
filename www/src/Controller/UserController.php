@@ -6,10 +6,10 @@ use Core\Controller\Controller;
 
 class UserController extends Controller
 {
+
     public function __construct()
     {
         $this->loadModel('user');
-        $this->loadModel('role');
     }
 
     /**
@@ -18,58 +18,104 @@ class UserController extends Controller
      * 
      * @return void
      */
-    public function login()
+    public function showLogin()
     {
         $this->anonymousOnly();
-        $username = $this->loginVerify();
-        if (!empty($_POST['changePwd'])) {
-            $this->changeFirstPassword(htmlspecialchars($_POST['username']));
+        $changePassword = false;
+
+        if ($_SESSION['temp']['changeYourPassword']) {
+            $changePassword = true;
         }
 
-        return $this->render("login", [
-            'title' => 'Panel | Connexion',
-            'username' => $username
+        return $this->render("login/form", [
+            "changePassword" => $changePassword
         ]);
     }
 
     /**
-     * Login logic
-     * 
-     * @return string
+     * Route: /login_check
+     *
+     * @return void
      */
-    public function loginVerify()
+    public function loginCheck()
     {
-        if (!empty($_POST) && isset($_POST['login'])) {
+        if (!empty($_POST)) {
             $username = htmlspecialchars($_POST['username']);
             $password = htmlspecialchars($_POST['password']);
             $token = htmlspecialchars($_POST['token']);
-            /* Check if user exist */
+            // Check if user exist
             if ($userEntity = $this->user->select(['username' => $username])) {
-                // Set userEntity with hydrated roleEntity
-                $userEntity->setRoleEntity($this->role->findById($userEntity->getRoleId()));
-                /* Check the password */
+                // Check the password
                 if (password_verify($password, $userEntity->getPassword())) {
-                    $calc = hash_hmac('sha256', $_SESSION['route'], $_SESSION['token2']);
+                    $calc = hash_hmac('sha256', 'login', $_SESSION['token2']);
+                    // Check token
                     if (hash_equals($calc, $token)) {
-                        /*  Check if its the first connection */
-                        if ($userEntity->getDefaultPassword() == 0) {
-                            /* Logged! */
+                        //  Check if its the first connection
+                        if ($userEntity->getDefaultPassword() === 0) {
+                            // Logged!
                             $_SESSION['username'] = $userEntity->getUsername();
                             $this->redirect('dashboard');
-                            exit();
                         } else {
-                            $this->changeFirstPassword($userEntity->getUsername());
+                            $_SESSION['temp']['username'] = $username;
+                            $_SESSION['temp']['changeYourPassword'] = true;
+                            $this->redirect('login');
                         }
                     } else {
-                        $this->getFlash()->addAlert('Le post n\'a pas été émis par le bon formulaire.');
+                        $this->getFlash()->addAlert('Internal server error - Bad token');
+                        $this->redirect('login');
                     }
                 } else {
-                    $this->getFlash()->addAlert('L\'utilisateur ou le mot de passe est incorrect !');
+                    $this->getFlash()->addAlert('Incorrect username or password.');
+                    $this->redirect('login');
                 }
             } else {
-                $this->getFlash()->addAlert('L\'utilisateur ou le mot de passe est incorrect !');
+                $this->getFlash()->addAlert('Incorrect username or password.');
+                $this->redirect('login');
             }
-            return $username;
+        } else {
+            $this->getFlash()->addAlert('Incorrect username or password.');
+            $this->redirect('login');
+        }
+    }
+
+    /**
+     * Route: /change_default_password
+     *
+     * @return void
+     */
+    public function changeDefaultPassword()
+    {
+        if (!empty($_POST)) {
+            $username = $_SESSION['temp']['username'];
+            $password = htmlspecialchars($_POST['new_password']);
+            $password_verify = htmlspecialchars($_POST['password_verify']);
+            $token = htmlspecialchars($_POST['token']);
+            $calc = hash_hmac('sha256', 'login', $_SESSION['token2']);
+            if (hash_equals($calc, $token)) {
+                if ($password === $password_verify) {
+                    if (strlen($password) >= 4) {
+                        $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
+                        if ($this->user->updateBy(['username' => $username], [
+                            'default_password' => '0',
+                            'password' => $passwordHash
+                        ])) {
+                            /* Logged! */
+                            $_SESSION['username'] = $username;
+                            unset($_SESSION['temp']);
+                            $this->redirect('dashboard');
+                        }
+                    } else {
+                        $this->getFlash()->addAlert('Password must have at least 4 characters!');
+                        $this->redirect('login');
+                    }
+                } else {
+                    $this->getFlash()->addAlert('Passwords are not identical!');
+                    $this->redirect('login');
+                }
+            } else {
+                $this->getFlash()->addAlert('Internal server error - Bad token');
+                $this->redirect('login');
+            }
         }
     }
 
@@ -81,46 +127,9 @@ class UserController extends Controller
      */
     public function logout()
     {
-        unset($_SESSION['username']);
+        unset($_SESSION);
         session_unset();
         session_destroy();
         $this->redirect('login');
-    }
-
-    /**
-     * changeFirstPassword
-     *
-     * @return void
-     */
-    private function changeFirstPassword(string $username)
-    {
-        /* Condition is true when called by form on changeFirstPassword view */
-        if (!empty($_POST) && isset($_POST['changePwd'])) {
-            $password = htmlspecialchars($_POST['password']);
-            $password_verify = htmlspecialchars($_POST['password_verify']);
-            if ($password === $password_verify) {
-                if (strlen($password) >= 8) {
-                    $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
-                    if ($this->user->updateBy(['username' => $username], [
-                        'default_password' => '0',
-                        'password' => $passwordHash
-                    ])) {
-                        /* Logged! */
-                        $_SESSION['username'] = $username;
-                        unset($_SESSION['token']);
-                        $this->redirect('dashboard');
-                        exit();
-                    }
-                } else {
-                    $this->getFlash()->addAlert('Votre mot de passe doit être de minimum de 8 caractères');
-                }
-            }
-        }
-
-        /* Render this page when called by loginVerify() */
-        return $this->render('changeFirstPassword', [
-            'title' => 'Changer votre mot de passe',
-            'username' => $username
-        ]);
     }
 }

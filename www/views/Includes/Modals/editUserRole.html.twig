@@ -1,0 +1,27 @@
+<div class="modal" id="editUserRole" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choisissez un nouveau rôle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <select class="custom-select" id="editUserRole_role">
+                        <option value="default">Rôles...</option>
+                        {% for role in roles %}
+                            {% if role.rank > currentRank %}
+                                <option value="{{ role.rank }}">{{ role.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="button" onclick="editUserRole();">Choisir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -45,6 +45,7 @@ class DatabaseMysqlController extends DatabaseController
      * @param string $statement eg. "SELECT * FROM {table}"
      * @param string|null $class_name
      * @param boolean $fetchAll false = Single fetch by default
+     * @return \PDOStatement|Core\Model\Entity|false|array
      */
     public function query(string $statement, ?string $class_name = null, bool $fetchAll = false)
     {
@@ -84,6 +85,7 @@ class DatabaseMysqlController extends DatabaseController
      * @param array $attributes An array of attribures
      * @param string|null $class_name
      * @param boolean $fetchAll false = Single fetch by default
+     * @return Core\Model\Entity|bool|array
      */
     public function prepare(string $statement, array $attributes, ?string $class_name = null, bool $fetchAll = false)
     {

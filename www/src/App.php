@@ -85,7 +85,7 @@ class App
         return new $tableNameSpace($this->getDb(), $tableName);
     }
 
-    private function getDb(): DatabaseController
+    public function getDb(): DatabaseController
     {
         if (!isset($this->db_instance)) {
             $this->db_instance = new DatabaseMysqlController(

@@ -1,0 +1,66 @@
+<form class="form-inline px-md-0">
+    <div class="form-group mb-3">
+        <div class="input-group mr-md-2">
+            <input id="addNewRole_role" type="text" class="form-control" placeholder="Ajouter un nouveau rôle">
+        </div>
+        <div class="input-group">
+            <button class="btn btn-primary" type="button" onclick="addNewRole();">Ajouter</button>
+        </div>
+    </div>
+</form>
+
+<table id="roles_table" class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Rank</th>
+            <th>Rôle</th>
+            <th>Modifier les droits</th>
+            <th>Supprimer</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>0</td>
+            <td>owner</td>
+            <td>
+                <button class="btn btn-primary btn-sm float-right" disabled="disabled">
+                    <i style="pointer-events: none;" class="far fa-edit"></i>
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-sm float-right" disabled="disabled">
+                    <i style="pointer-events: none;" class="far fa-trash-alt"></i>
+                </button>
+            </td>
+        </tr>
+    {% for role in roles %}
+        <tr id="{{ role.name }}">
+            <td>{{ role.rank }}</td>
+            <td>{{ role.name }}</td>
+            <td>
+                <button
+                    class="btn btn-primary btn-sm float-right"
+                    data-toggle="modal"
+                    data-target="#editRolePermissions"
+                    onclick="g_role = '{{ role.name }}'" {# Set global variable in setting.js with role.name value #}
+                    {% if role.rank <= currentRank %}disabled="disabled"{% endif %}
+                >
+                    <i style="pointer-events: none;" class="far fa-edit"></i>
+                </button>
+            </td>
+            <td>
+                <button
+                    class="btn btn-danger btn-sm float-right"
+                    onclick="deleteRole('{{ role.name }}');"
+                    {% if role.rank <= currentRank %}disabled="disabled"{% endif %}
+                >
+                    <i style="pointer-events: none;" class="far fa-trash-alt"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<p><i class="fas fa-info-circle"></i><small> Vous pouvez reorganiser les roles avec un glissez-depossez.</small></p>
+<button id="save_roles" class="btn btn-primary" disabled="disabled" onclick="saveRolesOrder();">Sauvegarder</button>
