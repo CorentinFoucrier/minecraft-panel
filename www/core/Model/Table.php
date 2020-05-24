@@ -62,7 +62,7 @@ abstract class Table
     }
 
     /**
-     * Return the last inserted id in a table
+     * Return the last inserted $column in a table
      *
      */
     public function last(string $column)

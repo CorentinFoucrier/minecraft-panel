@@ -15,11 +15,17 @@ $('button.delete').click(e => {
         username: username,
         token: token
     }, data => {
-        if (data === "done") {
-            $('#' + username).fadeOut(500, () => $(this).remove());
-            toastr.info("Joueur supprimé avec succès.");
-        } else {
-            toastr.error("Erreur !");
+        if (data) {
+            switch (data.state) {
+                case "info":
+                    $('#' + username).fadeOut(500, () => $(this).remove());
+                    toastr.info(data.info.message, data.info.title);
+                    break;
+
+                case "error":
+                    toastr.error(data.error.message, data.error.title);
+                    break;
+            }
         }
     });
 });

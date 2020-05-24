@@ -73,11 +73,6 @@ table.dataTable td.reorder {
   color: #fdfdfd;
 }
 
-.flag {
-  height: 20px;
-  width: 20px;
-}
-
 /* SIDE BAR */
 nav {
   z-index: 2;

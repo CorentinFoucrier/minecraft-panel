@@ -5,8 +5,10 @@ namespace Core\Controller;
 use App\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Symfony\Component\Intl\Locales;
 use Core\Twig\Filter\HumanizeFilter;
 use Core\Twig\Extension\URIExtension;
+use Core\Twig\Extension\LangExtension;
 use Core\Twig\Extension\FlashExtension;
 use Core\Controller\Session\FlashService;
 use Core\Twig\Extension\CsrfTokenExtension;
@@ -19,6 +21,10 @@ abstract class Controller
     private Environment $twig;
 
     private CsrfTokenService $csrfToken;
+
+    protected array $currentLanguage;
+
+    protected array $defaultLanguage;
 
     protected string $views = BASE_PATH . "www/views/";
 
@@ -52,14 +58,18 @@ abstract class Controller
             $loader = new FilesystemLoader($this->views);
             $this->twig = new Environment($loader);
             //Global
+            if ($_SESSION['username']) {
+                $this->twig->addGlobal('currentUser', $_SESSION['username']);
+                $this->twig->addGlobal('selectedLang', ucfirst(Locales::getName($_SESSION['lang'], $_SESSION['lang'])));
+            }
             $this->twig->addGlobal('route', $_SESSION['route']);
             $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
-            $this->twig->addGlobal('currentUser', $_SESSION['username']);
             $this->twig->addGlobal('DEBUG_TIME', round(microtime(true) - START_DEBUG_TIME, 3));
             //Extension
             $this->twig->addExtension(new URIExtension());
             $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new CsrfTokenExtension($this->getCsrfTokenService()));
+            $this->twig->addExtension(new LangExtension($this));
             //Filter
             $this->twig->addExtension(new HumanizeFilter());
         }
@@ -318,5 +328,15 @@ abstract class Controller
     protected function upload(string $path, string $attrName, array $exentions, array $mimeTypes): ?string
     {
         return (new UploadController())->upload($path, $attrName, $exentions, $mimeTypes);
+    }
+
+    /**
+     * Returns the translated string if possible, otherwise English.
+     * 
+     * @return string
+     */
+    protected function lang(string $key, ...$vars): string
+    {
+        return App::getInstance()->getLang($key, $vars);
     }
 }

@@ -34,11 +34,11 @@
 
             {% if changePassword is same as(true) %}
                 <div class="inputBox">
-                    <input type="password" name="new_password" required="required">
+                    <input type="password" name="new_password" required="required" minlength="4">
                     <label>Choose a password</label>
                 </div>
                 <div class="inputBox">
-                    <input type="password" name="password_verify" required="required">
+                    <input type="password" name="password_verify" required="required" minlength="4">
                     <label>Retype your password</label>
                 </div>
             {% endif %}

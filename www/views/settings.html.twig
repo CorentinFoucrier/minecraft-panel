@@ -19,10 +19,10 @@
         <div class="col-md-6">
             <ul class="nav nav-tabs" id="SettingsTabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="users_tab" data-toggle="tab" href="#users" role="tab">Utilisateurs</a>
+                    <a class="nav-link active" id="users_tab" data-toggle="tab" href="#users" role="tab">{{ lang('settings.tab.users') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="roleandpermission_tab" data-toggle="tab" href="#roleandpermission" role="tab">Rôles & droits</a>
+                    <a class="nav-link" id="roleandpermission_tab" data-toggle="tab" href="#roleandpermission" role="tab">{{ lang('settings.tab.rolePerm') }}</a>
                 </li>
             </ul>
             <div class="tab-content" id="tabContent">
@@ -48,7 +48,6 @@
     <script src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/absolute.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
     <script>
-        const currentRank = "";
         new ClipboardJS('#pass_copy');
     </script>
     <script src="{{ uri("base") }}assets/js/settings.js"></script>

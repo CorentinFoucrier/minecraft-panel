@@ -7,37 +7,37 @@
     </div>
     <input type="hidden" name="token" value="{{ csrf_token() }}">
     <div class="form-group">
-        <button class="btn btn-primary btn-sm" type="submit">Ajouter</button>
+        <button class="btn btn-primary btn-sm" type="submit">{{ lang('general.button.add') }}</button>
     </div>
 </form>
 
 <table class="table table-striped table-sm table-bordered">
     <thead>
         <tr>
-            <th>Username</th>
-            <th>UUID</th>
-            <th>Infos</th>
-            <th>Supprimer</th>
+            <th>{{ lang('players.ban.username') }}</th>
+            <th>{{ lang('players.ban.UUID') }}</th>
+            <th>{{ lang('players.ban.infos') }}</th>
+            <th>{{ lang('players.ban.delete') }}</th>
         </tr>
     </thead>
 
     <tbody>
         {% for player in bannedPlayers %}
-            <tr id="{{player.name}}">
-                <td class="align-middle">{{player.name}}</td>
-                <td class="align-middle">{{player.uuid}}</td>
+            <tr id="{{ player.name }}">
+                <td class="align-middle">{{ player.name }}</td>
+                <td class="align-middle">{{ player.uuid }}</td>
                 <td class="align-middle">
                     Le
-                    <strong class="text-primary">{{player.created|date("d/m/Y")}}</strong>
+                    <strong class="text-primary">{{ player.created|date("d/m/Y") }}</strong>
                     à
-                    <strong class="text-primary">{{player.created|date("h:i")}}</strong><br/>
+                    <strong class="text-primary">{{ player.created|date("h:i") }}</strong><br/>
                     Par :
-                    {{player.source}}<br/>
+                    {{ player.source }}<br/>
                     Pour :
-                    {{player.reason}}
+                    {{ player.reason }}
                 </td>
                 <td class="align-middle">
-                    <button class="btn btn-danger btn-sm float-right mx-auto delete" data-username="{{player.name}}">
+                    <button class="btn btn-danger btn-sm float-right mx-auto delete" data-username="{{ player.name }}">
                         <i style="pointer-events: none;" class="far fa-trash-alt"></i>
                     </button>
                 </td>

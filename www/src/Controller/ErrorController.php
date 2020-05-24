@@ -8,6 +8,7 @@ class ErrorController extends Controller
 {
     public function show(int $code)
     {
+        $this->userOnly();
         $description = [
             403 => " 403 Forbidden",
             404 => " 404 Not Found",

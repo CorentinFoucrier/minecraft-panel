@@ -38,17 +38,18 @@ class ServerController extends Controller
             }
             switch ($req->getStatus()) {
                 case SERVER_STOPPED:
-                    $this->echoJsonData('stopped')->echo();
+                    $this->echoJsonData('stopped')->add('html', $this->lang('server.checkStatus.button.stopped'))->echo();
                     break;
                 case SERVER_LOADING:
-                    $this->echoJsonData('loading')->echo();
+                    $this->echoJsonData('loading')->add('html', $this->lang('server.checkStatus.button.loading'))->echo();
                     break;
                 case SERVER_STARTED:
-                    $this->echoJsonData('started')->echo();
+                    $this->echoJsonData('started')->add('html', $this->lang('server.checkStatus.button.started'))->echo();
                     break;
                 case SERVER_ERROR:
                     $this->echoJsonData('error')
-                        ->addToast('Veuillez vérifier votre installation et relancer le serveur.', 'Une erreur est survenue !')
+                        ->addToast($this->lang('server.checkStatus.error'), $this->lang('general.error.occured'))
+                        ->add('html', $this->lang('server.checkStatus.button.started'))
                         ->echo();
                     break;
             }
@@ -73,21 +74,21 @@ class ServerController extends Controller
                     $this->echoJsonData('done')->echo();
                 } else if ($status === false) {
                     $this->echoJsonData('error')
-                        ->addToast('Erreur de base de données', 'Une erreur est survenue !')
+                        ->addToast($this->lang('general.error.database'), $this->lang('general.error.occured'))
                         ->echo();
                 } else {
                     $this->echoJsonData('stopped')
-                        ->addToast('Le serveur doit être démarrer', 'Une erreur est survenue !')
+                        ->addToast($this->lang('server.sendCommand.error.stopped'), $this->lang('general.error.occured'))
                         ->echo();
                 }
             } else {
                 $this->echoJsonData('error')
-                    ->addToast('Requête non permise', 'Bad token')
+                    ->addToast($this->lang('general.error.badToken'))
                     ->echo();
             }
         } else {
             $this->echoJsonData('forbidden')
-                ->addToast('Vous ne pouvez pas envoyer de commandes', 'Non accordé !')
+                ->addToast($this->lang('server.sendCommand.forbidden'), $this->lang('general.error.forbidden'))
                 ->echo();
         }
     }
@@ -116,9 +117,9 @@ class ServerController extends Controller
                     $res = ($this->server->update(1, ['version' => $version])) ? "fromCache" : "error";
                     $json = $this->echoJsonData($res);
                     if ($res === "fromCache") {
-                        $json->addToast('Votre version a bien été changée.', 'Chargée depuis le cache !');
+                        $json->addToast($this->lang('server.selectVersion.fromCache.message'), $this->lang('server.selectVersion.fromCache.title'));
                     } else {
-                        $json->addToast('Erreur base de donnée.', 'Une erreur est survenue !');
+                        $json->addToast($this->lang('general.error.database'), $this->lang('general.error.occured'));
                     }
                     $json->echo();
                     exit(0);
@@ -159,7 +160,7 @@ class ServerController extends Controller
                 }
             } else {
                 $this->echoJsonData('forbidden')
-                    ->addToast('Vous n\'êtes pas autorisé à changer la version du serveur', 'Permission non accordée !')
+                    ->addToast($this->lang('server.selectVersion.error.forbidden'), $this->lang('general.error.forbidden'))
                     ->echo();
             }
         }
@@ -226,7 +227,7 @@ class ServerController extends Controller
                 preg_match_all('/(.+)=(.*)/m', $eulaTxt, $matches, PREG_SET_ORDER, 0);
                 // If eula.txt exist but set to false.
                 if (end($matches[0]) == "false") {
-                    $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
+                    $this->echoJsonData('eula')->addToast($this->lang('server.start.eula'))->echo();
                     exit();
                 }
                 $req = $this->server->selectEverything();
@@ -247,20 +248,20 @@ class ServerController extends Controller
                             $status = $this->server->selectEverything()->getStatus();
                             // The default state is "loading" an other AJAX script will send a request to know if the server is up.
                             if ($status === SERVER_LOADING || $status === SERVER_STARTED) {
-                                $this->echoJsonData('loading')->addToast("Votre serveur vas démarrer", "Démmarage")->echo();
+                                $this->echoJsonData('loading')->addToast($this->lang('server.start.loading.message'), $this->lang('server.start.loading.title'))->echo();
                             } // Else isn't needed if an error occurs checkStatus() will send the error message
                         } else {
-                            $this->echoJsonData('error')->addToast("Une erreur est survenu")->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('general.error.occured'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast("La version selectionné n'est pas présente sur le serveur.", "Une erreur est survenu")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('server.start.error.version'), $this->lang('general.error.occured'))->echo();
                     }
                 }
             } else {
-                $this->echoJsonData('eula')->addToast("Eula non accepté !")->echo();
+                $this->echoJsonData('eula')->addToast($this->lang('server.start.eula'))->echo();
             }
         } else {
-            $this->echoJsonData('forbidden')->addToast("Vous n'avez pas la permission de demmarer le server !")->echo();
+            $this->echoJsonData('forbidden')->addToast($this->lang('server.start.error.forbidden'))->echo();
         }
     }
 
@@ -281,20 +282,20 @@ class ServerController extends Controller
                     if ($this->server->update($req->getId(), ['status' => SERVER_STOPPED])) {
                         $this->sendMinecraftCommand('stop');
                         $this->echoJsonData('stopped')
-                            ->addToast("Votre serveur à bien été arrêté !", "Arrêt")->echo();
+                            ->addToast($this->lang('server.stop.stopped.messsage'), $this->lang('server.stop.stopped.title'))->echo();
                     } else {
                         $this->echoJsonData('error')
-                            ->addToast("Erreur serveur !", "Internal server error")->echo();
+                            ->addToast($this->lang('general.error.internal'))->echo();
                     }
                 }
             } else {
                 $this->echoJsonData('forbidden')
-                    ->addToast('Vous n\'êtes pas autorisé à changer la version du serveur', 'Permission non accordée !')
+                    ->addToast($this->lang('server.stop.error.forbidden'), $this->lang('general.error.forbidden'))
                     ->echo();
             }
         } else {
             $this->echoJsonData('error')
-                ->addToast('Une erreur est survenue !', 'Erreur interne')
+                ->addToast($this->lang('general.error.internal'))
                 ->echo();
         }
     }
@@ -312,16 +313,16 @@ class ServerController extends Controller
         if (file_put_contents($jarPath, fopen($link, 'r'))) {
             if ($this->server->update(1, ['version' => $version])) {
                 $this->echoJsonData("downloaded")
-                    ->addToast('Votre version a bien été téléchargé et changée', 'Téléchargé !')
+                    ->addToast($this->lang('server.downloadServer.downloaded.message'), $this->lang('server.downloadServer.downloaded.title'))
                     ->echo();
             } else {
                 $this->echoJsonData("error")
-                    ->addToast('Erreur base de donnée.', 'Une erreur est survenue !')
+                    ->addToast($this->lang('general.error.database'), $this->lang('general.error.occured'))
                     ->echo();
             }
         } else {
             $this->echoJsonData("error")
-                ->addToast('Impossible de télécharger la version demmandé, veuillez réessayez !', 'Erreur !')
+                ->addToast($this->lang('server.downloadServer.error.cantDownload'))
                 ->echo();
         }
     }

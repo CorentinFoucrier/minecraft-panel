@@ -15,7 +15,7 @@ class WorldsController extends Controller
         $worlds = $this->getWorlds();
 
         $this->render('worlds', [
-            'title' => 'Gestion des mondes',
+            'title' => $this->lang('worlds.title'),
             'worlds' => $worlds
         ]);
     }
@@ -42,7 +42,7 @@ class WorldsController extends Controller
                 }
                 unlink($fileName);
             } else {
-                $this->getFlash()->addAlert("Erreur interne, le fichier n'a pas pu être compressé");
+                $this->getFlash()->addAlert($this->lang('worlds.error.notCompressed'));
             }
         } else {
             $this->error(404);
@@ -84,9 +84,9 @@ class WorldsController extends Controller
             $worldName = htmlspecialchars($_POST['worldName']);
             if ($token === $_SESSION['token']) {
                 if ($this->rmDirectoryRecursivly(BASE_PATH . "minecraft_server/$worldName")) {
-                    $this->echoJsonData('success')->addToast("Monde supprimé !")->echo();
+                    $this->echoJsonData('success')->addToast($this->lang('worlds.toastr.deleted'))->echo();
                 } else {
-                    $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                 }
             }
         }
@@ -144,7 +144,7 @@ class WorldsController extends Controller
             if (getenv("ENV_DEV") === "true") {
                 throw new \Exception($e->getMessage());
             }
-            $this->getFlash()->addAlert('Une erreur est survenue lors de la décompression');
+            $this->getFlash()->addAlert($this->lang('worlds.error.uncompressed'));
             return false;
         }
     }

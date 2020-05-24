@@ -5,10 +5,10 @@
     "phpseclib/phpseclib": "^2.0",
     "xpaw/php-minecraft-query": "^3.0",
     "xpaw/php-source-query-class": "^1.0",
-    "guzzlehttp/guzzle": "^6.4.1"
+    "guzzlehttp/guzzle": "^6.4.1",
+    "symfony/intl": "^5.0"
   },
   "require-dev": {
-    "fzaninotto/faker": "^1.8.0",
     "symfony/var-dumper": "^4.2",
     "filp/whoops": "^2.3.1",
     "phpunit/phpunit": "^8.2.1",
@@ -19,11 +19,6 @@
       "App\\": "src/",
       "Core\\": "core/",
       "Bin\\": "bin/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
     }
   }
 }

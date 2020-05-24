@@ -50,9 +50,10 @@ class UserController extends Controller
                     $calc = hash_hmac('sha256', 'login', $_SESSION['token2']);
                     // Check token
                     if (hash_equals($calc, $token)) {
-                        //  Check if its the first connection
+                        // Check if its the first connection
                         if ($userEntity->getDefaultPassword() === 0) {
                             // Logged!
+                            $_SESSION['lang'] = $userEntity->getLang();
                             $_SESSION['username'] = $userEntity->getUsername();
                             $this->redirect('dashboard');
                         } else {
@@ -61,19 +62,19 @@ class UserController extends Controller
                             $this->redirect('login');
                         }
                     } else {
-                        $this->getFlash()->addAlert('Internal server error - Bad token');
+                        $this->getFlash()->addAlert($this->lang('general.error.badToken'));
                         $this->redirect('login');
                     }
                 } else {
-                    $this->getFlash()->addAlert('Incorrect username or password.');
+                    $this->getFlash()->addAlert($this->lang('user.loginCheck.error.incorrect'));
                     $this->redirect('login');
                 }
             } else {
-                $this->getFlash()->addAlert('Incorrect username or password.');
+                $this->getFlash()->addAlert($this->lang('user.loginCheck.error.incorrect'));
                 $this->redirect('login');
             }
         } else {
-            $this->getFlash()->addAlert('Incorrect username or password.');
+            $this->getFlash()->addAlert($this->lang('user.loginCheck.error.incorrect'));
             $this->redirect('login');
         }
     }
@@ -91,29 +92,33 @@ class UserController extends Controller
             $password_verify = htmlspecialchars($_POST['password_verify']);
             $token = htmlspecialchars($_POST['token']);
             $calc = hash_hmac('sha256', 'login', $_SESSION['token2']);
+            $pwdMinLength = 4;
             if (hash_equals($calc, $token)) {
                 if ($password === $password_verify) {
-                    if (strlen($password) >= 4) {
+                    if (strlen($password) >= $pwdMinLength) {
                         $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
                         if ($this->user->updateBy(['username' => $username], [
                             'default_password' => '0',
                             'password' => $passwordHash
                         ])) {
-                            /* Logged! */
-                            $_SESSION['username'] = $username;
+                            // Logged!
+                            $id = $this->user->lastId();
+                            $user = $this->user->findById($id);
+                            $_SESSION['lang'] = $user->getLang();
+                            $_SESSION['username'] = $user->getUsername();
                             unset($_SESSION['temp']);
                             $this->redirect('dashboard');
                         }
                     } else {
-                        $this->getFlash()->addAlert('Password must have at least 4 characters!');
+                        $this->getFlash()->addAlert($this->lang('user.changeDefaultPassword.error.minLength', $pwdMinLength));
                         $this->redirect('login');
                     }
                 } else {
-                    $this->getFlash()->addAlert('Passwords are not identical!');
+                    $this->getFlash()->addAlert($this->lang("user.changeDefaultPassword.error.identical"));
                     $this->redirect('login');
                 }
             } else {
-                $this->getFlash()->addAlert('Internal server error - Bad token');
+                $this->getFlash()->addAlert($this->lang('general.error.badToken'));
                 $this->redirect('login');
             }
         }

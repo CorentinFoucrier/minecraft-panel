@@ -25,6 +25,7 @@ $app->getRouter()
     ->get('/config', 'Config#showForm', 'config')
     ->get('/login', 'User#showLogin', 'login')
     ->get('/settings', 'Settings#show', 'settings')
+    ->get('/account', 'Account#show', 'account')
 
     // Access POST only
     // User
@@ -54,4 +55,8 @@ $app->getRouter()
     ->post('/worlds/upload', 'Worlds#uploadWorld', 'upload_world')
     // Players
     ->post('/players/delete_from_list', 'Players#deleteFromList', 'delete_from_list')
+    // Account
+    ->post('/account/change_password', 'Account#changePassword', 'change_password')
+    ->post('/account/change_language', 'Account#changeLanguage', 'change_language')
+    ->post('/account/delete', 'Account#delete', 'delete_account')
     ->run();

@@ -124,4 +124,48 @@ class App
     {
         return new FlashService(new PhpSession());
     }
+
+    /**
+     * Returns the translated string if possible, otherwise English.
+     * 
+     * @return string
+     */
+    public function getLang(string $key, array $vars = []): string
+    {
+        $lang = $_SESSION['lang'];
+        if (!isset($this->currentLanguage)) {
+            $current_json = BASE_PATH . "www/lang/{$lang}.json";
+            $h = fopen($current_json, 'r');
+            ${$lang} = json_decode(fread($h, filesize($current_json)), true);
+            $this->currentLanguage = ${$lang};
+        }
+
+        if (empty($this->currentLanguage[$key])) {
+            if (!isset($this->defaultLanguage)) {
+                $en_json = BASE_PATH . "www/lang/en_US.json";
+                $h = fopen($en_json, 'r');
+                $en_US = json_decode(fread($h, filesize($en_json)), true);
+                $this->defaultLanguage = $en_US;
+            }
+            return $this->langReplaceVars($this->defaultLanguage[$key], $vars);
+        } else {
+            return $this->langReplaceVars($this->currentLanguage[$key], $vars);
+        }
+    }
+
+    /**
+     * Replace "$n" by value with the same index of "n" in $str
+     *
+     * @return string
+     */
+    private function langReplaceVars(string $str, array $vars): string
+    {
+        if (!empty($vars)) {
+            for ($i = 0; $i < count($vars); $i++) {
+                $re = '/\$' . $i . '/';
+                $str = preg_replace($re, $vars[$i], $str, 1);
+            }
+        }
+        return $str;
+    }
 }

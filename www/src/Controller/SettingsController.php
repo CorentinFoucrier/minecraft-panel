@@ -21,7 +21,7 @@ class SettingsController extends Controller
         array_shift($users);
         array_shift($roles);
         $this->render('settings', [
-            'title' => 'Options',
+            'title' => $this->lang('settings.title'),
             'roles' => $roles,
             'users' => $users,
             'perms' => $perms,
@@ -61,29 +61,29 @@ class SettingsController extends Controller
                                 if ($createUser && $createUserRole) {
                                     $this
                                         ->echoJsonData('success')
-                                        ->addToast("L'utilisateur $username a bien été créé", "Création réussi!")
+                                        ->addToast($this->lang('settings.addNewUser.create.message', $username), $this->lang('settings.addNewUser.create.title'))
                                         ->add('generatedPassword', $generatedPwd)
                                         ->echo();
                                 } else {
-                                    $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                                    $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                                 }
                             } else {
-                                $this->echoJsonData('invalid')->addToast("L'utilisateur existe déjà")->echo();
+                                $this->echoJsonData('invalid')->addToast($this->lang('settings.addNewUser.userExist'))->echo();
                             }
                         } else {
-                            $this->echoJsonData('error')->addToast('Vous ne pouvez pas créer un utilisateur avec un rôle suppérieur au votre.', 'Erreur')->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('settings.addNewUser.error.createGreater'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast('Vous ne pouvez pas créer du même rôle que le votre.', 'Erreur')->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('settings.addNewUser.error.sameRole'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('invalid')->addToast('Veuillez selectionner un rôle dans la liste.', 'Rôle invalide !')->echo();
+                    $this->echoJsonData('invalid')->addToast($this->lang('settings.addNewUser.error.invalid.message'), $this->lang('settings.addNewUser.error.invalid.title'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                $this->echoJsonData('forbidden')->addToast($this->lang('general.error.forbidden'))->echo();
             }
         } else {
-            $this->echoJsonData('forbidden')->addToast('Bad token', 'Internal server error')->echo();
+            $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
         }
     }
 
@@ -111,30 +111,30 @@ class SettingsController extends Controller
                                             ['user_id' => $userEntity->getId()],
                                             ['role_id' => $roleEntity->getId()]
                                         )) {
-                                            $this->echoJsonData('success')->addToast("Rôle changé avec succès !", "Réussi")->echo();
+                                            $this->echoJsonData('success')->addToast($this->lang('settings.editUserRole.edit'))->echo();
                                         } else {
-                                            $this->echoJsonData('error')->addToast("Veuillez reéssayer.", "Une erreur est survenue.")->echo();
+                                            $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                                         }
                                     } else {
-                                        $this->echoJsonData('error')->addToast("Veuillez reéssayer.", "Une erreur est survenue.")->echo();
+                                        $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                                     }
                                 } else {
-                                    $this->echoJsonData('error')->addToast("Vous ne pouvez pas attribuer votre propre rôle à un autre utilisateur.", "Erreur")->echo();
+                                    $this->echoJsonData('error')->addToast($this->lang('settings.editUserRole.error.sameRole'))->echo();
                                 }
                             } else {
-                                $this->echoJsonData('error')->addToast("Vous ne pouvez pas attribuer un rôle suppérieur au votre.", "Erreur")->echo();
+                                $this->echoJsonData('error')->addToast($this->lang('settings.editUserRole.error.greaterRole'))->echo();
                             }
                         } else {
-                            $this->echoJsonData('error')->addToast("Veuillez recharger la page. (F5)", "Le rôle n'existe pas.")->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('general.error.reload'), $this->lang('settings.editUserRole.roleDoesNotExist'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast("Veuillez recharger la page. (F5)", "L'utilisateur n'existe pas.")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('general.error.reload'), $this->lang('settings.editUserRole.userDoesNotExist'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.forbidden'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast("Bad token", "Internal server error")->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }
@@ -155,21 +155,21 @@ class SettingsController extends Controller
                     if ($username !== $_SESSION['username']) {
                         if ($user = $this->user->select(['username' => $username])) {
                             if ($this->user->deleteById($user->getId())) {
-                                $this->echoJsonData('deleted')->addToast("L'utilisateur $username a bien été supprimé !", "Suppression.")->echo();
+                                $this->echoJsonData('deleted')->addToast($this->lang('settings.deleteUser', $username))->echo();
                             } else {
-                                $this->echoJsonData('error')->addToast('Veuillez reéssayer.', 'Une erreur est survenue.')->echo();
+                                $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                             }
                         } else {
-                            $this->echoJsonData('notExist')->addToast("l'utilisateur n'existe pas.", 'Erreur !')->echo();
+                            $this->echoJsonData('notExist')->addToast($this->lang('settings.deleteUser.userDoesNotExist'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast("Vous ne pouvez pas supprimer votre compte à partir d'ici !")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('settings.deleteUser.error.self'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.forbidden'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Bad token', 'Internal server error')->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }
@@ -197,20 +197,20 @@ class SettingsController extends Controller
                                 $role = htmlspecialchars($data[$i]);
                                 $this->role->updateBy(["name" => $role], ["rank" => $i]);
                                 if ($i === count($data) - 1) {
-                                    $this->echoJsonData('success')->addToast('Modifications réussi.')->echo();
+                                    $this->echoJsonData('success')->addToast($this->lang('settings.saveRolesOrder.changes'))->echo();
                                 }
                             }
                         } else {
-                            $this->echoJsonData('error')->addToast('Vous ne pouvez pas bouger votre propre rôle.', 'Erreur')->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('settings.saveRolesOrder.error.moveOwnRole'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast('Invalid order', 'Internal server error')->echo();
+                        $this->echoJsonData('error')->addToast('Invalid order', 'Internal server error')->echo(); // this error can't be trigged with a normal user behavior.
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Data have some duplicates!', 'Internal server error')->echo();
+                    $this->echoJsonData('error')->addToast('Data have some duplicates!', 'Internal server error')->echo(); // this error can't be trigged with a normal user behavior.
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Bad token', 'Internal server error')->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }
@@ -234,15 +234,15 @@ class SettingsController extends Controller
                         'rank' => $newRank
                     ]);
                     if ($createRole) {
-                        $this->echoJsonData('success')->addToast("Le rôle $role a bien été créé", "Création réussi!")->add('rank', "$newRank")->echo();
+                        $this->echoJsonData('success')->addToast($this->lang('settings.addNewRole.create', $role))->add('rank', "$newRank")->echo();
                     } else {
-                        $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.forbidden'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Bad token', 'Internal server error')->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }
@@ -273,16 +273,16 @@ class SettingsController extends Controller
                             }
                             $this->echoJsonData('success')->add('permissions', $permissions)->echo();
                         } else {
-                            $this->echoJsonData('warning')->addToast("Aucuns droits n'a été trouvé, ceci peut être une erreur.", "Avertissement !")->echo();
+                            $this->echoJsonData('warning')->addToast($this->lang('settings.getRolePermission.warning.message'), $this->lang('settings.getRolePermission.warning.title'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast("Vous ne pouvez pas éditer votre propre rôle.", "Erreur")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('settings.getRolePermission.error.editOwnRole'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.forbidden'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Bad token', 'Internal server error')->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }
@@ -310,7 +310,7 @@ class SettingsController extends Controller
                             'permission_id' => $permission_id
                         ]);
                         if (!$createRolePerm) {
-                            $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                         }
                     } else if ($checked === "false") {
                         $removeRolePermission = $this->rolePermission->deleteAnd([
@@ -318,16 +318,16 @@ class SettingsController extends Controller
                             "permission_id" => $permission_id
                         ]);
                         if (!$removeRolePermission) {
-                            $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.forbidden'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Bad token', 'Internal server error')->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }
@@ -353,24 +353,24 @@ class SettingsController extends Controller
                             // Prevent a user to delete a role greater than his current role
                             if ($selectedRole->getRank() > $this->currentRole('rank')) {
                                 if ($this->role->deleteById($selectedRole->getId())) {
-                                    $this->echoJsonData('success')->addToast('Le rôle a bien été supprimé !')->echo();
+                                    $this->echoJsonData('success')->addToast($this->lang('settings.deleteRole.deleted'))->echo();
                                 } else {
-                                    $this->echoJsonData('error')->addToast("Veuillez ressayer", "Une erreur est survenue")->echo();
+                                    $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                                 }
                             } else {
-                                $this->echoJsonData('error')->addToast("Vous ne pouvez pas supprimer un rôle suppérieur au votre.", "Erreur")->echo();
+                                $this->echoJsonData('error')->addToast($this->lang('settings.deleteRole.error.greater'))->echo();
                             }
                         } else {
-                            $this->echoJsonData('error')->addToast("Vous ne pouvez pas supprimer votre propre rôle.", "Erreur")->echo();
+                            $this->echoJsonData('error')->addToast($this->lang('settings.deleteRole.error.ownRole'))->echo();
                         }
                     } else {
-                        $this->echoJsonData('error')->addToast("Le rôle que vous essayer de supprimer contient un/des utilisateur·s", "Erreur")->echo();
+                        $this->echoJsonData('error')->addToast($this->lang('settings.deleteRole.error.roleContainUsers'))->echo();
                     }
                 } else {
-                    $this->echoJsonData('error')->addToast('Permission non accordée !', 'Forbidden')->echo();
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.forbidden'))->echo();
                 }
             } else {
-                $this->echoJsonData('error')->addToast('Bad token', 'Internal server error')->echo();
+                $this->echoJsonData('error')->addToast($this->lang('general.error.badToken'))->echo();
             }
         }
     }

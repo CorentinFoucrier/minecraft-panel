@@ -1,10 +1,10 @@
 <form class="form-inline px-md-0">
     <div class="form-group mb-3">
         <div class="input-group mr-md-2">
-            <input id="addNewRole_role" type="text" class="form-control" placeholder="Ajouter un nouveau rôle">
+            <input id="addNewRole_role" type="text" class="form-control" placeholder="{{ lang('settings.rolePerm.placeholder') }}">
         </div>
         <div class="input-group">
-            <button class="btn btn-primary" type="button" onclick="addNewRole();">Ajouter</button>
+            <button class="btn btn-primary" type="button" onclick="addNewRole();">{{ lang('general.button.add') }}</button>
         </div>
     </div>
 </form>
@@ -12,17 +12,17 @@
 <table id="roles_table" class="table table-bordered">
     <thead class="thead-dark">
         <tr>
-            <th>Rank</th>
-            <th>Rôle</th>
-            <th>Modifier les droits</th>
-            <th>Supprimer</th>
+            <th>{{ lang('settings.rolePerm.thead.rank') }}</th>
+            <th>{{ lang('settings.rolePerm.thead.role') }}</th>
+            <th>{{ lang('settings.rolePerm.thead.editPerm') }}</th>
+            <th>{{ lang('settings.rolePerm.thead.delete') }}</th>
         </tr>
     </thead>
 
     <tbody>
         <tr>
             <td>0</td>
-            <td>owner</td>
+            <td>{{ lang('settings.rolePerm.body.owner') }}</td>
             <td>
                 <button class="btn btn-primary btn-sm float-right" disabled="disabled">
                     <i style="pointer-events: none;" class="far fa-edit"></i>
@@ -62,5 +62,5 @@
     {% endfor %}
     </tbody>
 </table>
-<p><i class="fas fa-info-circle"></i><small> Vous pouvez reorganiser les roles avec un glissez-depossez.</small></p>
-<button id="save_roles" class="btn btn-primary" disabled="disabled" onclick="saveRolesOrder();">Sauvegarder</button>
+<p><i class="fas fa-info-circle"></i><small> {{ lang('settings.rolePerm.info') }}</small></p>
+<button id="save_roles" class="btn btn-primary" disabled="disabled" onclick="saveRolesOrder();">{{ lang('general.button.save') }}</button>

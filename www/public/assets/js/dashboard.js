@@ -10,22 +10,22 @@ const checkStatus = () => {
             if (data.state) ctrlBtn.removeClass();
             switch (data.state) {
                 case "loading":
-                    ctrlBtn.addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('Chargement...');
+                    ctrlBtn.addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html(data.html);
                     await sleep(1000);
                     checkStatus(); // Loop on itself till server start
                     break;
                 case "started":
-                    ctrlBtn.addClass('btn btn-danger').removeAttr('disabled').attr('onclick', 'serverStop()').html('Stopper');
+                    ctrlBtn.addClass('btn btn-danger').removeAttr('disabled').attr('onclick', 'serverStop()').html(data.html);
                     break;
                 case "stopped":
                     cpu.html('N/A');
                     ram.html('N/A');
                     cpuChart.data.datasets[0].data = []; // Reset chart data
                     cpuChart.update();
-                    ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html('Démarrer');
+                    ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html(data.html);
                     break;
                 case "error":
-                    ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html('Démarrer');
+                    ctrlBtn.addClass('btn btn-primary').removeAttr('disabled').attr('onclick', 'serverStart()').html(data.html);
                     toastr.error(data.error.message, data.error.title);
                     break;
             }
@@ -40,7 +40,7 @@ const serverStart = accept => {
         $('#eula').modal('hide');
     }
     socket.emit('nodejs', "start"); // Send 'start' to every connected clients
-    ctrlBtn.removeClass().addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('Chargement...');
+    ctrlBtn.removeClass().addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('...');
     $('#log').empty(); // dump div.#log
 
     $.post("/start", {
@@ -128,7 +128,7 @@ socket.on('client', data => {
     switch (data) {
         case "start":
             $('#log').empty();
-            ctrlBtn.removeClass().addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('Chargement...');
+            ctrlBtn.removeClass().addClass('btn btn-primary').removeAttr('onclick').attr('disabled', 'disabled').html('...');
             break;
         case "stop":
             ctrlBtn.attr('disabled', 'disabled');

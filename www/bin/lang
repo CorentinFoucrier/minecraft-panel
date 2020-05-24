@@ -1,0 +1,97 @@
+#!/usr/bin/env php
+<?php
+
+namespace Bin;
+
+use Symfony\Component\Intl\Locales;
+
+if (PHP_SAPI !== "cli") {
+    echo "File only in CLI";
+    die(1);
+}
+
+$basePath = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
+define('BASE_PATH', $basePath);
+require_once BASE_PATH . 'www/vendor/autoload.php';
+
+class Lang
+{
+    public static function main(string $userLocale = "")
+    {
+        $en_json = BASE_PATH . "www/lang/en_US.json";
+        $h = fopen($en_json, 'r');
+        $en_US = json_decode(fread($h, filesize($en_json)), true);
+        fclose($h);
+        if (empty($en_US)) {
+            echo "\e[31m Error!\e[39m\n";
+            exit(1);
+        }
+
+        if (!empty($userLocale)) {
+            if (!Locales::exists($userLocale)) {
+                echo "\e[31m Error: Locale doesn't exist.\e[39m\n";
+                exit(1);
+            }
+            $newLocale = [];
+            foreach ($en_US as $k => $v) {
+                $newLocale[$k] = "";
+            }
+            $h = fopen(BASE_PATH . "www/lang/$userLocale.json", 'w');
+            if (!fwrite($h, json_encode($newLocale, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))) {
+                echo "\e[31m Error!\e[39m\n";
+                exit(1);
+            }
+            fclose($h);
+            echo "\e[32m  $userLocale.json has been created in\e[4m " . BASE_PATH . "www/lang\e[0m\e[39m\n";
+        } else {
+            $langFiles = scandir(BASE_PATH . "www/lang");
+            for ($i = 0; $i < count($langFiles); $i++) {
+                if (
+                    $langFiles[$i] !== "." &&
+                    $langFiles[$i] !== ".." &&
+                    $langFiles[$i] !== "en_US.json"
+                ) {
+                    $locale = substr($langFiles[$i], 0, -5); // Get locale without .json
+                    $locale_json = BASE_PATH . "www/lang/$locale.json";
+                    $h = fopen($locale_json, 'r');
+                    // Open, read, decode and put in a dynamic variable with the name of actual locale
+                    if (!${$locale} = json_decode(fread($h, filesize($locale_json)), true)) {
+                        echo "\e[31m Error!\e[39m\n";
+                        exit(1);
+                    }
+                    fclose($h);
+                    $tmp = [];
+                    foreach ($en_US as $k => $v) {
+                        if (array_key_exists($k, ${$locale})) {
+                            $tmp[$k] = ${$locale}[$k];
+                        } else {
+                            $tmp[$k] = "";
+                        }
+                    }
+                    $h = fopen($locale_json, 'w');
+                    if (!fwrite($h, json_encode($tmp, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))) {
+                        echo "\e[31m Error!\e[39m\n";
+                        exit(1);
+                    }
+                    fclose($h);
+                }
+            }
+            echo "\e[32m Done.\e[39m\n";
+        }
+    }
+}
+
+echo "\e[1m\e[33m What do you want to do?\e[0m\e[32m\n";
+echo "  [1] Update all languages files from en_US. (default)\n";
+echo "  [2] Create a new language file.\e[39m\n";
+
+switch (readline()) {
+    case "2":
+        echo "\e[1m\e[33m Type the name of locale you want to create (eg. en_US): \e[0m\e[39m";
+        Lang::main(readline());
+        break;
+
+    default:
+        Lang::main();
+        break;
+}

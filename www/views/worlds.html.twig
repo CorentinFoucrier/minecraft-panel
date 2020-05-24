@@ -20,15 +20,15 @@
 
     <section class="row m-4">
         <div class="col-md-6">
-            <h4 class="title mb-3">Ajouter un monde !</h4>
+            <h4 class="title mb-3">{{ lang('worlds.add') }}</h4>
             <form enctype="multipart/form-data" action="{{ uri("upload_world") }}" method="post">
                 <div class="input-group">
                     <div class="custom-file" lang="fr">
                         <input type="file" name="world" class="custom-file-input">
-                        <label class="custom-file-label" for="inputGroupFile04">Choisir un fichier...</label>
+                        <label class="custom-file-label" for="inputGroupFile04">{{ lang('worlds.chooseFile') }}</label>
                     </div>
                     <div class="input-group-append">
-                        <button class="btn btn-success btn-sm" type="submit">Ajouter</button>
+                        <button class="btn btn-success btn-sm" type="submit">{{ lang('general.button.add') }}</button>
                     </div>
                 </div>
             </form>
@@ -42,19 +42,19 @@
 
                 <thead>
                     <tr>
-                        <th>Monde</th>
-                        <th>Télécharger</th>
-                        <th>Supprimer</th>
+                        <th>{{ lang('worlds.thead.world') }}</th>
+                        <th>{{ lang('worlds.thead.download') }}</th>
+                        <th>{{ lang('worlds.thead.delete') }}</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for world in worlds %}
-                        <tr id="{{world}}">
-                            <td>{{world|replace({'_': ' '})}}</td>
+                        <tr id="{{ world }}">
+                            <td>{{ world|replace({'_': ' '}) }}</td>
                             <td>
                                 <form action="{{ uri("download_world") }}" method="post">
-                                    <input type="hidden" name="worldName" value="{{world}}">
+                                    <input type="hidden" name="worldName" value="{{ world }}">
                                     <input type="hidden" id="token" name="token" value="{{ csrf_token() }}">
                                     <button id="download" class="btn btn-primary btn-sm float-right">
                                         <i class="fas fa-download"></i>
@@ -62,7 +62,7 @@
                                 </form>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-sm float-right delete" data-worldname="{{world}}">
+                                <button class="btn btn-danger btn-sm float-right delete" data-worldname="{{ world }}">
                                     <i style="pointer-events: none;" class="far fa-trash-alt"></i>
                                     <spinning-dots class="d-none" style="width:12px;stroke-width:1px;color:#FFF;" dots="5"></spinning-dots>
                                 </button>

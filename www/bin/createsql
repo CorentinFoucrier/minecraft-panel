@@ -119,7 +119,7 @@ $pdo->exec(
         `username` varchar(255) NOT NULL,
         `password` varchar(255) NOT NULL,
         `default_password` tinyint(1) NOT NULL DEFAULT '1',
-        `lang` varchar(6) NOT NULL DEFAULT 'en_EN',
+        `lang` varchar(6) NOT NULL DEFAULT 'en_US',
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1"
 );
@@ -210,7 +210,7 @@ $pdo->exec(
     "INSERT INTO `{$prefix}user` (
         `username`, `password`, `default_password`, `lang`
     ) VALUES (
-        'admin', '{$passwordHash}', '1', 'en_EN'
+        'admin', '{$passwordHash}', '1', 'en_US'
     )"
 );
 

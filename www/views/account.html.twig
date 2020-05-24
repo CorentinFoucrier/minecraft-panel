@@ -1,0 +1,70 @@
+{% extends "layout/base.html.twig" %}
+
+{% block content %}
+    {% for errors in flash("alert") %}
+        <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
+            {{errors}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    {% for success in flash("success") %}
+        <div class="alert alert-success alert-dismissible fade show m-0" role="alert">
+            {{success}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    <div class="row m-4">
+        <div class="col-5">
+            <h4>{{ lang('account.changePassword') }}</h4>
+            <form action="account/change_password" method="POST">
+                <div class="form-group">
+                    <label for="oldPassword">{{ lang('account.oldPassword') }}</label>
+                    <input name="oldPassword" type="password" class="form-control" id="oldPassword" required="required"/>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">{{ lang('account.newPassword') }}</label>
+                    <input name="newPassword" type="password" class="form-control" id="newPassword" required="required" minlength="4"/>
+                </div>
+                <div class="form-group">
+                    <label for="passwordVerify">{{ lang('account.passwordVerify') }}</label>
+                    <input name="passwordVerify" type="password" class="form-control" id="passwordVerify" required="required" minlength="4"/>
+                </div>
+                <input type="hidden" name="token" value="{{ csrf_token() }}">
+                <button class="btn btn-primary" type="submit">{{ lang('general.button.send') }}</button>
+            </form>
+        </div>
+        <div class="offset-1 col-5">
+            <h4><i class="fas fa-globe"></i> {{ lang('account.selectLang') }}</h4>
+            <form class="form-inline mb-4" action="account/change_language" method="POST">
+                <div class="form-group">
+                    <select class="custom-select form-control mr-md-2" name="locale">
+                        {% for locale, language in languages %}
+                            {% if userLocale == locale %}
+                                <option selected="selected" value="{{ locale }}">{{ language }}</option>
+                            {% else %}
+                                <option value="{{ locale }}">{{ language }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="token" value="{{ csrf_token() }}">
+                    <button class="btn btn-primary" type="submit">{{ lang('general.button.send') }}</button>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-7">
+                    <div class="card border-danger">
+                        <div class="card-header"><span class="text-danger font-weight-bold">Danger zone</span></div>
+                        <div class="card-body">
+                            <button {% if currentUser == "admin" %}disabled="disabled"{% endif %} data-toggle="modal" data-target="#accountDeleteConfirm" class="btn btn-danger">{{ lang('account.button.delete') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "Includes/Modals/accountDeleteConfirmModal.html.twig" %}
+{% endblock %}

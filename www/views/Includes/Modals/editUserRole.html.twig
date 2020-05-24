@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Choisissez un nouveau rôle</h5>
+                <h5 class="modal-title">{{ lang('settings.modal.editUserRole.title') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -18,7 +18,7 @@
                         {% endfor %}
                     </select>
                     <div class="input-group-append">
-                        <button class="btn btn-success" type="button" onclick="editUserRole();">Choisir</button>
+                        <button class="btn btn-success" type="button" onclick="editUserRole();">{{ lang('general.button.select') }}</button>
                     </div>
                 </div>
             </div>

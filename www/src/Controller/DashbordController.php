@@ -24,7 +24,7 @@ class DashbordController extends Controller
         $versions = $this->getAvailableVersions();
 
         return $this->render("dashboard", [
-            'title' => "Tableau de bord",
+            'title' => $this->lang('dashboard.title'),
             'ramMax' => $serverEntity->getRamMax(),
             'versionType' => $versionType,
             'versionNumber' => $versionNumber,

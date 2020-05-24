@@ -7,28 +7,31 @@
     <div class="collapse navbar-collapse" id="navbar-burger">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item {% if route == "dashboard" %}active{% endif %}">
-                <a class="nav-link" href="{{ uri("dashboard") }}">Home</a>
+                <a class="nav-link" href="{{ uri("dashboard") }}">{{ lang('navbar.dashboard') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/plugins">Pugins</a>
+                <a class="nav-link" href="#">{{ lang('navbar.plugins') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ uri("config") }}">Configuration</a>
+                <a class="nav-link" href="{{ uri("config") }}">{{ lang('navbar.config') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ uri("worlds") }}">Gestion des mondes</a>
+                <a class="nav-link" href="{{ uri("worlds") }}">{{ lang('navbar.worlds') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ uri("players") }}">Tâches planifiées</a>
+                <a class="nav-link" href="{{ uri("players") }}">{{ lang('navbar.players') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/scheduled-tasks">Tâches planifiées</a>
+                <a class="nav-link" href="#">{{ lang('navbar.scheduled') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/file-export">Transfert de fichier</a>
+                <a class="nav-link" href="#">{{ lang('navbar.transfert') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ uri("settings") }}">Options</a>
+                <a class="nav-link" href="{{ uri("settings") }}">{{ lang('navbar.setting') }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ uri("logout") }}">{{ lang('navbar.logout') }}</a>
             </li>
         </ul>
     </div>

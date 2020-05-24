@@ -42,7 +42,7 @@ class PlayersController extends Controller
         }
 
         $this->render('players', [
-            'title' => "Gestion des joueurs",
+            'title' => $this->lang('players.title'),
             'tab' => $type,
             'ops' => $this->getJson('ops'),
             'bannedPlayers' => $this->getJson('banned-players'),
@@ -65,10 +65,7 @@ class PlayersController extends Controller
             if (getenv("ENV_DEV") === "true") {
                 throw $e;
             } else {
-                $this->getFlash()->addAlert(
-                    "Erreur: nous n'avons pas pu verifier votre uuid\n
-                    Veuillez réessayer plus tard."
-                );
+                $this->getFlash()->addAlert($this->lang('players.error.uuid'));
             }
         }
         $uuid = json_decode($response->getBody(), true)['id'];
@@ -82,14 +79,14 @@ class PlayersController extends Controller
         array_shift($matches); // To remove the first key
         $uuid = implode('-', $matches);
         if (empty($uuid)) {
-            $this->getFlash()->addAlert("Le joueur $name n'existe pas !");
+            $this->getFlash()->addAlert($this->lang('players.error.doesNotExist', $name));
             return FALSE;
         }
 
         // Check if player already exist.
         foreach ($this->getJson($type) as $value) {
             if ($value['name'] == $name) {
-                $this->getFlash()->addAlert("Le joueur {$name} est déjà dans la liste !");
+                $this->getFlash()->addAlert($this->lang('players.error.alreadyIn', $name));
                 return FALSE;
             }
         }
@@ -103,7 +100,7 @@ class PlayersController extends Controller
         } elseif ($type === 'banned-players') {
             $infos['created']   = $this->formatAtomDate();
             $infos['source']    = "Panel";
-            $infos['expires']   = "forever";
+            $infos['expires']   = $this->lang('players.ban.default.expires');
             $infos['reason']    = (empty($reason)) ? 'N/A' : $reason;
         }
         $jsonPhp = $this->getJson($type);
@@ -112,7 +109,7 @@ class PlayersController extends Controller
             BASE_PATH . "minecraft_server/{$type}.json",
             json_encode($jsonPhp, JSON_PRETTY_PRINT)
         ))) {
-            $this->getFlash()->addAlert("Erreur d'écriture !");
+            $this->getFlash()->addAlert($this->lang('players.error.internal.write'));
             return FALSE;
         }
         return TRUE;
@@ -147,11 +144,13 @@ class PlayersController extends Controller
                     BASE_PATH . "minecraft_server/{$listName}.json",
                     json_encode($resultArray, JSON_PRETTY_PRINT)
                 ))) {
-                    echo "done";
+                    $this->echoJsonData('info')->addToast($this->lang('players.deleted'))->echo();
+                } else {
+                    $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                 }
             } else {
                 $this->sendCommand($listName, $name, true);
-                echo "done";
+                $this->echoJsonData('info')->addToast($this->lang('players.deleted'))->echo();
             }
         }
     }
@@ -205,7 +204,7 @@ class PlayersController extends Controller
         try {
             return json_decode(file_get_contents(BASE_PATH . "minecraft_server/$type.json"), true);
         } catch (\Throwable $e) {
-            $this->getFlash()->addWarning("Le fichier \"$type.json\" n'a pas été trouvé! \nLancer le serveur une première fois et revenez ici.");
+            $this->getFlash()->addWarning($this->lang('players.warning.jsonNotFound', $type));
             return null;
         }
     }

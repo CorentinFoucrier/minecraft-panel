@@ -104,7 +104,7 @@ class ConfigController extends Controller
                     $form->addField("text", "$key", "$label", [
                         'attributes' => [
                             'value' => $value,
-                            'placeholder' => 'Custom value'
+                            'placeholder' => $this->lang('config.placeholder.customValue')
                         ]
                     ]);
                 } else if (is_numeric($value) && !in_array($key, $exclude)) { // Treatment for integer $value
@@ -117,7 +117,7 @@ class ConfigController extends Controller
                     $form->addField("text", "$key", "$label", [
                         'attributes' => [
                             'value' => $value,
-                            'placeholder' => 'Custom value'
+                            'placeholder' => $this->lang('config.placeholder.customValue')
                         ]
                     ]);
                 }
@@ -126,16 +126,13 @@ class ConfigController extends Controller
             $form->addToken($this->getCsrfTokenService()->getToken());
 
             return $this->render("config", [
-                'title' => "Configurations",
+                'title' => $this->lang('config.title'),
                 'form' => $form->getForm()
             ]);
         } else {
-            $this->getFlash()->addAlert(
-                "Le fichier serveur.properties n'a pas été trouvé.\n
-                Démarrer le serveur pour générer le fichier."
-            );
+            $this->getFlash()->addAlert($this->lang('config.error.properties'));
             return $this->render("noConfig", [
-                'title' => "Configuration non trouvé!"
+                'title' => $this->lang('config.error.title')
             ]);
         }
     }
@@ -148,10 +145,9 @@ class ConfigController extends Controller
                 $post[htmlspecialchars($key)] = htmlspecialchars($value);
             }
             if (!PropertiesService::write($post)) {
-                $this->getFlash()->addAlert("Le fichier serveur.properties n'a pas été trouvé.\n
-                Démarrer le serveur pour générer le fichier.");
+                $this->getFlash()->addAlert($this->lang('config.error.properties'));
             }
-            $this->getFlash()->addSuccess("Configuration mise à jour !");
+            $this->getFlash()->addSuccess($this->lang('config.updated'));
             $this->redirect('config');
         }
     }
