@@ -38,13 +38,13 @@ class ServerController extends Controller
             }
             switch ($req->getStatus()) {
                 case SERVER_STOPPED:
-                    $this->echoJsonData('stopped')->add('html', $this->lang('server.checkStatus.button.stopped'))->echo();
+                    $this->echoJsonData('stopped')->add('html', $this->lang('server.checkStatus.stopped'))->echo();
                     break;
                 case SERVER_LOADING:
-                    $this->echoJsonData('loading')->add('html', $this->lang('server.checkStatus.button.loading'))->echo();
+                    $this->echoJsonData('loading')->add('html', $this->lang('server.checkStatus.loading'))->echo();
                     break;
                 case SERVER_STARTED:
-                    $this->echoJsonData('started')->add('html', $this->lang('server.checkStatus.button.started'))->echo();
+                    $this->echoJsonData('started')->add('html', $this->lang('server.checkStatus.started'))->echo();
                     break;
                 case SERVER_ERROR:
                     $this->echoJsonData('error')
