@@ -3,7 +3,7 @@
 namespace Core\Controller\Services;
 
 /**
- * This class can be used to obtain a JSON representation  
+ * This class can be used to obtain a JSON representation
  * of a PHP array and sent throught an AJAX request
  */
 class JsonDataService

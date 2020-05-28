@@ -38,7 +38,7 @@ class ConfigController extends Controller
                 // cast $value because every $value is a string
                 if (is_numeric($value)) {
                     $value = (int) $value;
-                } else if ($value === "true" || $value === "false") {
+                } elseif ($value === "true" || $value === "false") {
                     $value = (bool) $value;
                 }
                 $label = ucfirst(str_replace(['.', '-'], ' ', $key)); // Make label "human readable"
@@ -96,8 +96,7 @@ class ConfigController extends Controller
                         break;
                 }
 
-                if (
-                    is_string($value)
+                if (is_string($value)
                     && !empty($value)
                     && !in_array($key, ["difficulty", "gamemode", "level-type"]) // Exclude fixed values in the switch below
                 ) { // Treatment for string not boolean, not integer
@@ -107,13 +106,13 @@ class ConfigController extends Controller
                             'placeholder' => $this->lang('config.placeholder.customValue')
                         ]
                     ]);
-                } else if (is_numeric($value) && !in_array($key, $exclude)) { // Treatment for integer $value
+                } elseif (is_numeric($value) && !in_array($key, $exclude)) { // Treatment for integer $value
                     $form->addField("number", "$key", "$label", [
                         'attributes' => [
                             'value' => $value
                         ]
                     ]);
-                } else if (is_string($value) && empty($value) && !in_array($key, $exclude)) { // Treatment for empty $value
+                } elseif (is_string($value) && empty($value) && !in_array($key, $exclude)) { // Treatment for empty $value
                     $form->addField("text", "$key", "$label", [
                         'attributes' => [
                             'value' => $value,

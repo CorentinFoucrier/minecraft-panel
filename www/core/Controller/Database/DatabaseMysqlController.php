@@ -52,8 +52,7 @@ class DatabaseMysqlController extends DatabaseController
         $req = $this->getPDO()->query($statement);
 
         // If the statement is UPDATE, INSERT or DELETE return the result (bool)
-        if (
-            strpos($statement, 'UPDATE') === 0 ||
+        if (strpos($statement, 'UPDATE') === 0 ||
             strpos($statement, 'INSERT') === 0 ||
             strpos($statement, 'DELETE') === 0
         ) {
@@ -93,8 +92,7 @@ class DatabaseMysqlController extends DatabaseController
         $res = $req->execute($attributes);
 
         // If the statement is UPDATE, INSERT or DELETE return the result (bool)
-        if (
-            strpos($statement, 'UPDATE') === 0 ||
+        if (strpos($statement, 'UPDATE') === 0 ||
             strpos($statement, 'INSERT') === 0 ||
             strpos($statement, 'DELETE') === 0
         ) {

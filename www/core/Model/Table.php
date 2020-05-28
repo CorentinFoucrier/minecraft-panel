@@ -25,7 +25,7 @@ abstract class Table
             $table_name = preg_replace('/\B([A-Z])/', '_$1', $tableName);
             // add user prefix + lowercase
             $this->table = PREFIX . strtolower($table_name);
-        } else if (getenv("ENV_DEV") === "true") {
+        } elseif (getenv("ENV_DEV") === "true") {
             throw new \Exception("\$this->table must not be initialized '" . $this->table . "' given.");
         } else {
             header("Location: " . URLController::getUri('error', ["code" => 500]));

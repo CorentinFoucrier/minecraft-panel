@@ -130,7 +130,7 @@ class App
 
     /**
      * Returns the translated string if possible, otherwise English.
-     * 
+     *
      * @return string
      */
     public function getLang(string $key, array $vars = []): string

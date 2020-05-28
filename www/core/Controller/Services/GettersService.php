@@ -4,7 +4,7 @@ namespace Core\Controller\Services;
 
 class GettersService
 {
-    static public function gettersToAssocArray($entity): ?array
+    public static function gettersToAssocArray($entity): ?array
     {
         $methods = \get_class_methods($entity);
         if (is_array($methods)) {

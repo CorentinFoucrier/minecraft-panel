@@ -22,8 +22,7 @@ class PlayersController extends Controller
         $this->userOnly();
         $this->hasPermission('players');
         // If $_POST and a valid token ->addToList
-        if (
-            !empty($_POST)
+        if (!empty($_POST)
             && htmlspecialchars($_POST['token']) === $_SESSION['token']
         ) {
             $type =   htmlspecialchars(end(explode('_', array_key_first($_POST))));
@@ -80,14 +79,14 @@ class PlayersController extends Controller
         $uuid = implode('-', $matches);
         if (empty($uuid)) {
             $this->getFlash()->addAlert($this->lang('players.error.doesNotExist', $name));
-            return FALSE;
+            return false;
         }
 
         // Check if player already exist.
         foreach ($this->getJson($type) as $value) {
             if ($value['name'] == $name) {
                 $this->getFlash()->addAlert($this->lang('players.error.alreadyIn', $name));
-                return FALSE;
+                return false;
             }
         }
         $infos = [
@@ -110,9 +109,9 @@ class PlayersController extends Controller
             json_encode($jsonPhp, JSON_PRETTY_PRINT)
         ))) {
             $this->getFlash()->addAlert($this->lang('players.error.internal.write'));
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
     }
 
     /**
@@ -127,8 +126,7 @@ class PlayersController extends Controller
             $username = htmlspecialchars($_POST['username']);
             $token = htmlspecialchars($_POST['token']);
             $listName = htmlspecialchars($_POST['listName']);
-            if (
-                $this->server->selectEverything()->getStatus() != SERVER_STARTED &&
+            if ($this->server->selectEverything()->getStatus() != SERVER_STARTED &&
                 !empty($username) &&
                 $token === $_SESSION['token']
             ) {

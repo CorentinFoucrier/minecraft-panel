@@ -159,7 +159,7 @@ abstract class Controller
         $user = $this->user->select(['username' => $_SESSION['username']]);
         if ($user && ($user->getRoleId() !== 1)) {
             if (!empty($_POST)) { // AJAX if $_POST
-                return FALSE;
+                return false;
             } else {
                 $this->redirect('login');
             }
@@ -304,9 +304,9 @@ abstract class Controller
         if (preg_match('/.*[pP]assword.*/', $output)) {
             $ssh->write(SHELL_PWD . PHP_EOL);
             $ssh->read('/.*@.*[$|#]/', $ssh::READ_REGEX);
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 
@@ -330,7 +330,7 @@ abstract class Controller
 
     /**
      * Returns the translated string if possible, otherwise English.
-     * 
+     *
      * @return string
      */
     protected function lang(string $key, ...$vars): string

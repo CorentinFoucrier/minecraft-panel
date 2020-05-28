@@ -312,7 +312,7 @@ class SettingsController extends Controller
                         if (!$createRolePerm) {
                             $this->echoJsonData('error')->addToast($this->lang('general.error.retry'), $this->lang('general.error.occured'))->echo();
                         }
-                    } else if ($checked === "false") {
+                    } elseif ($checked === "false") {
                         $removeRolePermission = $this->rolePermission->deleteAnd([
                             "role_id" => $role_id,
                             "permission_id" => $permission_id

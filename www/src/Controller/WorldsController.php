@@ -133,7 +133,7 @@ class WorldsController extends Controller
                 for ($i = 0; $i < $zip->numFiles; $i++) {
                     $nameI = $zip->getNameIndex($i);
                     if ($nameI != './' && $nameI != '../' && $nameI != '__MACOSX/_') {
-                        $zip->extractTo($path . str_replace('.zip', '', $fileName), array($zip->getNameIndex($i)));
+                        $zip->extractTo($path . str_replace('.zip', '', $fileName), [$zip->getNameIndex($i)]);
                     }
                 }
                 return $zip->close();

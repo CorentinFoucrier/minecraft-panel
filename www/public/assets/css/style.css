@@ -1,141 +1,142 @@
 /* GENERAL */
 @import url("https://fonts.googleapis.com/css?family=Ubuntu&display=swap");
 * {
-  font-family: "Ubuntu", sans-serif;
+    font-family: "Ubuntu", sans-serif;
 }
 
 *::selection {
-  background: #008542;
-  color: #fff;
+    background: #008542;
+    color: #fff;
 }
 
 body {
-  font-size: .95rem;
+    font-size: 0.95rem;
 }
 
 select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .wip {
-  cursor: not-allowed;
+    cursor: not-allowed;
 }
 
 .noresize {
-  /* no resize for <textarea> */
-  resize: none;
+    /* no resize for <textarea> */
+    resize: none;
 }
 
-.overflow { /* perfect-scrollbar requirements */
-  height: 100vh;
-  width: 100%;
-  overflow: hidden !important;
-  position: relative;
+.overflow {
+    /* perfect-scrollbar requirements */
+    height: 100vh;
+    width: 100%;
+    overflow: hidden !important;
+    position: relative;
 }
 
 /* TOASTR JS OVERRIDE */
 #toast-container > div {
-  opacity: 1 !important;
-  box-shadow: none !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
 }
 
 /* DATATABLE OVERRIDE */
 table.dataTable td.reorder {
-  text-align: unset !important;
+    text-align: unset !important;
 }
 
 /* TABLES */
 table {
-  width: auto !important;
+    width: auto !important;
 }
 
 /* SIDEBAR */
 
 .sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  padding: 56px 0 0; /* Height of navbar */
-  background-color: #1e1e1e;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 56px 0 0; /* Height of navbar */
+    background-color: #1e1e1e;
 }
 
 .sidebar-sticky {
-  position: relative;
-  top: 0;
-  height: calc(100vh - 1.5rem);
-  padding-top: 0.5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
+    position: relative;
+    top: 0;
+    height: calc(100vh - 1.5rem);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 @supports ((position: -webkit-sticky) or (position: sticky)) {
-  .sidebar-sticky {
-    position: -webkit-sticky;
-    position: sticky;
-  }
+    .sidebar-sticky {
+        position: -webkit-sticky;
+        position: sticky;
+    }
 }
 
 .sidebar .nav-link {
-  font-weight: 500;
-  color: #fff;
-  padding: 0.8rem 1.5rem !important;
+    font-weight: 500;
+    color: #fff;
+    padding: 0.8rem 1.5rem !important;
 }
 
 .sidebar .nav-link.active {
-  color: #008542;
+    color: #008542;
 }
 
 .sidebar .nav-link .fas {
-  color: #999;
+    color: #999;
 }
 
 .sidebar .nav-link:hover .fas,
 .sidebar .nav-link.active .fas {
-  color: inherit;
+    color: inherit;
 }
 
 .sidebar .nav-link .fas {
-  width: 25px;
-  margin-right: 4px;
-  vertical-align: text-bottom;
+    width: 25px;
+    margin-right: 4px;
+    vertical-align: text-bottom;
 }
 
 .sidebar-heading {
-  font-size: .75rem;
-  text-transform: uppercase;
+    font-size: 0.75rem;
+    text-transform: uppercase;
 }
 
 .sidebar .fixed-bottom .nav-link .fas {
-  width: 15px;
-  margin-right: inherit;
-  vertical-align: inherit;
+    width: 15px;
+    margin-right: inherit;
+    vertical-align: inherit;
 }
 
 /* CONTENT */
 
 [role="main"] {
-  padding-top: 133px; /* Space for fixed navbar */
+    padding-top: 133px; /* Space for fixed navbar */
 }
 
 @media (min-width: 768px) {
-  [role="main"] {
-    padding-top: 65px; /* Space for fixed navbar */
-  }
+    [role="main"] {
+        padding-top: 65px; /* Space for fixed navbar */
+    }
 }
 
 /* NAVBAR */
 
 .navbar-brand {
-  padding-top: .75rem;
-  padding-bottom: .75rem;
-  font-size: 1rem;
-  background-color: #1e1e1e;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-size: 1rem;
+    background-color: #1e1e1e;
 }
 
 .navbar-top {
-  /* box-shadow: 0px 3px 2px 0px rgb(35, 35, 35); */
-  background-color: #282828;
+    /* box-shadow: 0px 3px 2px 0px rgb(35, 35, 35); */
+    background-color: #282828;
 }

@@ -15,7 +15,7 @@ class UserController extends Controller
     /**
      * Login form
      * Route: /login
-     * 
+     *
      * @return void
      */
     public function showLogin()

@@ -72,7 +72,7 @@ class ServerController extends Controller
                     $command = htmlspecialchars($_POST['command']);
                     $this->sendMinecraftCommand($command);
                     $this->echoJsonData('done')->echo();
-                } else if ($status === false) {
+                } elseif ($status === false) {
                     $this->echoJsonData('error')
                         ->addToast($this->lang('general.error.database'), $this->lang('general.error.occured'))
                         ->echo();
@@ -217,8 +217,7 @@ class ServerController extends Controller
             file_put_contents($eula, "eula=true");
         }
 
-        if (
-            !empty($_POST['token'])
+        if (!empty($_POST['token'])
             && $this->hasPermission('start_and_stop', false)
             && $_POST['token'] === $_SESSION['token']
         ) {

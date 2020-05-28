@@ -38,7 +38,7 @@ class ZipService
                     $zip->addFromString(str_replace($path . '/', '', $file), file_get_contents($file));
                 }
             }
-        } else if (is_file($path)) {
+        } elseif (is_file($path)) {
             /* Add the file to the ZIP archive */
             $zip->addFromString(basename($path), file_get_contents($path));
         } else {
