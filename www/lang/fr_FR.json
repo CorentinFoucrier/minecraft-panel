@@ -75,6 +75,7 @@
     "worlds.thead.world": "Monde",
     "worlds.thead.download": "Télécharger",
     "worlds.thead.delete": "Supprimer",
+    "worlds.button.browse": "Parcourir",
     "players.title": "Gestion des joueurs",
     "players.ban.default.expires": "Pour toujours",
     "players.deleted": "Joueur supprimé avec succès.",

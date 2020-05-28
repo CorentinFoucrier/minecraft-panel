@@ -21,6 +21,10 @@ class App
 
     private RouterController $router;
 
+    private array $currentLanguage;
+
+    private array $defaultLanguage;
+
     /**
      * App instance singleton
      *
@@ -77,7 +81,6 @@ class App
      * Used for instantiate any table passed by Core\Controller\loadModel($tableName) method
      *
      * @param string $tableName
-     * @return object
      */
     public function getTable(string $tableName): object
     {

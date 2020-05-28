@@ -22,10 +22,6 @@ abstract class Controller
 
     private CsrfTokenService $csrfToken;
 
-    protected array $currentLanguage;
-
-    protected array $defaultLanguage;
-
     protected string $views = BASE_PATH . "www/views/";
 
     protected string $viewsExtention = ".html.twig";
@@ -59,8 +55,10 @@ abstract class Controller
             $this->twig = new Environment($loader);
             //Global
             if ($_SESSION['username']) {
+                $l = $_SESSION['lang'];
                 $this->twig->addGlobal('currentUser', $_SESSION['username']);
-                $this->twig->addGlobal('selectedLang', ucfirst(Locales::getName($_SESSION['lang'], $_SESSION['lang'])));
+                $this->twig->addGlobal('selectedLang', ucfirst(Locales::getName($l, $l)));
+                $this->twig->addGlobal('htmlLang', substr($l, 0, strpos($l, '_', 0)));
             }
             $this->twig->addGlobal('route', $_SESSION['route']);
             $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
@@ -83,7 +81,7 @@ abstract class Controller
      * @param string $tableName
      * @return void
      */
-    protected function loadModel(string ...$tableNames)
+    protected function loadModel(string ...$tableNames): void
     {
         // Add properties dynamically to Core\Controller as many time as loadModel is called who contain object of tableName
         foreach ($tableNames as $tableName) {
@@ -235,7 +233,7 @@ abstract class Controller
     /**
      * Get the role entity of every users
      *
-     * @return array|false
+     * @return mixed
      */
     protected function getUsersRole()
     {
@@ -251,7 +249,7 @@ abstract class Controller
     /**
      * Get the role entity of specific user
      *
-     * @return string|false
+     * @return mixed
      */
     protected function getUserRole(string $username)
     {
@@ -268,7 +266,7 @@ abstract class Controller
     /**
      * Get role entity of current logged user
      *
-     * @return mixed|false
+     * @return mixed
      */
     protected function currentRole(string $roleGetter)
     {

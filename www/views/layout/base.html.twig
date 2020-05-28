@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ htmlLang }}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -17,26 +17,39 @@
         <title>{{title}}</title>
     </head>
     <body>
+        <style>
+            .custom-file-input ~ .custom-file-label::after {
+                content: "{{ lang('worlds.button.browse') }}";
+            }
+        </style>
         {% if ENV_DEV == "true" %}<!-- App took {{DEBUG_TIME}} seconds -->{% endif %}
-        <div class="container-fluid content">
-            <div class="row vh-100">
-                {# Navbar desktop #}
+        <nav class="navbar fixed-top flex-md-nowrap p-0 navbar-top">
+            <div class="navbar-brand col-sm-3 col-md-2 mr-0">
+                <p class="m-0 p-1 pl-2">
+                    <span class="text-primary">■</span>
+                    {{ currentUser }}
+                </p>
+            </div>
+            <div class="col-md-6 m-md-0 h5">
+                <span class="text-uppercase">Minecraft Panel</span> - {{title}}
+            </div>
+            <div class="col-md-4 m-md-0 d-md-flex align-items-md-center justify-content-md-end">
+                <a href="{{ uri("account") }}" class="text-reset text-decoration-none">
+                    <i class="fas fa-globe"></i>
+                    {{ selectedLang }} |&nbsp;
+                </a>
+                <a href="{{ uri("logout") }}" class="text-danger text-decoration-none">
+                    <i class="fas fa-power-off"></i>
+                    &nbsp;{{ lang('navbar.logout') }}
+                </a>
+            </div>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
                 {% include "layout/navbar.html.twig" %}
-                {% include "layout/navbar-mobile.html.twig" %}
-
-                <div class="col-md-10 px-0">
-                    <div class="navbar-top row p-md-2 m-md-0 d-md-flex align-items-md-center justify-content-md-between d-none d-md-block">
-                        <div class="title h4 m-md-0 col-md-6">
-                            <span class="text-uppercase">Minecraft Panel</span> - {{title}}
-                        </div>
-                        <div class="m-md-0 d-md-flex col-md-6 align-items-md-center justify-content-md-end">
-                            <a href="{{ uri("account") }}" class="text-reset text-decoration-none"><i class="fas fa-globe"></i> {{ selectedLang }}</a>
-                        </div>
-                    </div>
-                    <div id="content" class="pt-md-5 overflow">
-                        {% block content %}{% endblock %}
-                    </div>
-                </div>
+                <main id="content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-5 overflow">
+                    {% block content %}{% endblock %}
+                </main>
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -52,8 +65,9 @@
                 toastr.info("Soon™", "W.I.P");
             });
             const baseUri = "{{ uri("base") }}";
-            const psContent = new PerfectScrollbar('#content');
-            const psSidebar = new PerfectScrollbar('#sidebar');
+            const psContent = new PerfectScrollbar('#content', {
+                scrollYMarginOffset: 100
+            });
         </script>
         {% block javascripts %}{% endblock %}
     </body>

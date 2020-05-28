@@ -203,24 +203,12 @@ abstract class Table
      * Query :
      * "INSERT INTO {$this->table} SET $sql_part"
      *
-     * @param array $fields
-     * @param bool $entityClass
      */
-    public function create(array $fields, $entityClass = false)
+    public function create(array $fields)
     {
         $sql_parts = [];
         $attributes = [];
-        if ($entityClass) {
-            $methods = get_class_methods($fields);
-            $array = [];
-            foreach ($methods as $value) {
-                if (strrpos($value, 'get') === 0) {
-                    $column = strtolower(explode('get', $value)[1]);
-                    $array[$column] = $fields->$value();
-                }
-            }
-            $fields = $array;
-        }
+
         foreach ($fields as $k => $v) {
             $sql_parts[] = "$k = ?";
             $attributes[] = $v;
@@ -267,7 +255,7 @@ abstract class Table
     }
 
     /**
-     * Undocumented function
+     * SQL INNER JOIN
      *
      * @param array $tables
      * @param array $on
@@ -324,18 +312,9 @@ abstract class Table
 
         // If attributes are set it's a prepare query
         if ($attributes) {
-            return $this->db->prepare(
-                $statement,
-                $attributes,
-                $class_name,
-                $fetchAll
-            );
+            return $this->db->prepare($statement, $attributes, $class_name, $fetchAll);
         } else {
-            return $this->db->query(
-                $statement,
-                $class_name,
-                $fetchAll
-            );
+            return $this->db->query($statement, $class_name, $fetchAll);
         }
     }
 }

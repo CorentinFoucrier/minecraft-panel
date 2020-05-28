@@ -1,62 +1,65 @@
-<nav id="sidebar" class="col-md-2 overflow d-none d-md-block">
-    <div class="row p-md-2 mb-4 d-md-flex flex-md-column">
-        <p class="m-0 pl-3">
-            <span class="text-primary">■</span>
-            {{ currentUser }}</p>
-        <a href="{{ uri("logout") }}" class="m-0 pl-3 text-muted">&gt; {{ lang('navbar.logout') }}</a>
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if route == "dashboard" %}active{% endif %}" href="{{ uri("base") }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    {{ lang('navbar.dashboard') }}
+                </a>
+            </li>
+            <li class="nav-item wip">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-cubes"></i>
+                    {{ lang('navbar.plugins') }}
+                    <span class="badge badge-info">Soon</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if route == "config" %}active{% endif %}" href="{{ uri("config") }}">
+                    <i class="fas fa-cog"></i>
+                    {{ lang('navbar.config') }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if route == "worlds" %}active{% endif %}" href="{{ uri("worlds") }}">
+                    <i class="fas fa-globe-africa"></i>
+                    {{ lang('navbar.worlds') }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if route == "players" %}active{% endif %}" href="{{ uri("players") }}">
+                    <i class="fas fa-user-friends"></i>
+                    {{ lang('navbar.players') }}
+                </a>
+            </li>
+            <li class="nav-item wip">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ lang('navbar.scheduled') }}
+                    <span class="badge badge-info">Soon</span>
+                </a>
+            </li>
+            <li class="nav-item wip">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-file-export"></i>
+                    {{ lang('navbar.transfert') }}
+                    <span class="badge badge-info">Soon</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if route == "settings" %}active{% endif %}" href="{{ uri("settings") }}">
+                    <i class="fas fa-users-cog"></i>
+                    {{ lang('navbar.setting') }}
+                </a>
+            </li>
+        </ul>
+        <ul class="nav flex-column fixed-bottom col-2 p-0">
+            <li class="nav-item mx-auto">
+                <a class="nav-link {% if route == "account" %}active{% endif %}" href="{{ uri("account") }}">
+                    <i class="fas fa-user"></i>
+                    {{ lang('navbar.account') }}
+                </a>
+            </li>
+        </ul>
     </div>
-    <a href="{{ uri("base") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "dashboard" %}bg-secondary{% endif %}">
-            <i class="fas fa-tachometer-alt pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.dashboard') }}</span>
-        </div>
-    </a>
-    <a href="#" class="text-reset text-decoration-none not-allowed wip">
-        <div class="row p-md-2 pl-md-4 mb-md-3">
-            <i class="fas fa-cubes pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.plugins') }} <span class="badge badge-info">Soon</span></span>
-        </div>
-    </a>
-    <a href="{{ uri("config") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "config" %}bg-secondary{% endif %}">
-            <i class="fas fa-cog pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.config') }}</span>
-        </div>
-    </a>
-    <a href="{{ uri("worlds") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "worlds" %}bg-secondary{% endif %}">
-            <i class="fas fa-globe-africa pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.worlds') }}</span>
-        </div>
-    </a>
-    <a href="{{ uri("players") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "players" %}bg-secondary{% endif %}">
-            <i class="fas fa-user-friends d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.players') }}</span>
-        </div>
-    </a>
-    <a href="#" class="text-reset text-decoration-none not-allowed wip">
-        <div class="row p-md-2 pl-md-4 mb-md-3">
-            <i class="fas fa-calendar-alt pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.scheduled') }} <span class="badge badge-info">Soon</span></span>
-        </div>
-    </a>
-    <a href="#" class="text-reset text-decoration-none not-allowed wip">
-        <div class="row p-md-2 pl-md-4 mb-md-3">
-            <i class="fas fa-file-export pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.transfert') }} <span class="badge badge-info">Soon</span></span>
-        </div>
-    </a>
-    <a href="{{ uri("settings") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "settings" %}bg-secondary{% endif %}">
-            <i class="fas fa-users-cog pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.setting') }}</span>
-        </div>
-    </a>
-    <a href="{{ uri("account") }}" class="text-reset text-decoration-none">
-        <div class="row p-md-2 pl-md-4 mb-md-3 {% if route == "account" %}bg-secondary{% endif %}">
-            <i class="fas fa-user pr-md-1 d-md-flex align-items-md-center"></i>
-            <span class="pl-md-3">{{ lang('navbar.account') }}</span>
-        </div>
-    </a>
 </nav>

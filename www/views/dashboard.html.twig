@@ -2,8 +2,8 @@
 
 {% block content %}
     {# Version infos #}
-    <div class="row m-4">
-        <div class="col-md-5 mb-3 mb-md-0 pr-md-5">
+    <div class="row mt-3">
+        <div class="col-md-5 pr-md-5">
             <div class="card">
                 <div class="card-header h5">
                     <b>{{ lang('dashboard.controls') }}</b>
@@ -46,7 +46,7 @@
                             <canvas id="cpuChart" style="background:#3B3B3B;border-radius:0px;width:500px;height:200px;padding-left:0px;padding-right:0px;padding-top:0px;padding-bottom:0px"></canvas>
                             <div class="d-flex justify-content-center">
                                 <div><i class="fas fa-microchip h2"></i></div>
-                                <div class="pl-2">{{ lang('dashboard.stats.cpu') }}<span id="cpu">N/A</span>%</div>
+                                <div class="pl-2">{{ lang('dashboard.stats.cpu') }} <span id="cpu">N/A</span>%</div>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -91,7 +91,7 @@
         </div>
     </div>
     {# Console #}
-    <div class="row m-4">
+    <div class="row mt-5">
         <div class="offset-md-1 col-md-10">
             <div class="card">
                 <h5 class="card-header">
