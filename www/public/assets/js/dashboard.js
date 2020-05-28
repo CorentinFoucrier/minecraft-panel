@@ -2,14 +2,14 @@ const token = $("#token").val();
 const ctrlBtn = $("#ctrlBtn");
 const psLog = new PerfectScrollbar("#log");
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const checkStatus = () => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         $.post(
             "/check_status",
             { token: token },
-            async (data) => {
+            async data => {
                 if (data.state) ctrlBtn.removeClass();
                 switch (data.state) {
                     case "loading":
@@ -55,7 +55,7 @@ const checkStatus = () => {
     });
 };
 
-const serverStart = (accept) => {
+const serverStart = accept => {
     event.preventDefault();
     if (accept == true) {
         $("#eula").modal("hide");
@@ -73,9 +73,9 @@ const serverStart = (accept) => {
         "/start",
         {
             token: token,
-            accept: accept,
+            accept: accept
         },
-        (data) => {
+        data => {
             switch (data.state) {
                 case "loading":
                     toastr.info(data.loading.message, data.loading.title);
@@ -106,7 +106,7 @@ const serverStop = () => {
     $.post(
         "/stop",
         { token: token },
-        async (data) => {
+        async data => {
             switch (data.state) {
                 case "stopped":
                     await sleep(5000);
@@ -133,9 +133,9 @@ const sendCommand = () => {
         "/send_command",
         {
             command: command.val(),
-            token: token,
+            token: token
         },
-        (data) => {
+        data => {
             command.val("");
             switch (data.state) {
                 case "forbidden":
@@ -155,7 +155,7 @@ const sendCommand = () => {
 
 // Refresh the actual version:
 // recieved when another client change the version of the server.
-socket.on("updateVersion", (data) => {
+socket.on("updateVersion", data => {
     const [selectedVersionType, selectedVersionNumber] = data.split("_");
     const versionLogo = $("#versionLogo");
     const vType = $("#vType");
@@ -168,7 +168,7 @@ socket.on("updateVersion", (data) => {
     vNumber.html(selectedVersionNumber);
 });
 
-socket.on("client", (data) => {
+socket.on("client", data => {
     switch (data) {
         case "start":
             $("#log").empty();

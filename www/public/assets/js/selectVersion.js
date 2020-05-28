@@ -1,4 +1,4 @@
-const selectVersion = async (type) => {
+const selectVersion = async type => {
     event.preventDefault();
 
     const version = $("#" + type).val(); // Release_1.15.2 || Snapshot_19w46a
@@ -22,9 +22,9 @@ const selectVersion = async (type) => {
                 "./select_version",
                 {
                     version: version,
-                    token: token,
+                    token: token
                 },
-                async (data) => {
+                async data => {
                     if (data) {
                         toastr.remove();
                         if (

@@ -12,7 +12,7 @@ command.blur(() => {
 
 // If the pressed key is equal to 13 it's the ENTER key
 // and if input has "hasFosus" to true then call sendCommand();
-$(document.body).keypress((e) => {
+$(document.body).keypress(e => {
     let keycode = e.keyCode ? e.keyCode : e.which; // Support every web browser
     if (keycode === 13) {
         sendCommand();
@@ -21,7 +21,7 @@ $(document.body).keypress((e) => {
 
 // When document is ready retrieve the console with socket.io
 const logs = $("#log");
-socket.on("console", (datas) => {
+socket.on("console", datas => {
     let arr = datas.slice(1, -3).split("\\n");
     $.each(datas.split(/[\r\n]+/), (_key, val) => {
         const regex = /^[0-9]+$/gm;
@@ -34,7 +34,7 @@ socket.on("console", (datas) => {
     $.post(
         "./get_online_players",
         { token: token },
-        (data) => {
+        data => {
             if (data.state) {
                 $("#playersOnline").html(data.online);
             } else {
@@ -45,13 +45,13 @@ socket.on("console", (datas) => {
     );
 });
 
-const escapeHtml = (text) => {
+const escapeHtml = text => {
     let map = {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#039;",
+        "'": "&#039;"
     };
-    return text.replace(/[&<>"']/g, (m) => map[m]);
+    return text.replace(/[&<>"']/g, m => map[m]);
 };

@@ -11,15 +11,15 @@ let usersTable = $("#users_table").DataTable({
     columnDefs: [
         { targets: "_all", orderable: false },
         { targets: [3, 4], width: "25%", searchable: false },
-        { targets: 0, searchable: false, visible: false },
+        { targets: 0, searchable: false, visible: false }
     ],
     info: false,
-    pagingType: "simple_numbers",
+    pagingType: "simple_numbers"
 });
 
 // https://datatables.net/plug-ins/sorting/absolute#Example
 let reorderType = $.fn.dataTable.absoluteOrderNumber([
-    { value: topIndex, position: "top" },
+    { value: topIndex, position: "top" }
 ]);
 
 let rolesTable = $("#roles_table").DataTable({
@@ -36,11 +36,11 @@ let rolesTable = $("#roles_table").DataTable({
                 if (cellData == "owner") {
                     $(td).removeClass("allow-reorder reorder");
                 }
-            },
-        },
+            }
+        }
     ],
     info: false,
-    pagingType: "simple_numbers",
+    pagingType: "simple_numbers"
 });
 
 // https://datatables.net/reference/event/row-reorder
@@ -77,15 +77,15 @@ $(document).ready(function () {
 
 // Modal events listener
 $("#editRolePermissions").on({
-    "shown.bs.modal": (e) => {
+    "shown.bs.modal": e => {
         // Trigger when modal is shown
         $.post(
             "/settings/get_role_permission",
             {
                 token: token,
-                role: g_role,
+                role: g_role
             },
-            (data) => {
+            data => {
                 if (data) {
                     switch (data.state) {
                         case "success":
@@ -117,15 +117,15 @@ $("#editRolePermissions").on({
             "json"
         );
     },
-    "hidden.bs.modal": (e) => {
+    "hidden.bs.modal": e => {
         // Trigger when modal is hidden
         $("input[type=checkbox].permission").prop("checked", false);
         $(".permission").parent().css("opacity", 0);
         spin.removeClass("d-none");
-    },
+    }
 });
 
-$("input[type=checkbox].permission").on("click", (e) => {
+$("input[type=checkbox].permission").on("click", e => {
     let $this = $(e.currentTarget); // Due to ES6 Arrow Function
     let checked = $this.prop("checked"); // bool
     let permission = $this.attr("name"); // name html attribute
@@ -136,9 +136,9 @@ $("input[type=checkbox].permission").on("click", (e) => {
             token: token,
             checked: checked,
             permission: permission,
-            role: g_role,
+            role: g_role
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "error":
@@ -156,7 +156,7 @@ $("input[type=checkbox].permission").on("click", (e) => {
     );
 });
 
-const deleteRow = (id) => {
+const deleteRow = id => {
     $("#" + id).fadeOut(500, () => {
         usersTable
             .row("#" + id)
@@ -175,9 +175,9 @@ const addNewUser = () => {
         {
             username: username.val(),
             role: role,
-            token: token,
+            token: token
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "success":
@@ -196,7 +196,7 @@ const addNewUser = () => {
                             </button>`,
                                 `<button class="btn btn-danger btn-sm float-right" onclick="deleteUser('${username.val()}');">
                                 <i style="pointer-events: none;" class="far fa-trash-alt"></i>
-                            </button>`,
+                            </button>`
                             ])
                             .draw()
                             .node();
@@ -222,14 +222,14 @@ const addNewUser = () => {
     );
 };
 
-const deleteUser = (username) => {
+const deleteUser = username => {
     $.post(
         "/settings/delete_user",
         {
             username: username,
-            token: token,
+            token: token
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "deleted":
@@ -264,9 +264,9 @@ const editUserRole = () => {
         {
             username: g_username.attr("id"),
             role: role,
-            token: token,
+            token: token
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "success":
@@ -306,9 +306,9 @@ const saveRolesOrder = () => {
         "/settings/save_roles_order",
         {
             token: token,
-            data: JSON.stringify(rolesData),
+            data: JSON.stringify(rolesData)
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "success":
@@ -335,9 +335,9 @@ const addNewRole = () => {
         "/settings/add_new_role",
         {
             token: token,
-            role: role.val(),
+            role: role.val()
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "success":
@@ -351,7 +351,7 @@ const addNewRole = () => {
                             </button>`,
                                 `<button class="btn btn-danger btn-sm float-right" onclick="deleteRole('${role.val()}');">
                                 <i style="pointer-events: none;" class="far fa-trash-alt"></i>
-                            </button>`,
+                            </button>`
                             ])
                             .draw()
                             .node();
@@ -378,14 +378,14 @@ const addNewRole = () => {
     );
 };
 
-const deleteRole = (role) => {
+const deleteRole = role => {
     $.post(
         "/settings/delete_role",
         {
             token: token,
-            role: role,
+            role: role
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "success":
