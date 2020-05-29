@@ -1,12 +1,12 @@
 // Target the selected tab and store it name in "tab" var
 let listName = $("a.active").attr("id").split("_")[0];
 
-$('a[data-toggle="tab"]').on("click", (e) => {
+$('a[data-toggle="tab"]').on("click", e => {
     listName = e.target.id.split("_")[0];
 });
 
 // Trigged when "trash" button is clicked
-$("button.delete").click((e) => {
+$("button.delete").click(e => {
     const username = e.target.dataset.username;
     const token = $("#token").val();
 
@@ -15,9 +15,9 @@ $("button.delete").click((e) => {
         {
             listName: listName,
             username: username,
-            token: token,
+            token: token
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "info":

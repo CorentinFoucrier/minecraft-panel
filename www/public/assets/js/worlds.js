@@ -1,4 +1,4 @@
-$("button.delete").on("click", (e) => {
+$("button.delete").on("click", e => {
     const worldName = e.target.dataset.worldname;
     const token = $("#token").val();
 
@@ -9,9 +9,9 @@ $("button.delete").on("click", (e) => {
         "/worlds/delete",
         {
             worldName: worldName,
-            token: token,
+            token: token
         },
-        (data) => {
+        data => {
             if (data) {
                 switch (data.state) {
                     case "success":
