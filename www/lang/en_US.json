@@ -153,7 +153,7 @@
     "settings.users.thead.editRole": "Edit role",
     "settings.users.thead.delete": "Delete",
     "settings.users.body.owner": "Owner",
-    "settings.rolePerm.placeholder": "Ajouter un nouveau rôle",
+    "settings.rolePerm.placeholder": "Add new role",
     "settings.rolePerm.thead.rank": "Rank",
     "settings.rolePerm.thead.role": "Role",
     "settings.rolePerm.thead.editPerm": "Edit permissions",

@@ -331,9 +331,9 @@ abstract class Controller
     /**
      * Returns the translated string if possible, otherwise English.
      *
-     * @return string
+     * @return null|string
      */
-    protected function lang(string $key, ...$vars): string
+    protected function lang(string $key, ...$vars): ?string
     {
         return App::getInstance()->getLang($key, $vars);
     }

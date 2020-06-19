@@ -73,8 +73,9 @@ class App
         define("SHELL_USER", getenv("SHELL_USER"));
         define("SHELL_PWD", getenv("SHELL_PWD"));
         define("SERVER_PROPERTIES", PropertiesService::get());
-        define("ENABLE_QUERY", "true");
+        define("ENABLE_QUERY", "true"); // See PropertiesService::write()
         define("QUERY_PORT", SERVER_PROPERTIES['server-port']);
+        define("IP", $_SERVER['SERVER_NAME']);
     }
 
     /**
@@ -114,10 +115,16 @@ class App
         if (!isset($this->ssh2_instance)) {
             try {
                 $ssh = new SSH2(getenv('IP'));
-                $ssh->login(SHELL_USER, SHELL_PWD);
+                if (!$ssh->login(SHELL_USER, SHELL_PWD)) {
+                    $this->getFlash()->addAlert("SSH login failed!");
+                }
                 $this->ssh2_instance = $ssh;
             } catch (\Exception $e) {
-                echo 'error';
+                if (getenv('ENV_DEV') === "true") {
+                    throw $e;
+                } else {
+                    $this->getFlash()->addAlert("SSH login failed!");
+                }
             }
         }
         return $this->ssh2_instance;
@@ -131,28 +138,31 @@ class App
     /**
      * Returns the translated string if possible, otherwise English.
      *
-     * @return string
+     * @return null|string
      */
-    public function getLang(string $key, array $vars = []): string
+    public function getLang(string $key, array $vars = []): ?string
     {
-        $lang = $_SESSION['lang'];
-        if (!isset($this->currentLanguage)) {
-            $current_json = BASE_PATH . "www/lang/{$lang}.json";
-            $h = fopen($current_json, 'r');
-            ${$lang} = json_decode(fread($h, filesize($current_json)), true);
-            $this->currentLanguage = ${$lang};
-        }
-
-        if (empty($this->currentLanguage[$key])) {
-            if (!isset($this->defaultLanguage)) {
-                $en_json = BASE_PATH . "www/lang/en_US.json";
-                $h = fopen($en_json, 'r');
-                $en_US = json_decode(fread($h, filesize($en_json)), true);
-                $this->defaultLanguage = $en_US;
+        if ($lang = $_SESSION['lang']) {
+            if (!isset($this->currentLanguage)) {
+                $current_json = BASE_PATH . "www/lang/{$lang}.json";
+                $h = fopen($current_json, 'r');
+                ${$lang} = json_decode(fread($h, filesize($current_json)), true);
+                $this->currentLanguage = ${$lang};
             }
-            return $this->langReplaceVars($this->defaultLanguage[$key], $vars);
+
+            if (empty($this->currentLanguage[$key])) {
+                if (!isset($this->defaultLanguage)) {
+                    $en_json = BASE_PATH . "www/lang/en_US.json";
+                    $h = fopen($en_json, 'r');
+                    $en_US = json_decode(fread($h, filesize($en_json)), true);
+                    $this->defaultLanguage = $en_US;
+                }
+                return $this->langReplaceVars($this->defaultLanguage[$key], $vars);
+            } else {
+                return $this->langReplaceVars($this->currentLanguage[$key], $vars);
+            }
         } else {
-            return $this->langReplaceVars($this->currentLanguage[$key], $vars);
+            return null;
         }
     }
 

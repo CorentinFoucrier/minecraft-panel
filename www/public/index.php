@@ -18,7 +18,7 @@ $app->getRouter()
     ->match('/players', 'Players#showPlayers', 'players')
 
     // Access GET only
-    ->get('/', 'Dashbord#showDashboad', 'dashboard')
+    ->get('/', 'Dashbord#show', 'dashboard')
     ->get('/', 'ONLY_FOR_#_URL_BASE', 'base') // Used for get base url (do not move this up)
     ->get('/logout', 'User#logout', 'logout')
     ->get('/error/[i:code]', 'Error#show', 'error')

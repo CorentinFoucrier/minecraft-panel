@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.min.css">
         <link rel="stylesheet" href="{{ uri("base") }}assets/css/style.css">
         {% block stylesheet %}{% endblock %}
-        <title>{{title}}</title>
+        <title>{{ title }}</title>
     </head>
     <body>
         <style>
@@ -22,7 +22,7 @@
                 content: "{{ lang('worlds.button.browse') }}";
             }
         </style>
-        {% if ENV_DEV == "true" %}<!-- App took {{DEBUG_TIME}} seconds -->{% endif %}
+        {% if ENV_DEV == "true" %}<!-- App took {{ DEBUG_TIME }} seconds -->{% endif %}
         <nav class="navbar fixed-top flex-md-nowrap p-0 navbar-top">
             <div class="navbar-brand col-sm-3 col-md-2 mr-0">
                 <p class="m-0 p-1 pl-2">
@@ -64,7 +64,7 @@
                 e.preventDefault();
                 toastr.info("Soon™", "W.I.P");
             });
-            const baseUri = "{{ uri("base") }}";
+            const baseUri = "{{ uri('base') }}";
             const psContent = new PerfectScrollbar('#content', {
                 scrollYMarginOffset: 100
             });

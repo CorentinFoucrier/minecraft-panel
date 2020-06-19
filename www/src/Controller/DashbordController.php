@@ -11,7 +11,7 @@ class DashbordController extends Controller
         $this->loadModel('server');
     }
 
-    public function showDashboad()
+    public function show()
     {
         $this->userOnly();
         $serverEntity = $this->server->selectEverything();

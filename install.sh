@@ -50,21 +50,6 @@ else
     sed -i -e "s/SOCKETIO_PORT=${SOCKETIO_PORT}/SOCKETIO_PORT=${userSocketPort}/g" .env
 fi
 
-serverIp () {
-    echo -e "\e[1m\e[34m Set your server IP\e[0m:"
-    printf " > "
-    read userIp
-    echo ""
-    if [[ "$userIp" == "" ]]; then
-        echo -e " \e[1m[\e[31mError\e[39m]\e[31m You have to set your server IP!\e[0m"
-        echo ""
-        serverIp
-    else
-        sed -i -e "s/IP=${IP}/IP=${userIp}/g" .env
-    fi
-}
-serverIp
-
 createUser () {
     echo -e "\e[1m\e[34m This application need to create a new Unix user on your system"
     echo -e " Please choose a non-existing username for this new user\e[39m:\e[0m"
