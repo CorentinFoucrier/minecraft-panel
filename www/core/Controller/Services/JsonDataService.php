@@ -2,6 +2,7 @@
 
 namespace Core\Controller\Services;
 
+// TODO: This will be remove
 /**
  * This class can be used to obtain a JSON representation
  * of a PHP array and sent throught an AJAX request
@@ -43,9 +44,9 @@ class JsonDataService
     /**
      * echo a JSON representation of a PHP array
      *
-     * @return void
+     * @return string
      */
-    public function echo(): void
+    public function echo()
     {
         echo ($json = json_encode($this->data, JSON_UNESCAPED_UNICODE))
             ? $json

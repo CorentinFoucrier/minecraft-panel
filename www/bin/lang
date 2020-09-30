@@ -19,56 +19,79 @@ class Lang
     public static function main(string $userLocale = "")
     {
         $en_json = BASE_PATH . "www/lang/en_US.json";
+
+        // Open and transform "en_US.json" into php array
         $h = fopen($en_json, 'r');
         $en_US = json_decode(fread($h, filesize($en_json)), true);
         fclose($h);
-        if (empty($en_US)) {
+
+        if (empty($en_US)) { // Empty ? Send an error then stop.
             echo "\e[31m Error!\e[39m\n";
             exit(1);
         }
 
+        // If empty, create a new language file, update otherwise
         if (!empty($userLocale)) {
+
             if (!Locales::exists($userLocale)) {
                 echo "\e[31m Error: Locale doesn't exist.\e[39m\n";
                 exit(1);
             }
+
+            // Create a php array with all existing key in en_US associated with an empty string as value.
             $newLocale = [];
             foreach ($en_US as $k => $v) {
                 $newLocale[$k] = "";
             }
+
+            // Create $userLocale.json and write the json encoded array into it.
             $h = fopen(BASE_PATH . "www/lang/$userLocale.json", 'w');
             if (!fwrite($h, json_encode($newLocale, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))) {
+                // if fwrite return false send and error then stop.
                 echo "\e[31m Error!\e[39m\n";
                 exit(1);
             }
             fclose($h);
+
             echo "\e[32m  $userLocale.json has been created in\e[4m " . BASE_PATH . "www/lang\e[0m\e[39m\n";
         } else {
+            // Update all languages files from "en_US.json".
+
+            // Retrive all JSON files in an array
             $langFiles = scandir(BASE_PATH . "www/lang");
             for ($i = 0; $i < count($langFiles); $i++) {
+                // Exclude ".", ".." and "en_US.json"
                 if (
                     $langFiles[$i] !== "." &&
                     $langFiles[$i] !== ".." &&
                     $langFiles[$i] !== "en_US.json"
                 ) {
-                    $locale = substr($langFiles[$i], 0, -5); // Get locale without .json
-                    $locale_json = BASE_PATH . "www/lang/$locale.json";
-                    $h = fopen($locale_json, 'r');
+                    $locale = substr($langFiles[$i], 0, -5); // Remove ".json" file extension
+                    $localeJsonFile = BASE_PATH . "www/lang/$locale.json";
+
                     // Open, read, decode and put in a dynamic variable with the name of actual locale
-                    if (!${$locale} = json_decode(fread($h, filesize($locale_json)), true)) {
+                    $h = fopen($localeJsonFile, 'r');
+                    if (!${$locale} = json_decode(fread($h, filesize($localeJsonFile)), true)) {
                         echo "\e[31m Error!\e[39m\n";
                         exit(1);
                     }
                     fclose($h);
+
+                    // Create a temporary array with all key and their origial value or an empty string
                     $tmp = [];
+                    // Loop on en_US array then compare keys between en_US and the current locale
                     foreach ($en_US as $k => $v) {
                         if (array_key_exists($k, ${$locale})) {
+                            // If key exist in both put the original value
                             $tmp[$k] = ${$locale}[$k];
                         } else {
+                            // Or an empty string for someone who would like to translate to easily see what is already translated or not
                             $tmp[$k] = "";
                         }
                     }
-                    $h = fopen($locale_json, 'w');
+
+                    // When loop done transform php array into JSON file
+                    $h = fopen($localeJsonFile, 'w');
                     if (!fwrite($h, json_encode($tmp, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))) {
                         echo "\e[31m Error!\e[39m\n";
                         exit(1);

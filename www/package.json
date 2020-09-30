@@ -1,0 +1,38 @@
+{
+    "devDependencies": {
+        "@babel/plugin-proposal-class-properties": "^7.10.1",
+        "@babel/preset-react": "^7.10.1",
+        "@symfony/webpack-encore": "^0.30.2",
+        "core-js": "^3.6.5",
+        "node-sass": "^4.14.1",
+        "sass-loader": "^8.0.0",
+        "webpack-notifier": "1.6.0"
+    },
+    "license": "UNLICENSED",
+    "scripts": {
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production",
+        "sass --watch": "sass --watch ./assets/sass/default_theme.scss:./public/assets/css/default_theme.css"
+    },
+    "dependencies": {
+        "axios": "^0.19.2",
+        "bootstrap": "^4.5.0",
+        "chart.js": "^2.9.3",
+        "dotenv": "^8.2.0",
+        "jquery": "^3.5.1",
+        "js-cookie": "^2.2.1",
+        "popper.js": "^1.16.1",
+        "qs": "^6.9.4",
+        "react": "^16.13.1",
+        "react-bootstrap": "^1.0.1",
+        "react-chartjs-2": "^2.9.0",
+        "react-custom-scrollbars": "^4.2.1",
+        "react-dom": "^16.13.1",
+        "react-helmet": "^6.1.0",
+        "react-loader-spinner": "^3.1.14",
+        "react-router-dom": "^5.2.0",
+        "react-toastify": "^6.0.8",
+        "socket.io-client": "^2.3.0"
+    }
+}

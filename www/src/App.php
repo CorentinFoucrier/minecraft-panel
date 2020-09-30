@@ -3,6 +3,7 @@
 namespace App;
 
 use phpseclib\Net\SSH2;
+use Symfony\Component\Intl\Locales;
 use Core\Controller\RouterController;
 use Core\Controller\Session\PhpSession;
 use Core\Controller\Session\FlashService;
@@ -46,11 +47,13 @@ class App
     public static function load(): void
     {
         if (getenv("ENV_DEV") === "true") {
+            define("ENV_DEV", true);
             // Whoops debug init
             $whoops = new \Whoops\Run;
             $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
             $whoops->register();
         } else {
+            define("ENV_DEV", false);
             // Turn off all error reporting
             error_reporting(0);
         }
@@ -60,6 +63,18 @@ class App
         // Session arn't compatible with CLI
         if (session_status() !== PHP_SESSION_ACTIVE && PHP_SAPI !== "cli") {
             session_start();
+        }
+
+        // Set up a cookie with userinfos for ReactJS
+        if (!empty($_SESSION['username']) && empty($_COOKIE['userInfos'])) {
+            $lang = $_SESSION['lang'];
+            $json = json_encode([
+                "formatedLang" => ucfirst(Locales::getName($lang, $lang)),
+                "htmlLang" => substr($lang, 0, strpos($lang, '_', 0)),
+                "username" => $_SESSION['username']
+            ]);
+            setcookie('userInfos', $json, 0, '/');
+            setcookie('token', $_SESSION['token'], 0, "/", "", false, true);
         }
     }
 
@@ -142,27 +157,24 @@ class App
      */
     public function getLang(string $key, array $vars = []): ?string
     {
-        if ($lang = $_SESSION['lang']) {
-            if (!isset($this->currentLanguage)) {
-                $current_json = BASE_PATH . "www/lang/{$lang}.json";
-                $h = fopen($current_json, 'r');
-                ${$lang} = json_decode(fread($h, filesize($current_json)), true);
-                $this->currentLanguage = ${$lang};
-            }
+        $lang = (!empty($_SESSION['lang']) ? $_SESSION['lang'] : "en_US");
+        if (!isset($this->currentLanguage)) {
+            $current_json = BASE_PATH . "www/lang/{$lang}.json";
+            $h = fopen($current_json, 'r');
+            ${$lang} = json_decode(fread($h, filesize($current_json)), true);
+            $this->currentLanguage = ${$lang};
+        }
 
-            if (empty($this->currentLanguage[$key])) {
-                if (!isset($this->defaultLanguage)) {
-                    $en_json = BASE_PATH . "www/lang/en_US.json";
-                    $h = fopen($en_json, 'r');
-                    $en_US = json_decode(fread($h, filesize($en_json)), true);
-                    $this->defaultLanguage = $en_US;
-                }
-                return $this->langReplaceVars($this->defaultLanguage[$key], $vars);
-            } else {
-                return $this->langReplaceVars($this->currentLanguage[$key], $vars);
+        if (empty($this->currentLanguage[$key])) {
+            if (!isset($this->defaultLanguage)) {
+                $en_json = BASE_PATH . "www/lang/en_US.json";
+                $h = fopen($en_json, 'r');
+                $en_US = json_decode(fread($h, filesize($en_json)), true);
+                $this->defaultLanguage = $en_US;
             }
+            return $this->langReplaceVars($this->defaultLanguage[$key], $vars);
         } else {
-            return null;
+            return $this->langReplaceVars($this->currentLanguage[$key], $vars);
         }
     }
 

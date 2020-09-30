@@ -5,15 +5,15 @@ namespace Core\Controller;
 use App\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use Symfony\Component\Intl\Locales;
-use Core\Twig\Filter\HumanizeFilter;
-use Core\Twig\Extension\URIExtension;
 use Core\Twig\Extension\LangExtension;
 use Core\Twig\Extension\FlashExtension;
 use Core\Controller\Session\FlashService;
 use Core\Twig\Extension\CsrfTokenExtension;
 use Core\Controller\Services\JsonDataService;
 use Core\Controller\Services\CsrfTokenService;
+use Core\Controller\Services\GitHubAPI;
+use Core\Twig\Extension\WebpackAssets;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 abstract class Controller
 {
@@ -55,21 +55,15 @@ abstract class Controller
             $this->twig = new Environment($loader);
             //Global
             if ($_SESSION['username']) {
-                $l = $_SESSION['lang'];
-                $this->twig->addGlobal('currentUser', $_SESSION['username']);
-                $this->twig->addGlobal('selectedLang', ucfirst(Locales::getName($l, $l)));
-                $this->twig->addGlobal('htmlLang', substr($l, 0, strpos($l, '_', 0)));
+                $lang = $_SESSION['lang'];
+                $this->twig->addGlobal('htmlLang', substr($lang, 0, strpos($lang, '_', 0)));
             }
             $this->twig->addGlobal('route', $_SESSION['route']);
-            $this->twig->addGlobal('ENV_DEV', getenv('ENV_DEV'));
-            $this->twig->addGlobal('DEBUG_TIME', round(microtime(true) - START_DEBUG_TIME, 3));
             //Extension
-            $this->twig->addExtension(new URIExtension());
             $this->twig->addExtension(new FlashExtension());
             $this->twig->addExtension(new CsrfTokenExtension($this->getCsrfTokenService()));
             $this->twig->addExtension(new LangExtension($this));
-            //Filter
-            $this->twig->addExtension(new HumanizeFilter());
+            $this->twig->addExtension(new WebpackAssets());
         }
         return $this->twig;
     }
@@ -109,13 +103,17 @@ abstract class Controller
      */
     protected function getUri(string $routeName, array $params = []): string
     {
-        return URLController::getUri($routeName, $params);
+        $protocol = $_SERVER["REQUEST_SCHEME"]; // "https"
+        $domain = $_SERVER["HTTP_HOST"]; // domain.com || server IP
+        $url = App::getInstance()->getRouter()->getUrl($routeName, $params); // Reversed routing
+
+        return $protocol . "://" . $domain . $url;
     }
 
     /**
      * Redirect client to a specific route name.
      *
-     * @param string $url
+     * @param string $routeName
      * @param string $getParameter set get parameter eg. http://local/home?page=2 or an anchor eg. http://local/home#contact
      * @return void
      */
@@ -209,7 +207,7 @@ abstract class Controller
      * @param bool $redirect Turn to false to get a boolean return of permission
      * @return void|bool
      */
-    protected function hasPermission(string $permissionName, bool $redirect = true)
+    protected function hasPermission(string $permissionName, bool $redirect = true): bool
     {
         $this->loadModel('user');
         $tables = ["user_role", "role_permission", "permission"];
@@ -279,7 +277,7 @@ abstract class Controller
      *
      * @see https://theterminallife.com/sending-commands-into-a-screen-session/
      * @param string $command The Minecraft command to send
-     * @return void
+     * @return bool
      */
     protected function sendMinecraftCommand(string $command): void
     {
@@ -310,6 +308,7 @@ abstract class Controller
         }
     }
 
+    // TODO: This will be remove
     protected function echoJsonData(string $state): JsonDataService
     {
         return new JsonDataService($state);
@@ -336,5 +335,69 @@ abstract class Controller
     protected function lang(string $key, ...$vars): ?string
     {
         return App::getInstance()->getLang($key, $vars);
+    }
+
+    /**
+     * @param array $data to send
+     * @param integer $code default: 200 OK
+     * @return void
+     */
+    protected function jsonResponse(array $data, int $code = 200): void
+    {
+        try {
+            $response = new JsonResponse($data, $code);
+            $response->send();
+        } catch (\Exception $e) {
+            // In case of JsonResponse Exception send our 500 internal error.
+            header('Content-type: application/json');
+            header($_SERVER['SERVER_PROTOCOL'] . " 500 Internal Error");
+            echo '{"error":"500 Internal Error"}';
+        }
+    }
+
+    protected function jsonOK(?string $description = null): void
+    {
+        $res = ["status" => "done", "code" => 200];
+        if ($description) $res["message"] = $description;
+        $this->jsonResponse($res);
+    }
+
+    protected function jsonBadRequest(?string $description = null): void
+    {
+        $res = ["status" => "Bad request", "code" => 400];
+        if ($description) $res["message"] = $description;
+        $this->jsonResponse($res, 400);
+    }
+
+    protected function jsonForbidden(?string $description = null): void
+    {
+        $res = ["status" => "Bad request", "code" => 403];
+        if ($description) $res["message"] = $description;
+        $this->jsonResponse($res, 403);
+    }
+
+    protected function jsonInternal(?string $description = null): void
+    {
+        $res = ["status" => "Internal Error", "code" => 500];
+        if ($description) $res["message"] = $description;
+        $this->jsonResponse($res, 500);
+    }
+
+    /**
+     * Helper to send a JSON response object formated for ReactToastify.  
+     * You alaways need to handle that response as ReactToastify component into React.
+     *
+     * @param string $messageKey lang.json key as message
+     * @param string|null $titleKey lang.json key as title (optional)
+     * @param integer $code HTTP response status code
+     * @return void
+     */
+    protected function toast(string $messageKey, ?string $titleKey = null, int $code = 200): void
+    {
+        if (is_null($titleKey)) {
+            $this->jsonResponse(["message" => $this->lang($messageKey)], $code);
+        } else {
+            $this->jsonResponse(["message" => $this->lang($messageKey), "title" => $this->lang($titleKey)], $code);
+        }
     }
 }

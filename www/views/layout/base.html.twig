@@ -1,74 +1,29 @@
 <!DOCTYPE html>
 <html lang="{{ htmlLang }}">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        {% if ENV_DEV == "true" %}
-            <link rel="stylesheet" href="{{ uri("base") }}assets/css/mcpanel.css">
-        {% else %}
-            <link rel="stylesheet" href="{{ uri("base") }}assets/css/mcpanel.min.css">
-        {% endif %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.min.css">
-        <link rel="stylesheet" href="{{ uri("base") }}assets/css/style.css">
-        {% block stylesheet %}{% endblock %}
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <style>
-            .custom-file-input ~ .custom-file-label::after {
-                content: "{{ lang('worlds.button.browse') }}";
-            }
-        </style>
-        {% if ENV_DEV == "true" %}<!-- App took {{ DEBUG_TIME }} seconds -->{% endif %}
-        <nav class="navbar fixed-top flex-md-nowrap p-0 navbar-top">
-            <div class="navbar-brand col-sm-3 col-md-2 mr-0">
-                <p class="m-0 p-1 pl-2">
-                    <span class="text-primary">■</span>
-                    {{ currentUser }}
-                </p>
-            </div>
-            <div class="col-md-6 m-md-0 h5">
-                <span class="text-uppercase">Minecraft Panel</span> - {{title}}
-            </div>
-            <div class="col-md-4 m-md-0 d-md-flex align-items-md-center justify-content-md-end">
-                <a href="{{ uri("account") }}" class="text-reset text-decoration-none">
-                    <i class="fas fa-globe"></i>
-                    {{ selectedLang }} |&nbsp;
-                </a>
-                <a href="{{ uri("logout") }}" class="text-danger text-decoration-none">
-                    <i class="fas fa-power-off"></i>
-                    &nbsp;{{ lang('navbar.logout') }}
-                </a>
-            </div>
-        </nav>
-        <div class="container-fluid">
-            <div class="row">
-                {% include "layout/navbar.html.twig" %}
-                <main id="content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-5 overflow">
-                    {% block content %}{% endblock %}
-                </main>
-            </div>
-        </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js"></script>
-        <script type="module" src="//unpkg.com/@grafikart/spinning-dots-element"></script>
-        <script src="{{ uri("base") }}assets/js/toastr_options.js"></script>
-        <script>
-            $('.wip').click(e => {
-                e.preventDefault();
-                toastr.info("Soon™", "W.I.P");
-            });
-            const baseUri = "{{ uri('base') }}";
-            const psContent = new PerfectScrollbar('#content', {
-                scrollYMarginOffset: 100
-            });
-        </script>
-        {% block javascripts %}{% endblock %}
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    {{ webpack_assets('links', 'app')|raw }}
+    <title>Panel</title>
+</head>
+
+<body>
+    <style>
+        .custom-file-input~.custom-file-label::after {
+            content: "{{ lang('worlds.button.browse') }}";
+        }
+    </style>
+
+    <noscript>{{ lang('general.noscript') }}</noscript>
+
+    {# React app #}
+    <div id="root"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {{ webpack_assets('scripts', 'app')|raw }}
+</body>
+
 </html>

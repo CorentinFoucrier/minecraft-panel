@@ -10,6 +10,8 @@
 
 namespace Bin;
 
+use WebSocket\Client;
+
 if (PHP_SAPI !== "cli") {
     echo "File only in CLI";
     die(1);
@@ -26,13 +28,20 @@ class ErrorsCheck extends \Core\Controller\Controller
     {
         $this->loadModel('server');
         $serverEntity = $this->server->selectEverything();
-        // If server is stopped or in loading mode there is an error
-        // otherwise it's been stopped by user
+        // TODO: Check in latest.log if a player issued command "/stop" directly in game chat
+        // to make sure that's not an error.
+
+        // If server is started or in loading mode there is an error otherwise it's been stopped by user
         if (
-            $serverEntity->getStatus() === 0 ||
-            $serverEntity->getStatus() === 1
+            $serverEntity->getStatus() === 1 ||
+            $serverEntity->getStatus() === 2
         ) {
             $this->server->update($serverEntity->getId(), ['status' => 3]);
+            // send to websocket
+            $NODE_NAME = getenv("NODE_NAME");
+            $client = new Client("ws://$NODE_NAME:8000/"); // it using internal docker port
+            $client->send("error");
+            $client->close();
         }
     }
 }

@@ -14,7 +14,7 @@ else
 fi
 
 if [ "$EUID" -ne 0 ]
-    then echo "Please run as root"
+then echo "Please run as root"
     exit 1
 fi
 
@@ -242,9 +242,12 @@ fi
 echo ""
 echo -e "\e[1m\e[32m Install Yarn packages\e[33m\e[0m"
 docker exec ${NODE_NAME} yarn install
-sleep 2
+sleep 1
+docker exec ${CONTAINER_NAME} yarn install
+sleep 1
 docker exec ${CONTAINER_NAME} chmod -R 777 /var/minecraft_server/ && php /var/www/bin/createsql
-sleep 2
+sleep 1
+
 # If you are in dev mode you need to run Node manually
 if [[ ${ENV_DEV} == "false" ]]; then
     docker exec -t -d ${NODE_NAME} node /var/www/server.js

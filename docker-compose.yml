@@ -1,57 +1,57 @@
 version: "3"
 
 services:
-  mc-panel.app:
-    container_name: ${CONTAINER_NAME}
-    restart: unless-stopped
-    build:
-      context: ./docker
-      args:
-        SHELL_USER_ID: ${SHELL_USER_ID}
-        SHELL_GROUP_ID: ${SHELL_GROUP_ID}
-    image: korey03/mc-panel
-    #user: ${SHELL_USER_ID}:${SHELL_GROUP_ID}
-    sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
-    volumes:
-      - ${PWD}/www:/var/www
-      - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server
-    ports:
-      - ${CONTAINER_PORT}:80
-    networks:
-      - mc-panel
-    env_file:
-      - .env
+    mc-panel.app:
+        container_name: ${CONTAINER_NAME}
+        restart: unless-stopped
+        build:
+            context: ./docker
+            args:
+                SHELL_USER_ID: ${SHELL_USER_ID}
+                SHELL_GROUP_ID: ${SHELL_GROUP_ID}
+        image: korey03/mc-panel
+        #user: ${SHELL_USER_ID}:${SHELL_GROUP_ID}
+        sysctls:
+            - net.ipv4.ip_unprivileged_port_start=0
+        volumes:
+            - ${PWD}/www:/var/www
+            - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server
+        ports:
+            - ${CONTAINER_PORT}:80
+        networks:
+            - mc-panel
+        env_file:
+            - .env
 
-  mc-panel.node:
-    container_name: ${NODE_NAME}
-    restart: unless-stopped
-    image: node:12
-    volumes:
-      - ${PWD}/www/nodejs:/var/www
-      - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server
-    ports:
-      - ${SOCKETIO_PORT}:8000
-    networks:
-      - mc-panel
-    env_file:
-      - .env
-    working_dir: /var/www
-    entrypoint: bash
-    command:
-      - -c
-      - |
-        tail -f /dev/null
+    mc-panel.node:
+        container_name: ${NODE_NAME}
+        restart: unless-stopped
+        image: node:12
+        volumes:
+            - ${PWD}/www/nodejs:/var/www
+            - /home/${SHELL_USER}/minecraft_server:/var/minecraft_server
+        ports:
+            - ${SOCKETIO_PORT}:8000
+        networks:
+            - mc-panel
+        env_file:
+            - .env
+        working_dir: /var/www
+        entrypoint: bash
+        command:
+            - -c
+            - |
+                tail -f /dev/null
 
-  mc-panel.mysql:
-    container_name: ${MYSQL_HOST}
-    restart: unless-stopped
-    image: mysql:5.6
-    networks:
-      - mc-panel
-    env_file:
-      - .env
+    mc-panel.mysql:
+        container_name: ${MYSQL_HOST}
+        restart: unless-stopped
+        image: mysql:5.6
+        networks:
+            - mc-panel
+        env_file:
+            - .env
 
 networks:
-  mc-panel:
-    driver: bridge
+    mc-panel:
+        driver: bridge

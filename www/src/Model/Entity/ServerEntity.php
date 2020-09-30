@@ -19,6 +19,8 @@ class ServerEntity extends Entity
 
     private int $ram_max;
 
+    private int $last_update;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -57,7 +59,7 @@ class ServerEntity extends Entity
         return $this->version;
     }
 
-    public function setVersion(int $version): self
+    public function setVersion(string $version): self
     {
         $this->version = $version;
         return $this;
@@ -82,6 +84,17 @@ class ServerEntity extends Entity
     public function setRamMax(int $ram_max): self
     {
         $this->ram_max = $ram_max;
+        return $this;
+    }
+
+    public function getLastUpdate(): ?int
+    {
+        return $this->last_update;
+    }
+
+    public function setLastUpdate(int $last_update): self
+    {
+        $this->last_update = $last_update;
         return $this;
     }
 }

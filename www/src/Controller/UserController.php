@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\App;
 use Core\Controller\Controller;
 
 class UserController extends Controller
@@ -9,7 +10,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->loadModel('user');
+        $this->loadModel('user', 'server');
     }
 
     /**
@@ -21,6 +22,11 @@ class UserController extends Controller
     public function showLogin()
     {
         $this->anonymousOnly();
+        $lastUpdate = $this->server->selectEverything()->getLastUpdate();
+        // if current time is smaller than 30 minutes
+        if (time() - $lastUpdate < 1800) {
+            (new DashboardController())->checkUpdate();
+        }
         $changePassword = false;
 
         if ($_SESSION['temp']['changeYourPassword']) {
@@ -135,6 +141,7 @@ class UserController extends Controller
         unset($_SESSION);
         session_unset();
         session_destroy();
+        setcookie('userinfos', null, -1, '/');
         $this->redirect('login');
     }
 }

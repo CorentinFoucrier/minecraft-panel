@@ -6,13 +6,17 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+RUN apt-get update && apt-get install -y gnupg
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
 RUN apt-get update \
-    && apt-get install -y gnupg \
     && apt-get install -y apt-utils \
     gcc make autoconf \
     libc-dev pkg-config \
     libyaml-dev \
-    mysql-common \
+    mysql-common yarn \
     locales && echo fr_FR.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 
 RUN pecl install yaml

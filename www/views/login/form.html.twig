@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap">
-    <link rel="stylesheet" href="{{ uri("base") }}assets/css/login/form.css">
+    <link rel="stylesheet" href="assets/css/login/form.css">
 </head>
 <body>
+    <noscript>{{ lang('general.noscript') }}</noscript>
     <div class="box">
         {% if changePassword is same as(true) %}
             <h2>Choose a password for {{ currentUser }}</h2>
