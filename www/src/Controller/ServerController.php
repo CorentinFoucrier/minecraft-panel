@@ -87,12 +87,12 @@ class ServerController extends Controller
                 $this->sendMinecraftCommand($command);
                 $this->jsonResponse(["state" => "OK"]);
             } elseif ($status === false) {
-                $this->toast("general.error.database", "general.error.occured", 400);
+                $this->toast("general.error.database", "general.error.occured", 500);
             } else {
-                $this->toast("server.sendCommand.error.stopped", "general.error.occured", 400);
+                $this->toast("server.sendCommand.error.stopped", "general.error.occured", 500);
             }
         } else {
-            $this->toast("server.sendCommand.forbidden", "general.error.forbidden", 400);
+            $this->toast("server.sendCommand.forbidden", "general.error.forbidden", 403);
         }
     }
 

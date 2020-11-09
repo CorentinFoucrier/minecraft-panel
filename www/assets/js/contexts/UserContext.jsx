@@ -4,5 +4,6 @@ export default React.createContext({
     formatedLang: "",
     htmlLang: "",
     username: "",
-    lang: {}
+    lang: {},
+    getUserInfo: () => {}
 });

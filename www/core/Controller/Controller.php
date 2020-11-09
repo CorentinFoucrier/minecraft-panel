@@ -6,13 +6,12 @@ use App\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Core\Twig\Extension\LangExtension;
+use Core\Twig\Extension\WebpackAssets;
 use Core\Twig\Extension\FlashExtension;
 use Core\Controller\Session\FlashService;
 use Core\Twig\Extension\CsrfTokenExtension;
 use Core\Controller\Services\JsonDataService;
 use Core\Controller\Services\CsrfTokenService;
-use Core\Controller\Services\GitHubAPI;
-use Core\Twig\Extension\WebpackAssets;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 abstract class Controller
@@ -34,7 +33,7 @@ abstract class Controller
      * @param array $variables
      * @return void
      */
-    protected function render(string $view, array $variables = []): void
+    final protected function render(string $view, array $variables = []): void
     {
         echo $this->getTwig()->render(
             $view . $this->viewsExtention,
@@ -347,8 +346,9 @@ abstract class Controller
         try {
             $response = new JsonResponse($data, $code);
             $response->send();
+            exit();
         } catch (\Exception $e) {
-            // In case of JsonResponse Exception send our 500 internal error.
+            // In case of JsonResponse Exception send a raw 500 internal error.
             header('Content-type: application/json');
             header($_SERVER['SERVER_PROTOCOL'] . " 500 Internal Error");
             echo '{"error":"500 Internal Error"}';

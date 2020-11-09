@@ -45,13 +45,14 @@ class ApiController extends Controller
             ->get("/api/server_infos", "Global#getServerInfos")
             ->get("/api/properties", "Global#getProperties")
             ->get("/api/lang", "Global#getLang")
+            ->get("/api/get_user_infos", "Global#getUserInfos")
             //
-            ->post("/api/server/select_version", "Server#selectVersion", "select_version")
             ->get("/api/dashboard/check_update", "Dashboard#checkUpdate", "check_update")
             ->get("/api/dashboard/minecraft_versions", "Dashboard#minecraftVersions", "minecraft_versions")
             ->get("/api/dashboard/spigot_versions", "Dashboard#spigotVersions", "spigot_versions")
             ->get("/api/dashboard/forge_versions", "Dashboard#forgeVersions", "forge_versions")
             ->post("/api/server/send_command", "Server#sendCommand", "send_command")
+            ->post("/api/server/select_version", "Server#selectVersion", "select_version")
             ->get("/api/server/status", "Server#getStatus", "get_server_status")
             ->post("/api/server/status", "Server#setStatus", "set_server_status")
             ->get("/api/server/eula", "Server#getEula", "get_eula")
@@ -67,7 +68,11 @@ class ApiController extends Controller
             ->get("/api/worlds", "Worlds#get", "worlds")
             ->post("/api/worlds", "Worlds#add", "worlds_add")
             ->patch("/api/worlds/[a:world_name]", "Worlds#update", "worlds_update")
-            ->delete("/api/worlds/[a:world_name]", "Worlds#delete", "worlds_delete");
+            ->delete("/api/worlds/[a:world_name]", "Worlds#delete", "worlds_delete")
+            ->delete("/api/account/[a:username]", "Account#delete", "delete_account")
+            ->post("/api/account/change_password", "Account#changePassword", "change_password")
+            ->post("/api/account/change_language", "Account#changeLanguage", "change_language")
+            ->get("/api/account/languages", "Account#availableLanguages", "available_languages");
 
         $match = $router->match();
 

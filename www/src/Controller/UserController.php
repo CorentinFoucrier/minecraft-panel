@@ -25,7 +25,7 @@ class UserController extends Controller
         $lastUpdate = $this->server->selectEverything()->getLastUpdate();
         // if current time is smaller than 30 minutes
         if (time() - $lastUpdate < 1800) {
-            (new DashboardController())->checkUpdate();
+            (new DashboardController())->checkUpdate(false);
         }
         $changePassword = false;
 

@@ -1,6 +1,5 @@
 import "../sass/default_theme.scss";
 import "../css/app.css";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -13,20 +12,24 @@ import UserContext from "./contexts/UserContext";
 const Root = () => {
     const [userInfos, setUserInfos] = useState({});
 
+    const getUserInfo = async () => {
+        try {
+            const { data: uinfo } = await Axios.get("/api/get_user_infos");
+            const { data: lang } = await Axios.get("/api/lang"); // Based on PHP $_SESSION
+            // Change the lang attribute in html tag <html lang="">
+            document.documentElement.lang = uinfo.htmlLang;
+            setUserInfos({
+                ...uinfo,
+                formatedLang: uinfo.formatedLang.replace(/\+/g, " "),
+                lang,
+                getUserInfo
+            });
+        } catch (error) {
+            console.error(error.response);
+        }
+    };
+
     useEffect(() => {
-        const getUserInfo = async () => {
-            try {
-                const cookie = JSON.parse(Cookies.get("userInfos"));
-                const response = await Axios.get("/api/lang");
-                setUserInfos({
-                    ...cookie,
-                    formatedLang: cookie.formatedLang.replace(/\+/g, " "),
-                    lang: response.data
-                });
-            } catch (error) {
-                console.error(error.response);
-            }
-        };
         getUserInfo();
     }, []);
 

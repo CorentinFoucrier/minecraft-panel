@@ -8,9 +8,9 @@ class PropertiesService
 
     public static function get(): ?array
     {
-        if (!$content = file_get_contents(self::$propertiesPath)) {
-            return null;
-        }
+        if (!is_file(self::$propertiesPath)) return null;
+        if (!$content = file_get_contents(self::$propertiesPath)) return null;
+
         // Search and split in 2 groups where is "=": (key)=(value)
         $regex = '/(.+)=(.*)/m';
         // Result of regex in an array of $matches

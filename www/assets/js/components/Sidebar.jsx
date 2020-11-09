@@ -65,10 +65,10 @@ const Sidebar = props => {
                         </NavLink>
                     </Nav.Item>
                 </Col>
-                <Col as="ul" md={2} className="nav flex-column fixed-bottom p-md-0">
+                <Col as="ul" md={2} className="nav flex-column fixed-bottom p-md-0 bg-light">
                     <Nav.Item className="mx-auto">
-                        <NavLink to="/account" className="nav-link">
-                            <i className="fas fa-user"></i>
+                        <NavLink to="/account" className="nav-link text-white">
+                            <i className="fas fa-user mr-1"></i>
                             {lang["navbar.account"]}
                         </NavLink>
                     </Nav.Item>

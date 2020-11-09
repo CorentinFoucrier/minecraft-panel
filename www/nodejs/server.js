@@ -7,6 +7,16 @@ const getPlayerCount = require("./components/PlayerCount");
 const monitoring = require("./components/Monitoring");
 const { instance: Axios } = require("./config/axios");
 
+/**
+ * currentConnections = {
+ *   "anAutoG€ner@t3dID" = {
+ *     currentSocket: {
+ *       id: "anAutoG€ner@t3dID"
+ *       {...}
+ *       }
+ *   },
+ * }
+ */
 let currentConnections = {};
 
 io.on("connection", socket => {

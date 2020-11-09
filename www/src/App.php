@@ -3,7 +3,6 @@
 namespace App;
 
 use phpseclib\Net\SSH2;
-use Symfony\Component\Intl\Locales;
 use Core\Controller\RouterController;
 use Core\Controller\Session\PhpSession;
 use Core\Controller\Session\FlashService;
@@ -44,7 +43,7 @@ class App
      *
      * @return void
      */
-    public static function load(): void
+    public function load(): void
     {
         if (getenv("ENV_DEV") === "true") {
             define("ENV_DEV", true);
@@ -58,7 +57,7 @@ class App
             error_reporting(0);
         }
 
-        self::defineConstants();
+        $this->defineConstants();
 
         // Session arn't compatible with CLI
         if (session_status() !== PHP_SESSION_ACTIVE && PHP_SAPI !== "cli") {
@@ -66,19 +65,19 @@ class App
         }
 
         // Set up a cookie with userinfos for ReactJS
-        if (!empty($_SESSION['username']) && empty($_COOKIE['userInfos'])) {
-            $lang = $_SESSION['lang'];
-            $json = json_encode([
-                "formatedLang" => ucfirst(Locales::getName($lang, $lang)),
-                "htmlLang" => substr($lang, 0, strpos($lang, '_', 0)),
-                "username" => $_SESSION['username']
-            ]);
-            setcookie('userInfos', $json, 0, '/');
+        if (!empty($_SESSION['username']) && !isset($_COOKIE['token'])) {
+            // $lang = $_SESSION['lang'];
+            // $json = json_encode([
+            //     "formatedLang" => ucfirst(Locales::getName($lang, $lang)), // English+(United States)
+            //     "htmlLang" => substr($lang, 0, strpos($lang, '_', 0)), // en
+            //     "username" => $_SESSION['username']
+            // ]);
+            // setcookie('userInfos', $json, 0, '/');
             setcookie('token', $_SESSION['token'], 0, "/", "", false, true);
         }
     }
 
-    private static function defineConstants(): void
+    private function defineConstants(): void
     {
         define("SERVER_STOPPED", 0);
         define("SERVER_LOADING", 1);

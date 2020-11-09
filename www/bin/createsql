@@ -68,7 +68,7 @@ $pdo->exec(
         `version` varchar(255) NOT NULL,
         `ram_min` int(4) NOT NULL DEFAULT '512',
         `ram_max` int(4) NOT NULL DEFAULT '1024',
-        `last_update` timestamp NOT NULL DEFAULT $timestamp
+        `last_update` int(10) NOT NULL DEFAULT $timestamp,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1"
 );

@@ -18,7 +18,7 @@ class DashboardController extends Controller
      *
      * @return void
      */
-    public function checkUpdate(): void
+    public function checkUpdate(bool $JSON = true): void
     {
         $this->server->update(1, ["last_update" => time()]);
         $mcVersionJsonPath = BASE_PATH . "www/assets/static/minecraft_versions.json";
@@ -33,9 +33,11 @@ class DashboardController extends Controller
                 $h = fopen($mcVersionJsonPath, "w");
                 fwrite($h, $minecraft_gist);
                 fclose($h);
-                $this->jsonResponse(["status" => true, "message" => $this->lang("dashboard.modal.selectVersion.sync.updated")]);
+                if ($JSON)
+                    $this->jsonResponse(["status" => true, "message" => $this->lang("dashboard.modal.selectVersion.sync.updated")]);
             } else {
-                $this->jsonResponse(["status" => false, "message" => $this->lang("dashboard.modal.selectVersion.sync.notUpdated")]);
+                if ($JSON)
+                    $this->jsonResponse(["status" => false, "message" => $this->lang("dashboard.modal.selectVersion.sync.notUpdated")]);
             }
         } else {
             $h = fopen($mcVersionJsonPath, "x+");

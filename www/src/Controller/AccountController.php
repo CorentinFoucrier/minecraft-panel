@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\App;
 use Core\Controller\Controller;
 use Symfony\Component\Intl\Locales;
 
@@ -13,114 +14,101 @@ class AccountController extends Controller
         $this->loadModel('user');
     }
 
-    public function show()
-    {
-        $this->userOnly();
-        $this->render('account', [
-            "title" => $this->lang('account.title'),
-            "languages" => $this->availableLanguages(),
-            "userLocale" => $_SESSION['lang'],
-        ]);
-    }
-
     /**
      * Methode: POST
-     * Route: /account/change_password
+     * Route: /api/account/change_password
      *
      * @return void
      */
     public function changePassword(): void
     {
-        $oldPassword = $_POST['oldPassword'];
-        $newPassword = $_POST['newPassword'];
-        $passwordVerify = $_POST['passwordVerify'];
-        $token = $_POST['token'];
-        if ($token === $_SESSION['token']) {
-            $user = $this->user->select(["username" => $_SESSION['username']]);
-            if (password_verify($oldPassword, $user->getPassword())) {
-                if (strlen($newPassword) >= 4) {
-                    if ($newPassword === $passwordVerify) {
-                        $passwordHash = password_hash($newPassword, PASSWORD_ARGON2ID);
-                        if ($this->user->updateBy(['id' => $user->getId()], ['password' => $passwordHash])) {
-                            $this->getFlash()->addSuccess($this->lang('account.changePassword.success'));
-                        } else {
-                            $this->getFlash()->addAlert($this->lang('general.error.database'));
-                        }
+        $oldPassword = htmlspecialchars($_POST['oldPassword']);
+        $newPassword = htmlspecialchars($_POST['newPassword']);
+        $passwordVerify = htmlspecialchars($_POST['passwordVerify']);
+
+        /** @var \App\Model\Table\UserTable */
+        $userTable = $this->user;
+        /** @var \App\Model\Entity\UserEntity */
+        $user = $userTable->select(["username" => $_SESSION['username']]);
+        if (password_verify($oldPassword, $user->getPassword())) {
+            if (strlen($newPassword) >= 4) {
+                if ($newPassword === $passwordVerify) {
+                    $passwordHash = password_hash($newPassword, PASSWORD_ARGON2ID);
+                    if ($this->user->updateBy(['id' => $user->getId()], ['password' => $passwordHash])) {
+                        $this->toast("account.changePassword.success");
                     } else {
-                        $this->getFlash()->addAlert($this->lang('account.changePassword.error.same'));
+                        $this->toast("general.error.database", "general.error.occured", 500);
                     }
                 } else {
-                    $this->getFlash()->addAlert($this->lang('account.changePassword.error.short'));
+                    $this->jsonResponse(["message" => $this->lang("account.changePassword.error.same"), "title" => "same"], 400);
                 }
             } else {
-                $this->getFlash()->addAlert($this->lang('account.changePassword.error.old'));
+                $this->jsonResponse(["message" => $this->lang("account.changePassword.error.short"), "title" => "short"], 400);
             }
         } else {
-            $this->getFlash()->addAlert($this->lang('general.error.badToken'));
+            $this->jsonResponse(["message" => $this->lang("account.changePassword.error.old"), "title" => "old"], 400);
         }
-        $this->redirect('account');
     }
 
     /**
      * Methode: POST
-     * Route: /account/change_language
+     * Route: /api/account/change_language
      *
      * @return void
      */
     public function changeLanguage(): void
     {
-        $locale = $_POST['locale'];
-        $token = $_POST['token'];
-        if ($token === $_SESSION['token']) {
-            if (Locales::exists($locale)) {
-                $user = $this->user->select(["username" => $_SESSION['username']]);
-                if ($this->user->updateBy(['id' => $user->getId()], ['lang' => $locale])) {
-                    $_SESSION['lang'] = $locale;
-                    $this->getFlash()->addSuccess($this->lang('account.changeLanguage.success'));
-                } else {
-                    $this->getFlash()->addAlert($this->lang('general.error.database'));
-                }
+        $locale = htmlspecialchars($_POST['locale']);
+
+        if (empty($locale)) {
+            $this->toast("account.changeLanguage.success");
+        };
+
+        if (Locales::exists($locale)) {
+            $user = $this->user->select(["username" => $_SESSION['username']]);
+            if ($this->user->updateBy(['id' => $user->getId()], ['lang' => $locale])) {
+                $_SESSION['lang'] = $locale;
+                $this->toast("account.changeLanguage.success");
             } else {
-                $this->getFlash()->addAlert($this->lang('general.error.internal'));
+                $this->toast("general.error.database", null, 500);
             }
         } else {
-            $this->getFlash()->addAlert($this->lang('general.error.badToken'));
+            $this->toast("general.error.internal", null, 500);
         }
-        $this->redirect('account');
     }
 
     /**
-     * Methode: POST
-     * Route: /account/delete
+     * Delete the current logged in account
+     * Methode: DELETE
+     * Route: /api/account/{username}
      *
      * @return void
      */
-    public function delete(): void
+    public function delete(string $username): void
     {
-        $token = $_POST['token'];
-        if ($token === $_SESSION['token']) {
-            $user = $this->user->select(["username" => $_SESSION['username']]);
-            if ($user->getId() !== 1) {
-                if ($this->user->deleteById($user->getId())) {
-                    $this->getFlash()->addSuccess($this->lang('account.delete.success'));
-                    unset($_SESSION);
-                    session_unset();
-                    session_destroy();
-                    $this->redirect('login');
-                } else {
-                    $this->getFlash()->addAlert($this->lang('general.error.database'));
-                    $this->redirect('account');
-                }
+        $userEntity = $this->user->select(["username" => $username]);
+        // Check if current user isn't the owner account
+        if ($userEntity->getId() !== 1) {
+            if ($this->user->deleteById($userEntity->getId())) {
+                unset($_SESSION);
+                session_unset();
+                session_destroy();
+                $this->toast("account.delete.success");
             } else {
-                $this->getFlash()->addAlert($this->lang('account.delete.error.owner'));
+                $this->toast("general.error.database", null, 500);
             }
         } else {
-            $this->getFlash()->addAlert($this->lang('general.error.badToken'));
-            $this->redirect('account');
+            $this->toast("account.delete.error.owner", null, 400);
         }
     }
 
-    private function availableLanguages(): array
+    /**
+     * Get all available languages based on language files that we have in /www/lang folder
+     * ROUTE: GET /api/languages
+     *
+     * @return void
+     */
+    public function availableLanguages(): void
     {
         $langFiles = scandir(BASE_PATH . "www/lang");
         $languages = [];
@@ -130,6 +118,10 @@ class AccountController extends Controller
                 $languages[$locale] = ucfirst(Locales::getName($locale, $locale));
             }
         }
-        return $languages;
+        if (!empty($languages)) {
+            $this->jsonResponse($languages);
+        } else {
+            $this->toast("general.error.internal", null, 500);
+        }
     }
 }

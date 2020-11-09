@@ -4,12 +4,23 @@ namespace App\Controller;
 
 use Core\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Intl\Locales;
 
 class GlobalController extends Controller
 {
     function __construct()
     {
         $this->loadModel('server');
+    }
+
+    public function getUserInfos(): void
+    {
+        $lang = $_SESSION['lang'];
+        $this->jsonResponse([
+            "formatedLang" => ucfirst(Locales::getName($lang, $lang)), // English+(United States)
+            "htmlLang" => substr($lang, 0, strpos($lang, '_', 0)), // en
+            "username" => $_SESSION['username']
+        ], 200);
     }
 
     public function getLang(): void

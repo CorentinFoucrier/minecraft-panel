@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 define('START_DEBUG_TIME', microtime(true));
 
 $basePath = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
@@ -6,7 +8,7 @@ define('BASE_PATH', $basePath, true);
 
 require_once BASE_PATH . 'www/vendor/autoload.php';
 $app = App\App::getInstance();
-$app::load();
+$app->load();
 
 $app->getRouter()
     ->all('/api/[*]?/[*]?', 'Api#manager', 'api')
